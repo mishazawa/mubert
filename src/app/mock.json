@@ -1,0 +1,30 @@
+[
+  {
+    "id": 15,
+    "name": "Bitstream Reverie",
+    "image": "https://storage.googleapis.com/static-eu.mubert.com/quests/shapes/shape_15.svg",
+    "bpm": 87,
+    "scale": 1,
+    "background_color": "#F4A2FF",
+    "created_from": 81922,
+    "deleted": false,
+    "public": true,
+    "key": 9,
+    "streaming_link": "https://api.mubert.xyz/quests/v1/stream/play?stream_id=15",
+    "genre": "lofi"
+  },
+  {
+    "id": 10,
+    "name": "Glitch Serotonin",
+    "image": "https://storage.googleapis.com/static-eu.mubert.com/quests/shapes/shape_10.svg",
+    "bpm": 120,
+    "scale": 1,
+    "background_color": "#FFA2BC",
+    "created_from": 81771,
+    "deleted": false,
+    "public": true,
+    "key": 1,
+    "streaming_link": "https://api.mubert.xyz/quests/v1/stream/play?stream_id=10",
+    "genre": "breakbeat"
+  }
+]
