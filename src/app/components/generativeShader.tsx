@@ -4,8 +4,19 @@ import { Color } from "three";
 import shaderVert from "@/app/shader/vertex.glsl";
 import shaderFrag from "@/app/shader/fragment.glsl";
 
-export const ColorShiftMaterial = shaderMaterial(
-  { time: 0, color: new Color(0.2, 0.0, 0.1) },
+type UniformValue<T> = {
+  value: T;
+};
+
+// declare uniforms here
+export type GenerativeShaderUniforms = {
+  time: UniformValue<number>;
+  color: UniformValue<Color>;
+};
+
+export const GenerativeShaderMaterial = shaderMaterial(
+  // uniforms
+  {},
   // vertex shader
   shaderVert,
   // fragment shader
@@ -13,4 +24,4 @@ export const ColorShiftMaterial = shaderMaterial(
 );
 
 // declaratively
-extend({ ColorShiftMaterial });
+extend({ GenerativeShaderMaterial });

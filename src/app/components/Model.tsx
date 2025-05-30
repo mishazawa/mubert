@@ -1,26 +1,53 @@
 "use client";
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
-import { Mesh } from "three";
-import { ColorShiftMaterial } from "./generativeShader";
+import { useFrame, useThree } from "@react-three/fiber";
+import { RefObject, useRef } from "react";
+import { Color, Mesh, Object3D } from "three";
+import {
+  GenerativeShaderMaterial,
+  GenerativeShaderUniforms,
+} from "./generativeShader";
 
 export function Model() {
-  const ref = useRef<Mesh>(null!);
-
-  useFrame(() => {
-    ref.current.rotation.x += 0.01;
-    ref.current.rotation.y += 0.01;
-  });
+  const ref = useTransforms();
+  const uniforms = useUniforms();
 
   return (
     <mesh ref={ref}>
       <boxGeometry />
       {/* @ts-ignore */}
-      <colorShiftMaterial
-        key={ColorShiftMaterial.key}
-        color="hotpink"
-        time={1}
+      <generativeShaderMaterial
+        key={GenerativeShaderMaterial.key}
+        uniforms={uniforms.current}
       />
     </mesh>
   );
+}
+
+function useTransforms(): RefObject<Object3D> {
+  const ref = useRef<Mesh>(null!);
+
+  // animate mesh here
+  useFrame(() => {
+    ref.current.rotation.x += 0.01;
+    ref.current.rotation.y += 0.01;
+  });
+
+  return ref;
+}
+
+function useUniforms(): RefObject<GenerativeShaderUniforms> {
+  const { clock } = useThree();
+
+  // initial values for uniforms
+  const uniforms = useRef<GenerativeShaderUniforms>({
+    color: { value: new Color(1, 0, 0) },
+    time: { value: 0 },
+  });
+
+  // animate uniforms here
+  useFrame(() => {
+    uniforms.current.time.value = clock.getElapsedTime();
+  });
+
+  return uniforms;
 }
