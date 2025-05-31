@@ -7,13 +7,16 @@ import {
   GenerativeShaderUniforms,
 } from "./generativeShader";
 
+const SPEED = 10; // suppose to be bpm?
+const SPEED_MULTIPLIER = 0.001;
+
 export function Model() {
   const ref = useTransforms();
   const uniforms = useUniforms();
 
   return (
     <mesh ref={ref}>
-      <octahedronGeometry args={[1, 40]} />
+      <octahedronGeometry args={[1, 64]} />
       {/* <torusKnotGeometry args={[1, 0.3, 256, 64]} /> */}
       {/* @ts-ignore */}
       <generativeShaderMaterial
@@ -37,8 +40,6 @@ function useTransforms(): RefObject<Object3D> {
 }
 
 function useUniforms(): RefObject<GenerativeShaderUniforms> {
-  const { clock } = useThree();
-
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>({
     color: { value: new Color(1, 0, 0) },
@@ -47,7 +48,7 @@ function useUniforms(): RefObject<GenerativeShaderUniforms> {
 
   // animate uniforms here
   useFrame(() => {
-    uniforms.current.time.value = clock.getElapsedTime();
+    uniforms.current.time.value += SPEED * SPEED_MULTIPLIER;
   });
 
   return uniforms;
