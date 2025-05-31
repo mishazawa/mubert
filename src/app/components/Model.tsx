@@ -13,7 +13,8 @@ export function Model() {
 
   return (
     <mesh ref={ref}>
-      <boxGeometry />
+      <octahedronGeometry args={[1, 40]} />
+      {/* <torusKnotGeometry args={[1, 0.3, 256, 64]} /> */}
       {/* @ts-ignore */}
       <generativeShaderMaterial
         key={GenerativeShaderMaterial.key}
@@ -28,8 +29,8 @@ function useTransforms(): RefObject<Object3D> {
 
   // animate mesh here
   useFrame(() => {
-    ref.current.rotation.x += 0.01;
-    ref.current.rotation.y += 0.01;
+    ref.current.rotation.x += 0.001;
+    ref.current.rotation.y += 0.001;
   });
 
   return ref;

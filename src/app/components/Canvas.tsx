@@ -14,7 +14,7 @@ export default function ThreeCanvas() {
         <Model />
       </Stage>
       <OrbitControls />
-      <PostFx />
+      {/* <PostFx /> */}
     </Canvas>
   );
 }
