@@ -43,3 +43,10 @@ body {
   justify-items: center;
   min-height: 100svh;
 }
+
+.stats {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
