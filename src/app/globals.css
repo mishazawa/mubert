@@ -50,3 +50,10 @@ body {
   left: 0;
   z-index: 2;
 }
+
+.DUMMY_player {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2;
+}

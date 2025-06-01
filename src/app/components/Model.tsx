@@ -1,18 +1,20 @@
 "use client";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { RefObject, useRef } from "react";
 import { Color, Mesh, Object3D } from "three";
+import { GenerativeShaderMaterial } from "./generativeShader";
+import { useAudioData } from "./hooks";
 import {
-  GenerativeShaderMaterial,
+  AnalysisData,
+  ApiProps,
+  CanvasProps,
   GenerativeShaderUniforms,
-} from "./generativeShader";
+} from "./types";
 
-const SPEED = 10; // suppose to be bpm?
-const SPEED_MULTIPLIER = 0.001;
-
-export function Model() {
-  const ref = useTransforms();
-  const uniforms = useUniforms();
+export function Model({ audio, bpm }: CanvasProps & ApiProps) {
+  const data = useAudioData(audio, { bpm });
+  const ref = useTransforms(data);
+  const uniforms = useUniforms(data);
 
   return (
     <mesh ref={ref}>
@@ -27,7 +29,7 @@ export function Model() {
   );
 }
 
-function useTransforms(): RefObject<Object3D> {
+function useTransforms(_: RefObject<AnalysisData>): RefObject<Object3D> {
   const ref = useRef<Mesh>(null!);
 
   // animate mesh here
@@ -39,7 +41,9 @@ function useTransforms(): RefObject<Object3D> {
   return ref;
 }
 
-function useUniforms(): RefObject<GenerativeShaderUniforms> {
+function useUniforms(
+  data: RefObject<AnalysisData>
+): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>({
     color: { value: new Color(1, 0, 0) },
@@ -48,7 +52,7 @@ function useUniforms(): RefObject<GenerativeShaderUniforms> {
 
   // animate uniforms here
   useFrame(() => {
-    uniforms.current.time.value += SPEED * SPEED_MULTIPLIER;
+    uniforms.current.time.value = data.current.playtime;
   });
 
   return uniforms;

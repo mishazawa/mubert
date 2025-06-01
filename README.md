@@ -34,6 +34,14 @@ yarn dev
 
 `type GenerativeShaderUniforms` - type for uniforms
 
+`type AnalysisData` - type for audio data
+
+`useUpdateAnalysisData()` - hook for setting audio data. used for updating time, fft, etc.
+
+`useInitAnalyser()` - creates audio context from html audio source
+
+`useAudioData(audio) -> data` - wrapper for audio stuff. returns reference to `AnalysisData`
+
 ### API postfx
 
 Just copy blur effect and make similar. Add to render queue.
