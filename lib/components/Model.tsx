@@ -1,7 +1,16 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import type { RefObject } from "react";
-import { Color, Mesh, Object3D } from "three";
+import {
+  CapsuleGeometry,
+  Color,
+  Mesh,
+  Object3D,
+  OctahedronGeometry,
+  SphereGeometry,
+  TorusGeometry,
+} from "three";
+
 import { GenerativeShaderMaterial } from "./generativeShader";
 import type { GenerativeShaderUniforms } from "./generativeShader";
 
@@ -12,16 +21,27 @@ export function Model() {
   const ref = useTransforms();
   const uniforms = useUniforms();
 
+  const octahedron = useMemo(() => new OctahedronGeometry(1, 64), []);
+  const capsule = useMemo(() => new CapsuleGeometry(1, 1, 4, 8), []);
+  const sphere = useMemo(() => new SphereGeometry(1, 32, 16), []);
+  const torus = useMemo(() => new TorusGeometry(1, 1, 16, 100), []);
+
+  const items = [octahedron, capsule, sphere, torus];
+
+  const visibleIndex = Math.floor(Math.random() * items.length);
+
   return (
-    <mesh ref={ref}>
-      <octahedronGeometry args={[1, 64]} />
-      {/* <torusKnotGeometry args={[1, 0.3, 256, 64]} /> */}
-      {/* @ts-ignore */}
-      <generativeShaderMaterial
-        key={GenerativeShaderMaterial.key}
-        uniforms={uniforms.current}
-      />
-    </mesh>
+    <group ref={ref}>
+      {items.map((i, idx) => (
+        <mesh geometry={i} visible={idx === visibleIndex}>
+          {/* @ts-ignore */}
+          <generativeShaderMaterial
+            key={GenerativeShaderMaterial.key}
+            uniforms={uniforms.current}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 }
 

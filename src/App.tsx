@@ -1,4 +1,3 @@
-import "./App.css";
 import Canvas from "../lib/main";
 function App() {
   return <Canvas />;
