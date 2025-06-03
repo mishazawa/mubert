@@ -36,20 +36,6 @@ npm run dev
 
 Just copy blur effect and make similar. Add to render queue.
 
-### Glsl
-
-```js
-// import
-#pragma glslify: snoise = require(./utils/simplex4d.glsl)
-
-// pass reference
-// https://github.com/glslify/glslify?tab=readme-ov-file#passing-references-between-modules
-#pragma glslify: pattern = require(./utils/pattern.glsl, snoise=snoise)
-
-// export
-#pragma glslify: export(pattern)
-```
-
 ### Building and usage as component
 
 ```bash
