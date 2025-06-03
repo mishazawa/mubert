@@ -13,4 +13,3 @@ float pattern(vec3 pos, float time) {
   return noise;
 }
 
-#pragma glslify: export(pattern)

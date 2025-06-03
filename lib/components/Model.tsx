@@ -1,43 +1,60 @@
 import { useFrame } from "@react-three/fiber";
+import CustomShaderMaterial from "three-custom-shader-material";
+
 import { useMemo, useRef } from "react";
 import type { RefObject } from "react";
+
 import {
-  CapsuleGeometry,
   Color,
+  IcosahedronGeometry,
   Mesh,
+  MeshPhysicalMaterial,
   Object3D,
   OctahedronGeometry,
-  SphereGeometry,
-  TorusGeometry,
 } from "three";
 
-import { GenerativeShaderMaterial } from "./generativeShader";
-import type { GenerativeShaderUniforms } from "./generativeShader";
+type UniformValue<T> = {
+  value: T;
+};
+
+// declare uniforms here
+export type GenerativeShaderUniforms = {
+  time: UniformValue<number>;
+  color1: UniformValue<Color>;
+  color2: UniformValue<Color>;
+};
+
+import vertexShader from "../shaders/vertex_noise.glsl?raw";
+import fragmentShader from "../shaders/fragment_noise.glsl?raw";
+import perlin from "../shaders/utils/noise3.glsl?raw";
 
 const SPEED = 10; // suppose to be bpm?
 const SPEED_MULTIPLIER = 0.001;
+const INCLUDE_MAP = {
+  "//#include<pnoise>": perlin,
+};
 
 export function Model() {
   const ref = useTransforms();
   const uniforms = useUniforms();
 
-  const octahedron = useMemo(() => new OctahedronGeometry(1, 64), []);
-  const capsule = useMemo(() => new CapsuleGeometry(1, 1, 4, 8), []);
-  const sphere = useMemo(() => new SphereGeometry(1, 32, 16), []);
-  const torus = useMemo(() => new TorusGeometry(1, 1, 16, 100), []);
+  const octahedron = useMemo(() => new OctahedronGeometry(1, 128), []);
+  const icosahedron = useMemo(() => new IcosahedronGeometry(1, 128), []);
 
-  const items = [octahedron, capsule, sphere, torus];
+  const items = [octahedron, icosahedron];
 
-  const visibleIndex = Math.floor(Math.random() * items.length);
+  const visibleIndex = 0;
 
   return (
     <group ref={ref}>
       {items.map((i, idx) => (
-        <mesh geometry={i} visible={idx === visibleIndex}>
-          {/* @ts-ignore */}
-          <generativeShaderMaterial
-            key={GenerativeShaderMaterial.key}
+        <mesh key={idx} geometry={i} visible={idx === visibleIndex}>
+          <CustomShaderMaterial
+            baseMaterial={MeshPhysicalMaterial}
+            vertexShader={compileShader(vertexShader, INCLUDE_MAP)}
+            fragmentShader={compileShader(fragmentShader, INCLUDE_MAP)}
             uniforms={uniforms.current}
+            roughness={0}
           />
         </mesh>
       ))}
@@ -60,7 +77,8 @@ function useTransforms(): RefObject<Object3D> {
 function useUniforms(): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>({
-    color: { value: new Color(1, 0, 0) },
+    color1: { value: new Color(0xffbe0b) },
+    color2: { value: new Color(0xff006e) },
     time: { value: 0 },
   });
 
@@ -70,4 +88,13 @@ function useUniforms(): RefObject<GenerativeShaderUniforms> {
   });
 
   return uniforms;
+}
+
+function compileShader(raw: string, map: Record<string, string>) {
+  let copy = `${raw}`;
+
+  Object.entries(map).forEach(([key, value]) => {
+    copy = copy.replace(key, value);
+  });
+  return copy;
 }

@@ -5,5 +5,3 @@ vec3 noise_3(vec4 pos) {
     snoise(vec4(pos.x, pos.y, pos.z, pos.a*0.2+30.0))
   );
 }
-
-#pragma glslify: export(noise_3)

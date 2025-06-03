@@ -1,6 +1,6 @@
 import { ShaderMaterial, Uniform } from "three";
-import vertexShader from "../shaders/vertex.glsl";
-import fragmentShader from "../shaders/blur.frag.glsl";
+import vertexShader from "../shaders/vertex.glsl?raw";
+import fragmentShader from "../shaders/blur.frag.glsl?raw";
 
 export class VerticalBlurShader extends ShaderMaterial {
   constructor() {

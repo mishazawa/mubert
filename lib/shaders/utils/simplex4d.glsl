@@ -128,4 +128,3 @@ float snoise(vec4 v)
 
   }
 
-#pragma glslify: export(snoise)
