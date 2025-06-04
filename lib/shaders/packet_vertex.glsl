@@ -12,10 +12,7 @@ uniform float uTime;
 //#include<math>
 //#include<snoise>
 //#include<noise3>
-
-float strips(float position) {
-  return fit(smoothMod(position, 1.0, 1.5), 0.35, 0.6, 0.0, 1.0);
-}
+//#include<voronoi3>
 
 
 
@@ -28,11 +25,10 @@ void main() {
   vec3 coords = normal;
   coords.y += uTime * SPEED;
 
-  vec3 noisePattern = noise3(vec4(coords* vec3(1., .01, 1.), 1.));
-  float pattern = strips(noisePattern.y * FREQ);
-  float displacement = clamp(pattern, 0.2, .8) * .3;
+  float displacement = smoothstep(0., .99, 1. - voronoi2d(uv * 10.)) - .5;
 
-  vDisplacement = displacement ;
+
+  vDisplacement = .1 * displacement;
 
   vec3 newPosition = vPosition + vNormal * vDisplacement ;
 

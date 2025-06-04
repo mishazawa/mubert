@@ -28,7 +28,7 @@ export function Model() {
 
   const visibleIndex = 0;
 
-  const [vertexShader, fragmentShader] = compile("organic");
+  const [vertexShader, fragmentShader] = compile("packet");
 
   return (
     <group ref={ref}>
@@ -40,6 +40,10 @@ export function Model() {
             fragmentShader={fragmentShader}
             uniforms={uniforms.current}
             roughness={0.5}
+            iridescence={1}
+            iridescenceIOR={1.3}
+            clearcoat={0.1}
+            clearcoatRoughness={0}
           />
         </mesh>
       ))}

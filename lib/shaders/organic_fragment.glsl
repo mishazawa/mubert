@@ -4,7 +4,7 @@ uniform vec3 uColor2;
 
 varying vec2 vUv;
 varying vec3 vPosition;
-varying vec3 vDispPosition;
+
 varying float vDisplacement;
 
 #define FREQ 1.0
