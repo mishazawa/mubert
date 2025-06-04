@@ -1,6 +1,7 @@
 import simplex3d from "./utils/simplex3d.glsl?raw";
 import simplex4d from "./utils/simplex4d.glsl?raw";
 import math from "./utils/math.glsl?raw";
+import calcBumpMap from "./utils/calc_bump.glsl?raw";
 
 import vertex from "./vertex.glsl?raw";
 import noiseVert from "./vertex_noise.glsl?raw";
@@ -20,6 +21,7 @@ const INCLUDE_MAP = {
   "//#include<snoise>": simplex4d,
   "//#include<noise3>": simplex3d,
   "//#include<math>": math,
+  "//#include<calc_bump>": calcBumpMap,
 };
 
 /**

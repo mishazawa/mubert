@@ -6,11 +6,10 @@ import { useMemo, useRef } from "react";
 import type { RefObject } from "react";
 import type { GenerativeShaderUniforms } from "../types";
 
-import { SPEED, SPEED_MULTIPLIER } from "../constants";
+import { MESH_DETAIL, SPEED, SPEED_MULTIPLIER } from "../constants";
 
 import {
   Color,
-  IcosahedronGeometry,
   Mesh,
   MeshPhysicalMaterial,
   Object3D,
@@ -23,10 +22,9 @@ export function Model() {
   const ref = useTransforms();
   const uniforms = useUniforms();
 
-  const octahedron = useMemo(() => new OctahedronGeometry(1, 128), []);
-  const icosahedron = useMemo(() => new IcosahedronGeometry(1, 128), []);
+  const octahedron = useMemo(() => new OctahedronGeometry(1, MESH_DETAIL), []);
 
-  const items = [octahedron, icosahedron];
+  const items = [octahedron];
 
   const visibleIndex = 0;
 

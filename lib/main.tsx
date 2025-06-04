@@ -24,6 +24,7 @@ export default function MubertCanvas() {
       {/* </Stage> */}
       <OrbitControls />
       {/* <PostFx /> */}
+      <ambientLight color={0x404040} intensity={10} />
     </Canvas>
   );
 }
