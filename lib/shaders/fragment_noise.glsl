@@ -1,6 +1,7 @@
-uniform float time;
-uniform vec3 color1;
-uniform vec3 color2;
+uniform float uTime;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
+
 varying vec2 vUv;
 varying vec3 vPosition;
 
@@ -12,9 +13,9 @@ varying vec3 vPosition;
 
 void main() {
 
-  vec3 noiseVal = noise3(vec4(SPEED * time + vPosition * FREQ, 1.0)) * 3.2;
+  vec3 noiseVal = noise3(vec4(SPEED * uTime + vPosition * FREQ, 1.0)) * 3.2;
   float mask = smoothstep(.5, .51 , noiseVal.x);
-  vec3 newColor = mix(color1, color2, mask);
+  vec3 newColor = mix(uColor1, uColor2, mask);
 
   csm_DiffuseColor.rgba = vec4(newColor, 1.0);
 }

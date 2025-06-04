@@ -33,14 +33,16 @@ export function Model() {
 
   const visibleIndex = 0;
 
+  const [vertexShader, fragmentShader] = compile("organic");
+
   return (
     <group ref={ref}>
       {items.map((i, idx) => (
         <mesh key={idx} geometry={i} visible={idx === visibleIndex}>
           <CustomShaderMaterial
             baseMaterial={MeshPhysicalMaterial}
-            vertexShader={compile(vertexShader)}
-            fragmentShader={compile(fragmentShader)}
+            vertexShader={vertexShader}
+            fragmentShader={fragmentShader}
             uniforms={uniforms.current}
             roughness={0}
           />
@@ -65,14 +67,14 @@ function useTransforms(): RefObject<Object3D> {
 function useUniforms(): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>({
-    color1: { value: new Color(0xffbe0b) },
-    color2: { value: new Color(0xff006e) },
-    time: { value: 0 },
+    uColor1: { value: new Color(0xffbe0b) },
+    uColor2: { value: new Color(0xff006e) },
+    uTime: { value: 0 },
   });
 
   // animate uniforms here
   useFrame(() => {
-    uniforms.current.time.value += SPEED * SPEED_MULTIPLIER;
+    uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER;
   });
 
   return uniforms;

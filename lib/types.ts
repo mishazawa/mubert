@@ -6,9 +6,9 @@ type UniformValue<T> = {
 
 // declare uniforms here
 export type GenerativeShaderUniforms = {
-  time: UniformValue<number>;
-  color1: UniformValue<Color>;
-  color2: UniformValue<Color>;
+  uTime: UniformValue<number>;
+  uColor1: UniformValue<Color>;
+  uColor2: UniformValue<Color>;
 };
 
 export type EnvironmentLightProps = {
