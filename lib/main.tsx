@@ -3,7 +3,7 @@ import { Center, OrbitControls, StatsGl } from "@react-three/drei";
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
 // import { PostFx } from "./components/PostFx";
-import "./types.d";
+import "./types";
 
 export default function MubertCanvas() {
   return (

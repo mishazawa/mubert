@@ -1,11 +1,10 @@
 import { Environment, Lightformer } from "@react-three/drei";
+import { ENV_MAP_RESOLUTION } from "../constants";
+import type { EnvironmentLightProps } from "../types";
 
-type EnvironmentLightProps = {
-  intensity: number;
-};
 export function EnvironmentLight({ intensity }: EnvironmentLightProps) {
   return (
-    <Environment resolution={512}>
+    <Environment resolution={ENV_MAP_RESOLUTION}>
       <Lightformer
         intensity={intensity}
         position={[5, 5, 5]}

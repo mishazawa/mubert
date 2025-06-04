@@ -2,7 +2,11 @@ import { useFrame } from "@react-three/fiber";
 import CustomShaderMaterial from "three-custom-shader-material";
 
 import { useMemo, useRef } from "react";
+
 import type { RefObject } from "react";
+import type { GenerativeShaderUniforms } from "../types";
+
+import { SPEED, SPEED_MULTIPLIER } from "../constants";
 
 import {
   Color,
@@ -13,26 +17,10 @@ import {
   OctahedronGeometry,
 } from "three";
 
-type UniformValue<T> = {
-  value: T;
-};
-
-// declare uniforms here
-export type GenerativeShaderUniforms = {
-  time: UniformValue<number>;
-  color1: UniformValue<Color>;
-  color2: UniformValue<Color>;
-};
+import { compile } from "../shaders/compiler";
 
 import vertexShader from "../shaders/vertex_noise.glsl?raw";
 import fragmentShader from "../shaders/fragment_noise.glsl?raw";
-import perlin from "../shaders/utils/noise3.glsl?raw";
-
-const SPEED = 10; // suppose to be bpm?
-const SPEED_MULTIPLIER = 0.001;
-const INCLUDE_MAP = {
-  "//#include<pnoise>": perlin,
-};
 
 export function Model() {
   const ref = useTransforms();
@@ -51,8 +39,8 @@ export function Model() {
         <mesh key={idx} geometry={i} visible={idx === visibleIndex}>
           <CustomShaderMaterial
             baseMaterial={MeshPhysicalMaterial}
-            vertexShader={compileShader(vertexShader, INCLUDE_MAP)}
-            fragmentShader={compileShader(fragmentShader, INCLUDE_MAP)}
+            vertexShader={compile(vertexShader)}
+            fragmentShader={compile(fragmentShader)}
             uniforms={uniforms.current}
             roughness={0}
           />
@@ -88,13 +76,4 @@ function useUniforms(): RefObject<GenerativeShaderUniforms> {
   });
 
   return uniforms;
-}
-
-function compileShader(raw: string, map: Record<string, string>) {
-  let copy = `${raw}`;
-
-  Object.entries(map).forEach(([key, value]) => {
-    copy = copy.replace(key, value);
-  });
-  return copy;
 }
