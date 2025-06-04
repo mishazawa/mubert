@@ -19,9 +19,6 @@ import {
 
 import { compile } from "../shaders/compiler";
 
-import vertexShader from "../shaders/vertex_noise.glsl?raw";
-import fragmentShader from "../shaders/fragment_noise.glsl?raw";
-
 export function Model() {
   const ref = useTransforms();
   const uniforms = useUniforms();
@@ -44,7 +41,7 @@ export function Model() {
             vertexShader={vertexShader}
             fragmentShader={fragmentShader}
             uniforms={uniforms.current}
-            roughness={0}
+            roughness={0.5}
           />
         </mesh>
       ))}
