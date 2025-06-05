@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import Canvas from "../lib/main";
-import { useControls } from "leva";
+import { button, useControls } from "leva";
 import type { ShaderControls } from "../lib/types";
-import { Color } from "three";
+import { Color, MathUtils } from "three";
 
 function App() {
   const data = useShaderState();
@@ -11,27 +11,17 @@ function App() {
 
 export default App;
 
-const RED = new Color("#f00");
+const MAX_SEED = 2048;
 
 function useShaderState() {
-  const ref = useRef<ShaderControls>({
-    uSeed: 0,
-    uColor1: RED,
-    uColor2: RED,
-    uUseColorKey: 0,
-    uColorKeyValue: 0,
-    uColorNoiseScale: 1,
-    uDisplacementNoiseScale: 1,
-    uDisplacementAmplitude: 1,
-    uRoughness: 0,
-    uClearcoat: 1,
-    uClearcoatRoughness: 0,
-    uIridescence: 1,
-  });
+  const ref = useRef<ShaderControls>(generateRandomParameters(0));
 
   useControls({
+    Generate: button(() => {
+      ref.current = generateRandomParameters(Math.random() * MAX_SEED);
+    }),
     seed: {
-      value: 0,
+      value: ref.current.uSeed,
       step: 1,
       onChange: (v) => {
         ref.current.uSeed = v;
@@ -50,7 +40,7 @@ function useShaderState() {
       },
     },
     use_key: {
-      value: 0,
+      value: ref.current.uUseColorKey,
       min: 0,
       max: 1,
       step: 1,
@@ -59,7 +49,7 @@ function useShaderState() {
       },
     },
     key_value: {
-      value: 1,
+      value: ref.current.uColorKeyValue,
       min: 0,
       max: 1,
       step: 1,
@@ -68,7 +58,7 @@ function useShaderState() {
       },
     },
     color_noise: {
-      value: 1,
+      value: ref.current.uColorNoiseScale,
       min: 0.5,
       max: 20,
       onChange: (v) => {
@@ -76,7 +66,7 @@ function useShaderState() {
       },
     },
     displacement_noise: {
-      value: 1,
+      value: ref.current.uDisplacementNoiseScale,
       min: 0.01,
       max: 2,
       onChange: (v) => {
@@ -84,7 +74,7 @@ function useShaderState() {
       },
     },
     amplitude: {
-      value: 1,
+      value: ref.current.uDisplacementAmplitude,
       min: 0.01,
       max: 0.5,
       onChange: (v) => {
@@ -92,7 +82,7 @@ function useShaderState() {
       },
     },
     roughness: {
-      value: 0,
+      value: ref.current.uRoughness,
       min: 0,
       max: 1,
       onChange: (v) => {
@@ -100,7 +90,7 @@ function useShaderState() {
       },
     },
     clearcoat: {
-      value: 1,
+      value: ref.current.uClearcoat,
       min: 0,
       max: 5,
       onChange: (v) => {
@@ -108,7 +98,7 @@ function useShaderState() {
       },
     },
     cc_roughness: {
-      value: 1,
+      value: ref.current.uClearcoatRoughness,
       min: 0,
       max: 1,
       onChange: (v) => {
@@ -116,7 +106,7 @@ function useShaderState() {
       },
     },
     iridescence: {
-      value: 1,
+      value: ref.current.uIridescence,
       min: 0,
       max: 5,
       onChange: (v) => {
@@ -127,3 +117,42 @@ function useShaderState() {
 
   return ref;
 }
+
+function getRandomInt(min: number, max: number, seed?: number) {
+  return Math.floor(MathUtils.seededRandom(seed) * (max - min + 1)) + min;
+}
+function getRandomFloat(min: number, max: number, seed?: number) {
+  return MathUtils.seededRandom(seed) * (max - min) + min;
+}
+
+function generateRandomParameters(uSeed: number): ShaderControls {
+  return {
+    uSeed,
+    uColor1: new Color(),
+    uColor2: new Color(),
+    uUseColorKey: getRandomInt(...VALID_RANGES.use_key, uSeed),
+    uColorKeyValue: getRandomInt(...VALID_RANGES.key_value, uSeed),
+    uColorNoiseScale: getRandomFloat(...VALID_RANGES.color_noise, uSeed),
+    uDisplacementNoiseScale: getRandomFloat(
+      ...VALID_RANGES.displacement_noise,
+      uSeed
+    ),
+    uDisplacementAmplitude: getRandomFloat(...VALID_RANGES.amplitude, uSeed),
+    uRoughness: getRandomFloat(...VALID_RANGES.roughness, uSeed),
+    uClearcoat: getRandomFloat(...VALID_RANGES.clearcoat, uSeed),
+    uClearcoatRoughness: getRandomFloat(...VALID_RANGES.cc_roughness, uSeed),
+    uIridescence: getRandomFloat(...VALID_RANGES.iridescence, uSeed),
+  };
+}
+
+const VALID_RANGES: Record<string, [number, number]> = {
+  use_key: [0, 1],
+  key_value: [0, 1],
+  color_noise: [0.5, 20],
+  displacement_noise: [0.01, 2],
+  amplitude: [0.01, 0.5],
+  roughness: [0, 1],
+  clearcoat: [0, 5],
+  cc_roughness: [0, 1],
+  iridescence: [0, 5],
+};
