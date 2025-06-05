@@ -4,24 +4,23 @@ import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
 // import { PostFx } from "./components/PostFx";
 import "./types";
+import type { RefObject } from "react";
+import type { ShaderControls } from "./types";
 
-export default function MubertCanvas() {
+export default function MubertCanvas(props: {
+  data: RefObject<ShaderControls>;
+}) {
+  console.log("Render occurred");
   return (
     <Canvas>
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
-      {/* <Stage
-        preset="soft"
-        intensity={4}
-        adjustCamera={false}
-        shadows={false}
-        environment={null}
-      > */}
+
       <Center>
         <EnvironmentLight intensity={10} />
-        <Model />
+        <Model {...props} />
       </Center>
-      {/* </Stage> */}
+
       <OrbitControls />
       {/* <PostFx /> */}
       <ambientLight color={0x404040} intensity={10} />
