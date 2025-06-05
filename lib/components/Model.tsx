@@ -28,7 +28,7 @@ export function Model() {
 
   const visibleIndex = 0;
 
-  const [vertexShader, fragmentShader] = compile("packet");
+  const [vertexShader, fragmentShader] = compile("organic");
 
   return (
     <group ref={ref}>
@@ -39,10 +39,10 @@ export function Model() {
             vertexShader={vertexShader}
             fragmentShader={fragmentShader}
             uniforms={uniforms.current}
-            roughness={0.5}
+            roughness={0}
             iridescence={1}
-            iridescenceIOR={1.3}
-            clearcoat={0.1}
+            iridescenceIOR={2.3}
+            clearcoat={1}
             clearcoatRoughness={0}
           />
         </mesh>
@@ -66,7 +66,9 @@ function useTransforms(): RefObject<Object3D> {
 function useUniforms(): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>({
-    uColor1: { value: new Color(0xffbe0b) },
+    // uColor1: { value: new Color(0xffbe0b) },
+    // uColor2: { value: new Color(0xff006e) },
+    uColor1: { value: new Color(0xffffff) },
     uColor2: { value: new Color(0xff006e) },
     uTime: { value: 0 },
   });
