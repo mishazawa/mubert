@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import Canvas, { generateShaderParams } from "../lib/main";
+import Canvas, { generateShaderParams } from "@lib/main";
 import { button, useControls } from "leva";
 
 import { Color } from "three";
