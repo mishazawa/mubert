@@ -1,4 +1,4 @@
-uniform float time;
+uniform float uTime;
 
 varying vec2 vUv;
 varying vec3 vPosition;
@@ -10,22 +10,12 @@ varying vec3 vPosition;
 //#include<snoise>
 //#include<noise3>
 
-vec3 turbulence(vec3 p, float power) {
-  vec3 t = vec3(-.5);
-
-  for (float f = 1.0 ; f <= 2.0 ; f++ ){
-    t += abs(noise3(vec4(vec3(p * power), 1.0)));
-  }
-
-  return t;
-}
-
 void main() {
   vUv = uv;
   vPosition = position;
   vNormal = normal;
 
-  vec3 mask = DIST_AMP * turbulence(normal + time * SPEED, FREQ);
+  vec3 mask = DIST_AMP * turbulence(normal + uTime * SPEED, FREQ);
   
   vec3 newPosition = position + normal * mask;
 
