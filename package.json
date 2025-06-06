@@ -9,11 +9,14 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b ./tsconfig.lib.json && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build:lib",
+    "dev": "vite --config vite.config.app.ts",
+    "build:lib": "vite build --config vite.config.lib.ts",
+    "build:app": "vite build --config vite.config.app.ts",
+    "build:ts": "tsc -b",
+    "build:all": "tsc -b && npm run build:lib && npm run build:app",
+    "deploy": "firebase deploy --only hosting"
   },
   "peerDependencies": {
     "react": "^19.1.0",

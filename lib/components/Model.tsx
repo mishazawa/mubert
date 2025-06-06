@@ -6,10 +6,14 @@ import { useMemo, useRef } from "react";
 import type { RefObject } from "react";
 import type { GenerativeShaderUniforms, ShaderControls } from "../types";
 
-import { MESH_DETAIL, SPEED, SPEED_MULTIPLIER } from "../constants";
+import {
+  MESH_DETAIL,
+  SPEED,
+  SPEED_MULTIPLIER,
+  UNIFORM_DEFAULTS,
+} from "../constants";
 
 import {
-  Color,
   Mesh,
   MeshPhysicalMaterial,
   Object3D,
@@ -23,13 +27,11 @@ export function Model({ data }: { data: RefObject<ShaderControls> }) {
   const uniforms = useUniforms(data);
 
   const octahedron = useMemo(() => new OctahedronGeometry(1, MESH_DETAIL), []);
-
   const items = [octahedron];
-
   const visibleIndex = 0;
 
-  const [vertexShader, fragmentShader] = compile("organic");
-  console.log("REDNDED");
+  const [vertexShader, fragmentShader] = useMemo(() => compile("noise"), []);
+
   return (
     <group ref={ref}>
       {items.map((i, idx) => (
@@ -62,38 +64,6 @@ function useTransforms(): RefObject<Object3D> {
 
   return ref;
 }
-
-const RED = new Color("#f00");
-
-const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
-  uTime: { value: 0 },
-  uSeed: { value: 0 },
-  uColor1: { value: RED },
-  uColor2: { value: RED },
-  uUseColorKey: { value: 0 },
-  uColorKeyValue: { value: 0 },
-  uColorNoiseScale: {
-    value: 0,
-  },
-  uDisplacementNoiseScale: {
-    value: 0,
-  },
-  uDisplacementAmplitude: {
-    value: 0,
-  },
-  uRoughness: {
-    value: 0,
-  },
-  uClearcoat: {
-    value: 0,
-  },
-  uClearcoatRoughness: {
-    value: 0,
-  },
-  uIridescence: {
-    value: 0,
-  },
-};
 
 function useUniforms(
   controls: RefObject<ShaderControls>
