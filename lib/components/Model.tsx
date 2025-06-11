@@ -22,7 +22,7 @@ import {
 
 import { compile } from "../shaders/compiler";
 
-export function Model({ data }: { data: RefObject<ShaderControls> }) {
+export function Model({ data }: { data: ShaderControls }) {
   const ref = useTransforms();
   const uniforms = useUniforms(data);
 
@@ -66,7 +66,7 @@ function useTransforms(): RefObject<Object3D> {
 }
 
 function useUniforms(
-  controls: RefObject<ShaderControls>
+  controls: ShaderControls
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
@@ -74,21 +74,20 @@ function useUniforms(
   // animate uniforms here
   useFrame(() => {
     uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER;
-    uniforms.current.uSeed.value = controls.current.uSeed;
-    uniforms.current.uColor1.value = controls.current.uColor1;
-    uniforms.current.uColor2.value = controls.current.uColor2;
-    uniforms.current.uUseColorKey.value = controls.current.uUseColorKey;
-    uniforms.current.uColorKeyValue.value = controls.current.uColorKeyValue;
-    uniforms.current.uColorNoiseScale.value = controls.current.uColorNoiseScale;
+    uniforms.current.uSeed.value = controls.uSeed;
+    uniforms.current.uColor1.value = controls.uColor1;
+    uniforms.current.uColor2.value = controls.uColor2;
+    uniforms.current.uUseColorKey.value = controls.uUseColorKey;
+    uniforms.current.uColorKeyValue.value = controls.uColorKeyValue;
+    uniforms.current.uColorNoiseScale.value = controls.uColorNoiseScale;
     uniforms.current.uDisplacementNoiseScale.value =
-      controls.current.uDisplacementNoiseScale;
+      controls.uDisplacementNoiseScale;
     uniforms.current.uDisplacementAmplitude.value =
-      controls.current.uDisplacementAmplitude;
-    uniforms.current.uRoughness.value = controls.current.uRoughness;
-    uniforms.current.uClearcoat.value = controls.current.uClearcoat;
-    uniforms.current.uClearcoatRoughness.value =
-      controls.current.uClearcoatRoughness;
-    uniforms.current.uIridescence.value = controls.current.uIridescence;
+      controls.uDisplacementAmplitude;
+    uniforms.current.uRoughness.value = controls.uRoughness;
+    uniforms.current.uClearcoat.value = controls.uClearcoat;
+    uniforms.current.uClearcoatRoughness.value = controls.uClearcoatRoughness;
+    uniforms.current.uIridescence.value = controls.uIridescence;
   });
 
   return uniforms;

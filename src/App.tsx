@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import Canvas, { generateShaderParams } from "@lib/main";
-import { button, useControls } from "leva";
+import { useControls } from "leva";
 
 import { Color } from "three";
 
@@ -11,120 +11,95 @@ function App() {
 
 export default App;
 
-const MAX_SEED = 2048;
-
 function useShaderState() {
-  const ref = useRef(generateShaderParams(0));
-  const options = useUiParams(ref);
-  useControls(options as any);
+  const [defaults, set] = useState(generateShaderParams(0));
 
-  return ref;
-}
+  const [color1, setColor1] = useState(defaults.uColor1);
+  const [color2, setColor2] = useState(defaults.uColor2);
 
-function useUiParams(ref: any) {
-  // for demo purpose show only generate button
-  if (process.env.NODE_ENV !== "development")
+  useEffect(() => {
+    setData({
+      ...defaults,
+      uColor1: `#${defaults.uColor1.getHexString()}`,
+      uColor2: `#${defaults.uColor2.getHexString()}`,
+    });
+  }, [defaults.uSeed]);
+
+  const [data, setData] = useControls(() => {
     return {
-      Generate: button(() => {
-        const seed = Math.random() * MAX_SEED;
-        console.log(seed);
-        ref.current = generateShaderParams(seed);
-      }),
+      uSeed: {
+        value: defaults.uSeed,
+        step: 1,
+        onChange: (v: any) => {
+          set(generateShaderParams(v));
+        },
+      },
+      uColor1: {
+        value: `#${color1.getHexString()}`,
+        onChange: (v: any) => {
+          setColor1(new Color(v));
+        },
+      },
+      uColor2: {
+        value: `#${color2.getHexString()}`,
+        onChange: (v: any) => {
+          setColor2(new Color(v));
+        },
+      },
+      uUseColorKey: {
+        value: defaults.uUseColorKey,
+        min: 0,
+        max: 1,
+        step: 1,
+      },
+      uColorKeyValue: {
+        value: defaults.uColorKeyValue,
+        min: 0,
+        max: 1,
+        step: 1,
+      },
+      uColorNoiseScale: {
+        value: defaults.uColorNoiseScale,
+        min: 0.5,
+        max: 20,
+      },
+      uDisplacementNoiseScale: {
+        value: defaults.uDisplacementNoiseScale,
+        min: 0.01,
+        max: 2,
+      },
+      uDisplacementAmplitude: {
+        value: defaults.uDisplacementAmplitude,
+        min: 0.01,
+        max: 0.5,
+      },
+      uRoughness: {
+        value: defaults.uRoughness,
+        min: 0,
+        max: 1,
+      },
+      uClearcoat: {
+        value: defaults.uClearcoat,
+        min: 0,
+        max: 5,
+      },
+      uClearcoatRoughness: {
+        value: defaults.uClearcoatRoughness,
+        min: 0,
+        max: 1,
+      },
+      uIridescence: {
+        value: defaults.uIridescence,
+        min: 0,
+        max: 5,
+      },
     };
+  });
 
   return {
-    seed: {
-      value: ref.current.uSeed,
-      step: 1,
-      onChange: (v: any) => {
-        ref.current.uSeed = v;
-      },
-    },
-    primary: {
-      value: `#${ref.current.uColor1.getHexString()}`,
-      onChange: (v: any) => {
-        ref.current.uColor1 = new Color(v);
-      },
-    },
-    secondary: {
-      value: `#${ref.current.uColor2.getHexString()}`,
-      onChange: (v: any) => {
-        ref.current.uColor2 = new Color(v);
-      },
-    },
-    use_key: {
-      value: ref.current.uUseColorKey,
-      min: 0,
-      max: 1,
-      step: 1,
-      onChange: (v: any) => {
-        ref.current.uUseColorKey = v;
-      },
-    },
-    key_value: {
-      value: ref.current.uColorKeyValue,
-      min: 0,
-      max: 1,
-      step: 1,
-      onChange: (v: any) => {
-        ref.current.uColorKeyValue = v;
-      },
-    },
-    color_noise: {
-      value: ref.current.uColorNoiseScale,
-      min: 0.5,
-      max: 20,
-      onChange: (v: any) => {
-        ref.current.uColorNoiseScale = v;
-      },
-    },
-    displacement_noise: {
-      value: ref.current.uDisplacementNoiseScale,
-      min: 0.01,
-      max: 2,
-      onChange: (v: any) => {
-        ref.current.uDisplacementNoiseScale = v;
-      },
-    },
-    amplitude: {
-      value: ref.current.uDisplacementAmplitude,
-      min: 0.01,
-      max: 0.5,
-      onChange: (v: any) => {
-        ref.current.uDisplacementAmplitude = v;
-      },
-    },
-    roughness: {
-      value: ref.current.uRoughness,
-      min: 0,
-      max: 1,
-      onChange: (v: any) => {
-        ref.current.uRoughness = v;
-      },
-    },
-    clearcoat: {
-      value: ref.current.uClearcoat,
-      min: 0,
-      max: 5,
-      onChange: (v: any) => {
-        ref.current.uClearcoat = v;
-      },
-    },
-    cc_roughness: {
-      value: ref.current.uClearcoatRoughness,
-      min: 0,
-      max: 1,
-      onChange: (v: any) => {
-        ref.current.uClearcoatRoughness = v;
-      },
-    },
-    iridescence: {
-      value: ref.current.uIridescence,
-      min: 0,
-      max: 5,
-      onChange: (v: any) => {
-        ref.current.uIridescence = v;
-      },
-    },
+    ...data,
+    uColor1: color1,
+    uColor2: color2,
+    uSeed: defaults.uSeed,
   };
 }
