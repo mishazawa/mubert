@@ -10,6 +10,9 @@ export type GenerativeShaderUniforms = {
   readonly uSeed: UniformValue<number>;
   readonly uColor1: UniformValue<Color>;
   readonly uColor2: UniformValue<Color>;
+  readonly uColor3: UniformValue<Color>;
+  readonly uColor4: UniformValue<Color>;
+  readonly uColor5: UniformValue<Color>;
   readonly uUseColorKey: UniformValue<number>;
   readonly uColorKeyValue: UniformValue<number>;
   readonly uColorNoiseScale: UniformValue<number>;
@@ -19,6 +22,8 @@ export type GenerativeShaderUniforms = {
   readonly uClearcoat: UniformValue<number>;
   readonly uClearcoatRoughness: UniformValue<number>;
   readonly uIridescence: UniformValue<number>;
+  readonly uLineWidth: UniformValue<number>;
+  readonly uLineCount: UniformValue<number>;
 };
 
 type ProgramableUniforms = Omit<GenerativeShaderUniforms, "uTime">;

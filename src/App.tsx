@@ -3,6 +3,7 @@ import Canvas, { generateShaderParams } from "@lib/main";
 import { useControls } from "leva";
 
 import { Color } from "three";
+import type { ShaderControls } from "@lib/types";
 
 function App() {
   const data = useShaderState();
@@ -16,17 +17,23 @@ function useShaderState() {
 
   const [color1, setColor1] = useState(defaults.uColor1);
   const [color2, setColor2] = useState(defaults.uColor2);
+  const [color3, setColor3] = useState(defaults.uColor3);
+  const [color4, setColor4] = useState(defaults.uColor4);
+  const [color5, setColor5] = useState(defaults.uColor5);
 
   useEffect(() => {
     setData({
       ...defaults,
       uColor1: `#${defaults.uColor1.getHexString()}`,
       uColor2: `#${defaults.uColor2.getHexString()}`,
+      uColor3: `#${defaults.uColor3.getHexString()}`,
+      uColor4: `#${defaults.uColor4.getHexString()}`,
+      uColor5: `#${defaults.uColor5.getHexString()}`,
     });
   }, [defaults.uSeed]);
 
-  const [data, setData] = useControls(() => {
-    return {
+  const [data, setData] = useControls(
+    (): Record<keyof ShaderControls, any> => ({
       uSeed: {
         value: defaults.uSeed,
         step: 1,
@@ -44,6 +51,24 @@ function useShaderState() {
         value: `#${color2.getHexString()}`,
         onChange: (v: any) => {
           setColor2(new Color(v));
+        },
+      },
+      uColor3: {
+        value: `#${color3.getHexString()}`,
+        onChange: (v: any) => {
+          setColor3(new Color(v));
+        },
+      },
+      uColor4: {
+        value: `#${color4.getHexString()}`,
+        onChange: (v: any) => {
+          setColor4(new Color(v));
+        },
+      },
+      uColor5: {
+        value: `#${color5.getHexString()}`,
+        onChange: (v: any) => {
+          setColor5(new Color(v));
         },
       },
       uUseColorKey: {
@@ -93,13 +118,27 @@ function useShaderState() {
         min: 0,
         max: 5,
       },
-    };
-  });
+      uLineWidth: {
+        value: defaults.uLineWidth,
+        min: 0.01,
+        max: 1,
+      },
+      uLineCount: {
+        value: defaults.uLineCount,
+        step: 1,
+        min: 0,
+        max: 4,
+      },
+    })
+  );
 
   return {
     ...data,
     uColor1: color1,
     uColor2: color2,
+    uColor3: color3,
+    uColor4: color4,
+    uColor5: color5,
     uSeed: defaults.uSeed,
   };
 }

@@ -3,12 +3,20 @@ uniform float uSeed;
 
 uniform vec3  uColor1;
 uniform vec3  uColor2;
+uniform vec3  uColor3;
+uniform vec3  uColor4;
+uniform vec3  uColor5;
+
 uniform float uUseColorKey;
 uniform float uColorKeyValue;
 uniform float uColorNoiseScale;
 
 uniform float uDisplacementNoiseScale;
 uniform float uDisplacementAmplitude;
+uniform float uLineWidth;
+
+uniform int uLineCount;
+
 
 // std material props
 uniform float uRoughness;

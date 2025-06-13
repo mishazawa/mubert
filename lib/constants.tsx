@@ -1,7 +1,7 @@
 import { Color } from "three";
 import type { GenerativeShaderUniforms } from "./types";
 
-export const ENV_MAP_RESOLUTION = 512;
+export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
 export const SPEED_MULTIPLIER = 0.001;
 export const MESH_DETAIL = 256;
@@ -17,6 +17,7 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   clearcoat: [0, 5],
   cc_roughness: [0, 1],
   iridescence: [0, 5],
+  uLineCount: [0, 5],
 };
 
 const DEFAULT_COLOR = new Color("#fff");
@@ -25,6 +26,9 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   uSeed: { value: 0 },
   uColor1: { value: DEFAULT_COLOR },
   uColor2: { value: DEFAULT_COLOR },
+  uColor3: { value: DEFAULT_COLOR },
+  uColor4: { value: DEFAULT_COLOR },
+  uColor5: { value: DEFAULT_COLOR },
   uUseColorKey: { value: 0 },
   uColorKeyValue: { value: 0 },
   uColorNoiseScale: {
@@ -46,6 +50,12 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
     value: 0,
   },
   uIridescence: {
+    value: 0,
+  },
+  uLineWidth: {
+    value: 0.1,
+  },
+  uLineCount: {
     value: 0,
   },
 };

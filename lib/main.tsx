@@ -1,4 +1,3 @@
-import type { RefObject } from "react";
 import { Color } from "three";
 import { Canvas } from "@react-three/fiber";
 import { Center, OrbitControls, StatsGl } from "@react-three/drei";
@@ -29,11 +28,15 @@ export default function MubertCanvas(props: { data: ShaderControls }) {
 
 export function generateShaderParams(uSeed: number): ShaderControls {
   const gen = randomGenerator(uSeed);
-  const [primary, secondary] = getColors(gen);
+  const palette = getColors(gen);
   return {
     uSeed,
-    uColor1: new Color(primary),
-    uColor2: new Color(secondary),
+    uLineWidth: gen.float(0, 1),
+    uColor1: palette[0],
+    uColor2: palette[1],
+    uColor3: palette[2],
+    uColor4: palette[3],
+    uColor5: palette[4],
     uUseColorKey: gen.int(...VALID_RANGES.use_key),
     uColorKeyValue: gen.int(...VALID_RANGES.key_value),
     uColorNoiseScale: gen.float(
@@ -47,5 +50,6 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uClearcoat: gen.float(...VALID_RANGES.clearcoat),
     uClearcoatRoughness: gen.float(...VALID_RANGES.cc_roughness),
     uIridescence: gen.float(...VALID_RANGES.iridescence),
+    uLineCount: gen.int(...VALID_RANGES.uLineCount),
   };
 }

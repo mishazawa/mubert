@@ -1,11 +1,9 @@
-import { MathUtils } from "three";
-import colors from "nice-color-palettes";
+import { Color, MathUtils } from "three";
+import { colors } from "./colors";
 
 export function getColors(rg: RandomGenerator) {
-  const palette = colors[rg.int(0, 100)];
-  const primary = palette[0];
-  const secondary = palette[rg.int(1, palette.length - 1)];
-  return [primary, secondary];
+  const palette = colors[rg.int(0, colors.length)];
+  return palette.map((c) => new Color(c));
 }
 
 function getRandomInt(min: number, max: number, seed?: number) {
