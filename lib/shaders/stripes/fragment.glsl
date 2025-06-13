@@ -6,10 +6,10 @@ varying float vDisplacement;
 
 #define SPEED .5
 #define FREQ 1.
-#define RANDOM_HIGHER_RANGE 0
-//#include<snoise>
+#define FRAC_SCALE 8.
+
+
 //#include<noise3>
-//#include<random>
 //#include<calc_bump>
 //#include<line_functions>
 
@@ -34,8 +34,16 @@ void main() {
 
   newColor = maybeDrawLines(background, pos);
 
+  //vec3 noiseVal = noise3(vec4(uNoiseOffset + (pos + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.)) + uTime * SPEED, 1.0));
+
+  //float pattern = fract((noiseVal + pos * uNoiseOffset * FRAC_SCALE * float(uLineCount)).y + uTime);
+
+  //pattern = smoothstep(.499, .501, pattern);
+
+  //newColor = mix(background, newColor, pattern);
+
   //#include<common_standard_props>
-  //csm_Roughness = mix(uRoughness, 0., line);
+  //csm_Roughness = mix(uRoughness, 0., pattern);
 
   csm_DiffuseColor.rgba = vec4(newColor, 1.0);
 }

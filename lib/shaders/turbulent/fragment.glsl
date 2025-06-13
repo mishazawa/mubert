@@ -13,7 +13,7 @@ varying float vDisplacement;
 
 void main() {
 
-  vec3 noiseVal = noise3(vec4(uNoiseOffset + (-vPosition * uColorNoiseScale) + uTime * SPEED, 1.0)) * 3.2;
+  vec3 noiseVal = noise3(uNoiseOffset + (-vPosition * uColorNoiseScale) + uTime * SPEED) * 3.2;
   float mask = smoothstep(.5, .51 , noiseVal.x);
 
   vec3 key = vec3(uColorKeyValue);

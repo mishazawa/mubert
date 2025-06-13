@@ -1,5 +1,5 @@
 import simplex3d from "./utils/simplex3d.glsl?raw";
-import simplex4d from "./utils/simplex4d.glsl?raw";
+
 import voronoi3d from "./utils/voronoi3d.glsl?raw";
 
 import math from "./utils/math.glsl?raw";
@@ -48,7 +48,7 @@ const SHADER_BUNDLE: Record<ShaderKey, [string, string]> = {
 const INCLUDE_MAP = {
   "//#include<common_uniforms>": commonUniforms,
   "//#include<common_standard_props>": commonStandardProps,
-  "//#include<snoise>": simplex4d,
+
   "//#include<noise3>": simplex3d,
   "//#include<voronoi3>": voronoi3d,
   "//#include<math>": math,

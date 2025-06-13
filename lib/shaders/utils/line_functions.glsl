@@ -13,33 +13,86 @@ float lineFn(vec3 p, vec3 n, float width) {
 
 
 vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
-  vec3 colors[5] = vec3[5](
-    uColor1,
-    uColor2,
-    uColor3,
-    uColor4,
-    uColor5
-  );
+  if (uLineCount == 0) return background;
+  float timeFreq = uTime * FREQ;
+  float timeSpeed = uTime * SPEED;
+  vec3 noiseOffset = uNoiseOffset + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.);
 
   vec3 newColor = background;
 
-  for (int i = 1; i <= uLineCount; i++) { 
-    vec3 lineColor = colors[i];
+
+  if (uLineCount > 0) {
+    vec3 current = uColor1;
     vec3 plane = normalize(vec3(
-      sin(lineColor.x + uTime * FREQ),
-      cos(lineColor.y + uTime * FREQ), 
-      sin(lineColor.z - uTime * FREQ)
-    ) + colors[i]);
+    sin(current.x + timeFreq),
+      cos(current.y + timeFreq),
+      sin(current.z - timeFreq)
+    ) + current);
 
-
-    vec3 noiseVal = noise3(vec4(uNoiseOffset + (pos + plane + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.)) + uTime * SPEED, 1.0));
-
+    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
     float line = lineFn(pos, plane + noiseVal, uLineWidth);
-
-    newColor = mix(newColor, colors[i], line);
+    newColor = mix(newColor, current, line);
   }
 
-  newColor = mix(background, newColor, clamp(float(uLineCount), 0., 1.));
+  if (uLineCount > 1) {
+    vec3 current = uColor2;
+    vec3 plane = normalize(vec3(
+    sin(current.x + timeFreq),
+      cos(current.y + timeFreq),
+      sin(current.z - timeFreq)
+    ) + current);
+
+    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+
+
+    float line = lineFn(pos, plane + noiseVal, uLineWidth);
+    newColor = mix(newColor, current, line);
+  }
+
+    if (uLineCount > 2) {
+    vec3 current = uColor3;
+    vec3 plane = normalize(vec3(
+    sin(current.x + timeFreq),
+      cos(current.y + timeFreq),
+      sin(current.z - timeFreq)
+    ) + current);
+
+    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+
+
+    float line = lineFn(pos, plane + noiseVal, uLineWidth);
+    newColor = mix(newColor, current, line);
+  }
+
+    if (uLineCount > 3) {
+    vec3 current = uColor4;
+    vec3 plane = normalize(vec3(
+    sin(current.x + timeFreq),
+      cos(current.y + timeFreq),
+      sin(current.z - timeFreq)
+    ) + current);
+
+    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+
+
+    float line = lineFn(pos, plane + noiseVal, uLineWidth);
+    newColor = mix(newColor, current, line);
+  }
+
+    if (uLineCount >= 4) {
+    vec3 current = uColor5;
+    vec3 plane = normalize(vec3(
+    sin(current.x + timeFreq),
+      cos(current.y + timeFreq),
+      sin(current.z - timeFreq)
+    ) + current);
+
+    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+
+
+    float line = lineFn(pos, plane + noiseVal, uLineWidth);
+    newColor = mix(newColor, current, line);
+  }
 
   return newColor;
 }
