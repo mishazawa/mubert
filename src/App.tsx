@@ -102,6 +102,11 @@ function useShaderState() {
       min: 0,
       max: 4,
     },
+    uNoiseVariant: {
+      value: defaults.uNoiseVariant,
+      min: 0,
+      max: 1,
+    },
   }));
   const colors = useColorsControls(defaults);
 

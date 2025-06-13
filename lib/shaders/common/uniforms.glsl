@@ -19,7 +19,7 @@ uniform float uLineWidth;
 
 uniform int uLineCount;
 uniform float uRoughnessPattern;
-
+uniform float uNoiseVariant;
 // std material props
 uniform float uRoughness;
 uniform float uClearcoat;

@@ -8,7 +8,7 @@ export const MESH_DETAIL = 256;
 export const AMBIENT_LIGHT_COLOR = 0x404040;
 
 export const VALID_RANGES: Record<string, [number, number]> = {
-  use_key: [0, 2], // not included 2
+  use_key: [0, 0], // not included 2
   key_value: [0, 2], // not included 2
   color_noise: [0.5, 20],
   displacement_noise: [0.01, 2],
@@ -62,6 +62,9 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
     value: new Vector3(),
   },
   uRoughnessPattern: {
+    value: 0,
+  },
+  uNoiseVariant: {
     value: 0,
   },
 };

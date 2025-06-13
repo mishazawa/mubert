@@ -10,6 +10,7 @@ varying float vDisplacement;
 
 
 //#include<noise3>
+//#include<voronoi3>
 //#include<calc_bump>
 //#include<line_functions>
 
@@ -25,9 +26,12 @@ void main() {
 
   newColor = maybeDrawLines(background, pos);
 
-  vec3 noiseVal = noise3(uNoiseOffset + pos, 0.0);
+  float animation = uTime * SPEED;
+  vec3 noiseSeed = uNoiseOffset + pos;
 
-  float displacedY = pos.y + noiseVal.y * uColorNoiseScale + uTime * SPEED;
+  vec3 noiseVal = mix(voronoi3d(noiseSeed), noise3(noiseSeed, animation), uNoiseVariant);
+
+  float displacedY = pos.y + noiseVal.y * uColorNoiseScale + animation;
   
   float pattern = fract(displacedY);
 

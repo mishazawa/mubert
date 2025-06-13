@@ -60,5 +60,6 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uLineCount: gen.int(...VALID_RANGES.uLineCount),
     uNoiseOffset: getVector3(gen),
     uRoughnessPattern: gen.float(0, 1),
+    uNoiseVariant: gen.float(0, 1),
   };
 }
