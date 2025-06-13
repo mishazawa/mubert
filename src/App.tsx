@@ -91,6 +91,11 @@ function useShaderState() {
       min: 0,
       max: 5,
     },
+    uEmission: {
+      value: defaults.uEmission,
+      min: 0,
+      max: 1,
+    },
     uLineWidth: {
       value: defaults.uLineWidth,
       min: 0.01,
@@ -105,7 +110,7 @@ function useShaderState() {
     uStripesWidth: {
       value: defaults.uStripesWidth,
       min: 0,
-      max: 8,
+      max: 1,
     },
     uNoiseVariant: {
       value: defaults.uNoiseVariant,

@@ -22,6 +22,8 @@ uniform float uRoughnessPattern;
 uniform float uNoiseVariant;
 
 uniform float uStripesWidth;
+uniform float uEmission;
+
 
 
 // std material props

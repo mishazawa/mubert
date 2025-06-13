@@ -23,20 +23,20 @@ void main() {
   vec3 background = mix(uColor1, key,  uUseColorKey);
   vec3 newColor = background;
 
-  vec3 pos = normalize(vPosition);
+  vec3 POS = normalize(vPosition);
 
-  newColor = maybeDrawLines(background, pos);
+  newColor = maybeDrawLines(background, POS);
 
   float animation = uTime * SPEED;
-  vec3 noiseSeed = uNoiseOffset + pos;
+  vec3 noiseSeed = uNoiseOffset + POS;
 
   vec3 noiseVal = mix(voronoi3d(noiseSeed), noise3(noiseSeed, animation), uNoiseVariant);
 
   float noiseScale = mix(uStripesWidth + uColorNoiseScale, uColorNoiseScale, uNoiseVariant);
 
-  float displacedY = pos.y + (noiseVal.y * noiseScale)  + animation;
+  float displacedY = POS.y + (noiseVal.y * noiseScale)  + animation;
   
-  float pattern = fract(displacedY) + fit(uStripesWidth, 0., FRAC_SCALE, 0., 1.);
+  float pattern = fract(displacedY) + uStripesWidth - .5;
 
   pattern = step(.5, pattern);
 

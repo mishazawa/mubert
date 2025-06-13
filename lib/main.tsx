@@ -18,7 +18,7 @@ export default function MubertCanvas(props: {
   debug?: any;
 }) {
   return (
-    <Canvas>
+    <Canvas className="vis_canvas">
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
 
@@ -62,5 +62,6 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uRoughnessPattern: gen.float(0, 1),
     uNoiseVariant: gen.float(0, 1),
     uStripesWidth: gen.float(...VALID_RANGES.uStripesWidth),
+    uEmission: gen.float(0, 1),
   };
 }

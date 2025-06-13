@@ -28,6 +28,7 @@ export type GenerativeShaderUniforms = {
   readonly uRoughnessPattern: UniformValue<number>;
   readonly uNoiseVariant: UniformValue<number>;
   readonly uStripesWidth: UniformValue<number>;
+  readonly uEmission: UniformValue<number>;
 };
 
 type ProgramableUniforms = Omit<GenerativeShaderUniforms, "uTime">;
