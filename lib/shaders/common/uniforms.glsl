@@ -18,7 +18,7 @@ uniform float uDisplacementAmplitude;
 uniform float uLineWidth;
 
 uniform int uLineCount;
-
+uniform float uRoughnessPattern;
 
 // std material props
 uniform float uRoughness;

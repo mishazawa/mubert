@@ -71,6 +71,11 @@ function useShaderState() {
       min: 0,
       max: 1,
     },
+    uRoughnessPattern: {
+      value: defaults.uRoughnessPattern,
+      min: 0,
+      max: 1,
+    },
     uClearcoat: {
       value: defaults.uClearcoat,
       min: 0,

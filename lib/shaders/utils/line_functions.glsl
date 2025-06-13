@@ -29,7 +29,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
       sin(current.z - timeFreq)
     ) + current);
 
-    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+    vec3 noiseVal = noise3(plane + pos + noiseOffset, timeSpeed);
     float line = lineFn(pos, plane + noiseVal, uLineWidth);
     newColor = mix(newColor, current, line);
   }
@@ -42,7 +42,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
       sin(current.z - timeFreq)
     ) + current);
 
-    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+    vec3 noiseVal = noise3(plane + pos + noiseOffset, timeSpeed);
 
 
     float line = lineFn(pos, plane + noiseVal, uLineWidth);
@@ -57,7 +57,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
       sin(current.z - timeFreq)
     ) + current);
 
-    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+    vec3 noiseVal = noise3(plane + pos + noiseOffset, timeSpeed);
 
 
     float line = lineFn(pos, plane + noiseVal, uLineWidth);
@@ -72,7 +72,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
       sin(current.z - timeFreq)
     ) + current);
 
-    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
+    vec3 noiseVal = noise3(plane + pos + noiseOffset, timeSpeed);
 
 
     float line = lineFn(pos, plane + noiseVal, uLineWidth);

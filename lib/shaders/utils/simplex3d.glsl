@@ -101,12 +101,13 @@ float snoise(vec3 v)
                                 dot(p2,x2), dot(p3,x3) ) );
   }
 
-vec3 noise3(vec3 pos) {
-  float n1 = snoise(pos + vec3(uTime));
-  float n2 = snoise(pos.yzx + vec3(uTime + 10.0));
-  float n3 = snoise(pos.zxy + vec3(uTime + 20.0));
+vec3 noise3(vec3 pos, float offset) {
+  float n1 = snoise(pos + vec3(offset));
+  float n2 = snoise(pos.yzx + vec3(offset + 10.0));
+  float n3 = snoise(pos.zxy + vec3(offset + 20.0));
   return vec3(n1, n2, n3);
 }
+
 vec3 turbulence(vec3 p, float power) {
   float t = -.5;
 

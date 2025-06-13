@@ -25,6 +25,7 @@ export type GenerativeShaderUniforms = {
   readonly uLineWidth: UniformValue<number>;
   readonly uLineCount: UniformValue<number>;
   readonly uNoiseOffset: UniformValue<Vector3>;
+  readonly uRoughnessPattern: UniformValue<number>;
 };
 
 type ProgramableUniforms = Omit<GenerativeShaderUniforms, "uTime">;

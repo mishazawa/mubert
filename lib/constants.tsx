@@ -61,4 +61,7 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   uNoiseOffset: {
     value: new Vector3(),
   },
+  uRoughnessPattern: {
+    value: 0,
+  },
 };

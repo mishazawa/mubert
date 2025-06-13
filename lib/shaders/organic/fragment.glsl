@@ -14,7 +14,7 @@ varying float vDisplacement;
 //#include<calc_bump>
 
 void main() {
-  vec3 noiseVal = noise3(uNoiseOffset + (-vPosition * uColorNoiseScale) + uTime * SPEED * 2.0) * 15.;
+  vec3 noiseVal = noise3(uNoiseOffset + (-vPosition * uColorNoiseScale), uTime * SPEED * 2.0) * 15.;
 
   float mask = smoothstep(.5, .51 , noiseVal.x);
 

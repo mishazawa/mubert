@@ -59,5 +59,6 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uIridescence: gen.float(...VALID_RANGES.iridescence),
     uLineCount: gen.int(...VALID_RANGES.uLineCount),
     uNoiseOffset: getVector3(gen),
+    uRoughnessPattern: gen.float(0, 1),
   };
 }
