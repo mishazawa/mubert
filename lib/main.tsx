@@ -9,7 +9,10 @@ import type { ShaderControls } from "./types";
 
 import { getColors, randomGenerator, randomSwapRange } from "./utils";
 
-export default function MubertCanvas(props: { data: ShaderControls }) {
+export default function MubertCanvas(props: {
+  data: ShaderControls;
+  debug?: any;
+}) {
   return (
     <Canvas>
       {/* TO BE REMOVED */}

@@ -11,21 +11,9 @@ varying float vDisplacement;
 //#include<noise3>
 //#include<random>
 //#include<calc_bump>
+//#include<line_functions>
 
 
-float plot(float d, float width){
-  const float THICKNESS = .01;
-  return  smoothstep( THICKNESS - width, THICKNESS, d) -
-          smoothstep( THICKNESS, THICKNESS + width, d);
-}
-
-
-// p: 3D point on unit sphere
-// n: normal vector of the plane (orientation)
-float lineFn(vec3 p, vec3 n, float width) {
-    float d = (dot(p, n));
-    return plot(d, width);
-} 
 
 void main() {
   vec3 colors[5] = vec3[5](
@@ -44,30 +32,8 @@ void main() {
 
   vec3 pos = normalize(vPosition);
 
-  for (int i = 1; i <= uLineCount; i++) { 
-    vec3 lineColor = colors[i];
-    vec3 plane = normalize(vec3(
-      sin(lineColor.x + uTime * FREQ),
-      cos(lineColor.y + uTime * FREQ), 
-      sin(lineColor.z - uTime * FREQ)
-    ) + colors[i]);
+  newColor = maybeDrawLines(background, pos);
 
-
-    vec3 noiseVal = noise3(vec4(uSeed + (pos + plane + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.)) + uTime * SPEED, 1.0));
-
-    float line = lineFn(pos, plane + noiseVal, uLineWidth);
-
-    newColor = mix(newColor, colors[i], line);
-  }
-
-
-  vec3 N = vNormal * 5.;
-  csm_Bump = perturbNormalArb(
-    -vViewPosition,
-    N,
-    //vec2(dFdx(vDisplacement + (.1* line)), dFdy(vDisplacement+(.1* line))), 
-    vec2(dFdx(vDisplacement), dFdy(vDisplacement)), 
-    smoothstep(0., 1., dot(N, normalize(vViewPosition))));
   //#include<common_standard_props>
   //csm_Roughness = mix(uRoughness, 0., line);
 

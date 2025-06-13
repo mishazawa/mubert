@@ -12,7 +12,7 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   key_value: [0, 2], // not included 2
   color_noise: [0.5, 20],
   displacement_noise: [0.01, 2],
-  amplitude: [0.01, 0.5],
+  amplitude: [0.01, 0.1],
   roughness: [0, 1],
   clearcoat: [0, 5],
   cc_roughness: [0, 1],

@@ -5,6 +5,8 @@ import voronoi3d from "./utils/voronoi3d.glsl?raw";
 import math from "./utils/math.glsl?raw";
 import random from "./utils/random.glsl?raw";
 import calcBumpMap from "./utils/calc_bump.glsl?raw";
+import lineFunctions from "./utils/line_functions.glsl?raw";
+
 import commonUniforms from "./common/uniforms.glsl?raw";
 import commonStandardProps from "./common/standard_props.glsl?raw";
 
@@ -52,6 +54,7 @@ const INCLUDE_MAP = {
   "//#include<math>": math,
   "//#include<calc_bump>": calcBumpMap,
   "//#include<random>": random,
+  "//#include<line_functions>": lineFunctions,
 };
 
 function compileShader(raw: string, map: Record<string, string>) {

@@ -22,7 +22,15 @@ import {
 
 import { compile } from "../shaders/compiler";
 
-export function Model({ data }: { data: ShaderControls }) {
+export function Model({
+  data,
+  debug,
+}: {
+  data: ShaderControls;
+  debug?: Record<string, any>;
+}) {
+  const { vertex, fragment, preset } = debug ?? {};
+
   const ref = useTransforms();
   const uniforms = useUniforms(data);
 
@@ -31,8 +39,9 @@ export function Model({ data }: { data: ShaderControls }) {
   const visibleIndex = 0;
 
   const [vertexShader, fragmentShader] = useMemo(
-    () => compile("stripes", "vertex"),
-    []
+    () =>
+      compile(preset, vertex ? "vertex" : fragment ? "fragment" : undefined),
+    [vertex, fragment, preset]
   );
 
   return (

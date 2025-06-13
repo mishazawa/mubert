@@ -8,13 +8,6 @@ varying float vDisplacement;
 void main() {
   vec3 key = vec3(uColorKeyValue);
 
-  vec3 N = vNormal * 2.5;
-  csm_Bump = perturbNormalArb(
-    -vViewPosition,
-    N,
-    vec2(dFdx(vDisplacement), dFdy(vDisplacement)), 
-    smoothstep(0., 1., dot(N, normalize(vViewPosition))));
-
   //#include<common_standard_props>
 
   csm_DiffuseColor.rgba = vec4(key, 1.0);
