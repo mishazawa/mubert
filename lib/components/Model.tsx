@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import CustomShaderMaterial from "three-custom-shader-material";
 
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import type { RefObject } from "react";
 import type { GenerativeShaderUniforms, ShaderControls } from "../types";
@@ -84,7 +84,7 @@ function useUniforms(
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
-  const copyUniforms = useCallback(() => {
+  useEffect(() => {
     Object.keys(controls).map((k) => {
       const key = k as ElementType;
       uniforms.current[key].value = controls[key];
@@ -93,7 +93,7 @@ function useUniforms(
   // animate uniforms here
   useFrame(() => {
     uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER;
-    copyUniforms();
+    // copyUniforms();
     // uniforms.current.uSeed.value = controls.uSeed;
     // uniforms.current.uColor1.value = controls.uColor1;
     // uniforms.current.uColor2.value = controls.uColor2;

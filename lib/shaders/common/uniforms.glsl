@@ -1,6 +1,8 @@
 uniform float uTime;
 uniform float uSeed;
 
+uniform vec3 uNoiseOffset; 
+
 uniform vec3  uColor1;
 uniform vec3  uColor2;
 uniform vec3  uColor3;

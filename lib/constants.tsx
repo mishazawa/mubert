@@ -1,4 +1,4 @@
-import { Color } from "three";
+import { Color, Vector3 } from "three";
 import type { GenerativeShaderUniforms } from "./types";
 
 export const ENV_MAP_RESOLUTION = 256;
@@ -57,5 +57,8 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   },
   uLineCount: {
     value: 0,
+  },
+  uNoiseOffset: {
+    value: new Vector3(),
   },
 };

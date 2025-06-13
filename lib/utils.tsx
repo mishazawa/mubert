@@ -1,11 +1,13 @@
-import { Color, MathUtils } from "three";
+import { Color, MathUtils, Vector3 } from "three";
 import { colors } from "./colors";
 
 export function getColors(rg: RandomGenerator) {
   const palette = colors[rg.int(0, colors.length)];
   return palette.map((c) => new Color(c));
 }
-
+export function getVector3(rg: RandomGenerator) {
+  return new Vector3(rg.float(0, 1), rg.float(0, 1), rg.float(0, 1));
+}
 function getRandomInt(min: number, max: number, seed?: number) {
   return Math.floor(MathUtils.seededRandom(seed) * (max - min + 1)) + min;
 }

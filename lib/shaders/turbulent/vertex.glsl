@@ -15,7 +15,7 @@ void main() {
   vNormal = normal;
   vUv = uv;
 
-  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uSeed + normal + uTime * SPEED, uDisplacementNoiseScale);
+  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + normal + uTime * SPEED, uDisplacementNoiseScale);
   
   vec3 newPosition = position + normal * mask;
 

@@ -32,7 +32,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
     ) + colors[i]);
 
 
-    vec3 noiseVal = noise3(vec4(uSeed + (pos + plane + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.)) + uTime * SPEED, 1.0));
+    vec3 noiseVal = noise3(vec4(uNoiseOffset + (pos + plane + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.)) + uTime * SPEED, 1.0));
 
     float line = lineFn(pos, plane + noiseVal, uLineWidth);
 

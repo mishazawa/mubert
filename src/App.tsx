@@ -17,7 +17,15 @@ function useShaderState() {
   const [defaults, set] = useState(generateShaderParams(0));
 
   useEffect(() => {
-    const { uColor1, uColor2, uColor3, uColor4, uColor5, ...qux } = defaults;
+    const {
+      uColor1,
+      uColor2,
+      uColor3,
+      uColor4,
+      uColor5,
+      uNoiseOffset,
+      ...qux
+    } = defaults;
     setData({
       ...qux,
     });
@@ -96,6 +104,7 @@ function useShaderState() {
     ...data,
     ...colors,
     uSeed: defaults.uSeed,
+    uNoiseOffset: defaults.uNoiseOffset,
   };
 }
 

@@ -1,4 +1,4 @@
-import type { Color } from "three";
+import type { Color, Vector3 } from "three";
 
 type UniformValue<T> = {
   value: T;
@@ -24,6 +24,7 @@ export type GenerativeShaderUniforms = {
   readonly uIridescence: UniformValue<number>;
   readonly uLineWidth: UniformValue<number>;
   readonly uLineCount: UniformValue<number>;
+  readonly uNoiseOffset: UniformValue<Vector3>;
 };
 
 type ProgramableUniforms = Omit<GenerativeShaderUniforms, "uTime">;

@@ -1,4 +1,3 @@
-import { Color } from "three";
 import { Canvas } from "@react-three/fiber";
 import { Center, OrbitControls, StatsGl } from "@react-three/drei";
 
@@ -7,7 +6,12 @@ import { EnvironmentLight } from "./components/EnvironmentLight";
 import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
 import type { ShaderControls } from "./types";
 
-import { getColors, randomGenerator, randomSwapRange } from "./utils";
+import {
+  getColors,
+  getVector3,
+  randomGenerator,
+  randomSwapRange,
+} from "./utils";
 
 export default function MubertCanvas(props: {
   data: ShaderControls;
@@ -54,5 +58,6 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uClearcoatRoughness: gen.float(...VALID_RANGES.cc_roughness),
     uIridescence: gen.float(...VALID_RANGES.iridescence),
     uLineCount: gen.int(...VALID_RANGES.uLineCount),
+    uNoiseOffset: getVector3(gen),
   };
 }

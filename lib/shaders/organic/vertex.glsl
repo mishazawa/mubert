@@ -22,8 +22,8 @@ void main() {
 
   float animation = uTime * SPEED;
   vec3 coords = normal + animation;
-  vec3 noiseMask = noise3(vec4(uSeed + vPosition - animation * 0.1, 1.)) * 1.5;
-  vec3 noisePattern = noise3(vec4(uSeed + coords * vec3(uDisplacementNoiseScale), 1.));
+  vec3 noiseMask = noise3(vec4(uNoiseOffset + vPosition - animation * 0.1, 1.)) * 1.5;
+  vec3 noisePattern = noise3(vec4(uNoiseOffset + coords * vec3(uDisplacementNoiseScale), 1.));
   float pattern = strips(noisePattern.y * FREQ);
 
 
