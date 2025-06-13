@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import CustomShaderMaterial from "three-custom-shader-material";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import type { RefObject } from "react";
 import type { GenerativeShaderUniforms, ShaderControls } from "../types";

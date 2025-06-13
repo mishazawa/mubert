@@ -22,7 +22,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
 
 
   if (uLineCount > 0) {
-    vec3 current = uColor1;
+    vec3 current = uColor2;
     vec3 plane = normalize(vec3(
     sin(current.x + timeFreq),
       cos(current.y + timeFreq),
@@ -35,21 +35,6 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
   }
 
   if (uLineCount > 1) {
-    vec3 current = uColor2;
-    vec3 plane = normalize(vec3(
-    sin(current.x + timeFreq),
-      cos(current.y + timeFreq),
-      sin(current.z - timeFreq)
-    ) + current);
-
-    vec3 noiseVal = noise3(plane + pos + noiseOffset + timeSpeed);
-
-
-    float line = lineFn(pos, plane + noiseVal, uLineWidth);
-    newColor = mix(newColor, current, line);
-  }
-
-    if (uLineCount > 2) {
     vec3 current = uColor3;
     vec3 plane = normalize(vec3(
     sin(current.x + timeFreq),
@@ -64,7 +49,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
     newColor = mix(newColor, current, line);
   }
 
-    if (uLineCount > 3) {
+    if (uLineCount > 2) {
     vec3 current = uColor4;
     vec3 plane = normalize(vec3(
     sin(current.x + timeFreq),
@@ -79,7 +64,7 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
     newColor = mix(newColor, current, line);
   }
 
-    if (uLineCount >= 4) {
+    if (uLineCount > 3) {
     vec3 current = uColor5;
     vec3 plane = normalize(vec3(
     sin(current.x + timeFreq),
