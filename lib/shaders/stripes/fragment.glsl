@@ -6,9 +6,10 @@ varying float vDisplacement;
 
 #define SPEED .5
 #define FREQ 1.
-#define FRAC_SCALE 8.
+#define FRAC_SCALE 16.
 
 
+//#include<math>
 //#include<noise3>
 //#include<voronoi3>
 //#include<calc_bump>
@@ -31,9 +32,11 @@ void main() {
 
   vec3 noiseVal = mix(voronoi3d(noiseSeed), noise3(noiseSeed, animation), uNoiseVariant);
 
-  float displacedY = pos.y + noiseVal.y * uColorNoiseScale + animation;
+  float noiseScale = mix(uStripesWidth + uColorNoiseScale, uColorNoiseScale, uNoiseVariant);
+
+  float displacedY = pos.y + (noiseVal.y * noiseScale)  + animation;
   
-  float pattern = fract(displacedY);
+  float pattern = fract(displacedY) + fit(uStripesWidth, 0., FRAC_SCALE, 0., 1.);
 
   pattern = step(.5, pattern);
 

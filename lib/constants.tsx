@@ -18,6 +18,7 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   cc_roughness: [0, 1],
   iridescence: [0, 5],
   uLineCount: [0, 5],
+  uStripesWidth: [0, 8],
 };
 
 const DEFAULT_COLOR = new Color("#fff");
@@ -65,6 +66,9 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
     value: 0,
   },
   uNoiseVariant: {
+    value: 0,
+  },
+  uStripesWidth: {
     value: 0,
   },
 };
