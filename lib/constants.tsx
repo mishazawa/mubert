@@ -4,7 +4,7 @@ import type { GenerativeShaderUniforms } from "./types";
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
 export const SPEED_MULTIPLIER = 0.001;
-export const MESH_DETAIL = 256;
+export const MESH_DETAIL = 64;
 export const AMBIENT_LIGHT_COLOR = 0x404040;
 
 export const VALID_RANGES: Record<string, [number, number]> = {

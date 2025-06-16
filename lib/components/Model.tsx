@@ -18,9 +18,14 @@ import {
   MeshPhysicalMaterial,
   Object3D,
   OctahedronGeometry,
+  IcosahedronGeometry,
+  SphereGeometry
 } from "three";
 
 import { compile } from "../shaders/compiler";
+
+
+import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export function Model({
   data,
@@ -35,9 +40,18 @@ export function Model({
   const uniforms = useUniforms(data);
 
   const octahedron = useMemo(() => new OctahedronGeometry(1, MESH_DETAIL), []);
-  const items = [octahedron];
-  const visibleIndex = 0;
+  const icosahedron = useMemo(() => new IcosahedronGeometry(1, MESH_DETAIL), []);
 
+  octahedron.toNonIndexed();  
+  const merged = mergeVertices(icosahedron);         
+  merged.computeVertexNormals();
+  const sphere = useMemo(() => new SphereGeometry(1, 128, 128), []);
+  const items = [octahedron, sphere, merged];
+  const visibleIndex = 2;
+
+
+
+  
   const [vertexShader, fragmentShader] = useMemo(
     () =>
       compile(preset, vertex ? "vertex" : fragment ? "fragment" : undefined),
@@ -58,6 +72,7 @@ export function Model({
             iridescenceIOR={2.3}
             clearcoat={1}
             clearcoatRoughness={0}
+            
           />
         </mesh>
       ))}

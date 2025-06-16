@@ -196,8 +196,8 @@ function useDebugShader() {
       value: false,
     },
     preset: {
-      value: "stripes",
-      options: ["noise", "organic", "stripes"],
+      value: "slai",
+      options: ["noise", "organic", "stripes", "slai"],
     },
   });
 }

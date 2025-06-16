@@ -124,3 +124,25 @@ vec4 random4(vec4 p4) {
     return fract((p4.xxyz + p4.yzzw) * p4.zywx);
 }
 #endif
+
+
+
+float vnoise1d(float x) {
+    float p = floor(x);
+    float w = fract(x);
+
+    float u = w * w * w * (w * (w * 6.0 - 15.0) + 10.0);  // quintic smoothstep
+
+    float a = random(vec3(p, 0.0, 0.0));
+    float b = random(vec3(p + 1.0, 0.0, 0.0));
+
+    return mix(a, b, u) * 2.0 - 1.0;
+}
+
+vec3 sinnoise_distort(vec3 p, float s, float f, vec3 t) {
+  p.xyz += 1.00*sin(2.0*(f)*p.yzx+t)*s;
+  p.xyz += 0.66*sin(4.0*(f)*p.yzx+t)*s;
+  p.xyz += 0.33*sin(8.0*(f)*p.yzx+t)*s;
+//   p.xyz += 0.050*sin(16.0*(f)*p.yzx+t)*s;
+  return p;
+}
