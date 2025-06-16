@@ -1,130 +1,208 @@
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import Canvas, { generateShaderParams } from "@lib/main";
-import { button, useControls } from "leva";
+import { useControls } from "leva";
 
 import { Color } from "three";
+import type { ShaderControls } from "@lib/types";
 
 function App() {
   const data = useShaderState();
-  return <Canvas data={data} />;
+  const debug = useDebugShader();
+  return <Canvas data={data} debug={debug} />;
 }
 
 export default App;
 
-const MAX_SEED = 2048;
-
 function useShaderState() {
-  const ref = useRef(generateShaderParams(0));
-  const options = useUiParams(ref);
-  useControls(options as any);
+  const [defaults, set] = useState(generateShaderParams(0));
 
-  return ref;
-}
+  useEffect(() => {
+    const {
+      uColor1,
+      uColor2,
+      uColor3,
+      uColor4,
+      uColor5,
+      uNoiseOffset,
+      ...qux
+    } = defaults;
+    setData({
+      ...qux,
+    });
+  }, [defaults.uSeed]);
 
-function useUiParams(ref: any) {
-  // for demo purpose show only generate button
-  if (process.env.NODE_ENV !== "development")
-    return {
-      Generate: button(() => {
-        const seed = Math.random() * MAX_SEED;
-        console.log(seed);
-        ref.current = generateShaderParams(seed);
-      }),
-    };
-
-  return {
-    seed: {
-      value: ref.current.uSeed,
+  const [data, setData] = useControls(() => ({
+    uSeed: {
+      value: defaults.uSeed,
       step: 1,
       onChange: (v: any) => {
-        ref.current.uSeed = v;
+        set(generateShaderParams(v));
       },
     },
-    primary: {
-      value: `#${ref.current.uColor1.getHexString()}`,
-      onChange: (v: any) => {
-        ref.current.uColor1 = new Color(v);
-      },
-    },
-    secondary: {
-      value: `#${ref.current.uColor2.getHexString()}`,
-      onChange: (v: any) => {
-        ref.current.uColor2 = new Color(v);
-      },
-    },
-    use_key: {
-      value: ref.current.uUseColorKey,
+    uUseColorKey: {
+      value: defaults.uUseColorKey,
       min: 0,
       max: 1,
       step: 1,
-      onChange: (v: any) => {
-        ref.current.uUseColorKey = v;
-      },
     },
-    key_value: {
-      value: ref.current.uColorKeyValue,
+    uColorKeyValue: {
+      value: defaults.uColorKeyValue,
       min: 0,
       max: 1,
       step: 1,
-      onChange: (v: any) => {
-        ref.current.uColorKeyValue = v;
-      },
     },
-    color_noise: {
-      value: ref.current.uColorNoiseScale,
+    uColorNoiseScale: {
+      value: defaults.uColorNoiseScale,
       min: 0.5,
       max: 20,
-      onChange: (v: any) => {
-        ref.current.uColorNoiseScale = v;
-      },
     },
-    displacement_noise: {
-      value: ref.current.uDisplacementNoiseScale,
+    uDisplacementNoiseScale: {
+      value: defaults.uDisplacementNoiseScale,
       min: 0.01,
       max: 2,
-      onChange: (v: any) => {
-        ref.current.uDisplacementNoiseScale = v;
-      },
     },
-    amplitude: {
-      value: ref.current.uDisplacementAmplitude,
+    uDisplacementAmplitude: {
+      value: defaults.uDisplacementAmplitude,
       min: 0.01,
-      max: 0.5,
-      onChange: (v: any) => {
-        ref.current.uDisplacementAmplitude = v;
-      },
+      max: 0.1,
     },
-    roughness: {
-      value: ref.current.uRoughness,
+    uRoughness: {
+      value: defaults.uRoughness,
       min: 0,
       max: 1,
-      onChange: (v: any) => {
-        ref.current.uRoughness = v;
-      },
     },
-    clearcoat: {
-      value: ref.current.uClearcoat,
-      min: 0,
-      max: 5,
-      onChange: (v: any) => {
-        ref.current.uClearcoat = v;
-      },
-    },
-    cc_roughness: {
-      value: ref.current.uClearcoatRoughness,
+    uRoughnessPattern: {
+      value: defaults.uRoughnessPattern,
       min: 0,
       max: 1,
-      onChange: (v: any) => {
-        ref.current.uClearcoatRoughness = v;
-      },
     },
-    iridescence: {
-      value: ref.current.uIridescence,
+    uClearcoat: {
+      value: defaults.uClearcoat,
       min: 0,
       max: 5,
-      onChange: (v: any) => {
-        ref.current.uIridescence = v;
-      },
     },
+    uClearcoatRoughness: {
+      value: defaults.uClearcoatRoughness,
+      min: 0,
+      max: 1,
+    },
+    uIridescence: {
+      value: defaults.uIridescence,
+      min: 0,
+      max: 5,
+    },
+    uEmission: {
+      value: defaults.uEmission,
+      min: 0,
+      max: 1,
+    },
+    uLineWidth: {
+      value: defaults.uLineWidth,
+      min: 0.01,
+      max: 1,
+    },
+    uLineCount: {
+      value: defaults.uLineCount,
+      step: 1,
+      min: 0,
+      max: 4,
+    },
+    uStripesWidth: {
+      value: defaults.uStripesWidth,
+      min: 0,
+      max: 1,
+    },
+    uNoiseVariant: {
+      value: defaults.uNoiseVariant,
+      min: 0,
+      max: 1,
+    },
+  }));
+  const colors = useColorsControls(defaults);
+
+  return {
+    ...defaults,
+    ...data,
+    ...colors,
   };
+}
+
+function useColorsControls(defaults: ShaderControls) {
+  const [color1, setColor1] = useState(defaults.uColor1);
+  const [color2, setColor2] = useState(defaults.uColor2);
+  const [color3, setColor3] = useState(defaults.uColor3);
+  const [color4, setColor4] = useState(defaults.uColor4);
+  const [color5, setColor5] = useState(defaults.uColor5);
+
+  useEffect(() => {
+    setData({
+      uColor1: `#${defaults.uColor1.getHexString()}`,
+      uColor2: `#${defaults.uColor2.getHexString()}`,
+      uColor3: `#${defaults.uColor3.getHexString()}`,
+      uColor4: `#${defaults.uColor4.getHexString()}`,
+      uColor5: `#${defaults.uColor5.getHexString()}`,
+    });
+  }, [defaults.uSeed]);
+
+  const [_, setData] = useControls("Colors", () => ({
+    uColor1: {
+      value: `#${color1.getHexString()}`,
+      onChange: (v: any) => {
+        setColor1(new Color(v));
+      },
+    },
+    uColor2: {
+      value: `#${color2.getHexString()}`,
+      onChange: (v: any) => {
+        setColor2(new Color(v));
+      },
+    },
+    uColor3: {
+      value: `#${color3.getHexString()}`,
+      onChange: (v: any) => {
+        setColor3(new Color(v));
+      },
+    },
+    uColor4: {
+      value: `#${color4.getHexString()}`,
+      onChange: (v: any) => {
+        setColor4(new Color(v));
+      },
+    },
+    uColor5: {
+      value: `#${color5.getHexString()}`,
+      onChange: (v: any) => {
+        setColor5(new Color(v));
+      },
+    },
+  }));
+
+  return {
+    uColor1: color1,
+    uColor2: color2,
+    uColor3: color3,
+    uColor4: color4,
+    uColor5: color5,
+  };
+}
+
+function useDebugShader() {
+  return useControls("Debug", {
+    vertex: {
+      value: false,
+    },
+    fragment: {
+      value: false,
+    },
+    preset: {
+      value: "slai",
+      options: ["noise", "organic", "stripes", "slai"],
+    },
+    mesh: {
+      value: 2,
+      min: 0,
+      max: 2,
+      step: 1,
+    },
+  });
 }

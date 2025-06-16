@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import CustomShaderMaterial from "three-custom-shader-material";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import type { RefObject } from "react";
 import type { GenerativeShaderUniforms, ShaderControls } from "../types";
@@ -18,19 +18,39 @@ import {
   MeshPhysicalMaterial,
   Object3D,
   OctahedronGeometry,
+  IcosahedronGeometry,
+  SphereGeometry,
 } from "three";
 
 import { compile } from "../shaders/compiler";
 
-export function Model({ data }: { data: RefObject<ShaderControls> }) {
+export function Model({
+  data,
+  debug,
+}: {
+  data: ShaderControls;
+  debug?: Record<string, any>;
+}) {
+  const { vertex, fragment, preset, mesh } = debug ?? {};
+
   const ref = useTransforms();
   const uniforms = useUniforms(data);
 
+  const sphere = useMemo(() => new SphereGeometry(1, 128, 128), []);
   const octahedron = useMemo(() => new OctahedronGeometry(1, MESH_DETAIL), []);
-  const items = [octahedron];
-  const visibleIndex = 0;
+  const icosahedron = useMemo(
+    () => new IcosahedronGeometry(1, MESH_DETAIL),
+    []
+  );
 
-  const [vertexShader, fragmentShader] = useMemo(() => compile("noise"), []);
+  const items = [octahedron, sphere, icosahedron];
+  const visibleIndex = mesh;
+
+  const [vertexShader, fragmentShader] = useMemo(
+    () =>
+      compile(preset, vertex ? "vertex" : fragment ? "fragment" : undefined),
+    [vertex, fragment, preset]
+  );
 
   return (
     <group ref={ref}>
@@ -65,30 +85,22 @@ function useTransforms(): RefObject<Object3D> {
   return ref;
 }
 
+type ElementType = keyof ShaderControls;
+
 function useUniforms(
-  controls: RefObject<ShaderControls>
+  controls: ShaderControls
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
-
+  useEffect(() => {
+    Object.keys(controls).map((k) => {
+      const key = k as ElementType;
+      uniforms.current[key].value = controls[key];
+    });
+  }, [controls]);
   // animate uniforms here
   useFrame(() => {
     uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER;
-    uniforms.current.uSeed.value = controls.current.uSeed;
-    uniforms.current.uColor1.value = controls.current.uColor1;
-    uniforms.current.uColor2.value = controls.current.uColor2;
-    uniforms.current.uUseColorKey.value = controls.current.uUseColorKey;
-    uniforms.current.uColorKeyValue.value = controls.current.uColorKeyValue;
-    uniforms.current.uColorNoiseScale.value = controls.current.uColorNoiseScale;
-    uniforms.current.uDisplacementNoiseScale.value =
-      controls.current.uDisplacementNoiseScale;
-    uniforms.current.uDisplacementAmplitude.value =
-      controls.current.uDisplacementAmplitude;
-    uniforms.current.uRoughness.value = controls.current.uRoughness;
-    uniforms.current.uClearcoat.value = controls.current.uClearcoat;
-    uniforms.current.uClearcoatRoughness.value =
-      controls.current.uClearcoatRoughness;
-    uniforms.current.uIridescence.value = controls.current.uIridescence;
   });
 
   return uniforms;

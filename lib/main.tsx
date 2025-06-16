@@ -1,5 +1,3 @@
-import type { RefObject } from "react";
-import { Color } from "three";
 import { Canvas } from "@react-three/fiber";
 import { Center, OrbitControls, StatsGl } from "@react-three/drei";
 
@@ -10,16 +8,17 @@ import type { ShaderControls } from "./types";
 
 import {
   getColors,
-  getRandomInt,
-  getRandomFloat,
+  getVector3,
+  randomGenerator,
   randomSwapRange,
 } from "./utils";
 
 export default function MubertCanvas(props: {
-  data: RefObject<ShaderControls>;
+  data: ShaderControls;
+  debug?: any;
 }) {
   return (
-    <Canvas>
+    <Canvas className="vis_canvas">
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
 
@@ -35,25 +34,34 @@ export default function MubertCanvas(props: {
 }
 
 export function generateShaderParams(uSeed: number): ShaderControls {
-  const [primary, secondary] = getColors(uSeed);
+  const gen = randomGenerator(uSeed);
+  const palette = getColors(gen);
   return {
     uSeed,
-    uColor1: new Color(primary),
-    uColor2: new Color(secondary),
-    uUseColorKey: getRandomInt(...VALID_RANGES.use_key, uSeed),
-    uColorKeyValue: getRandomInt(...VALID_RANGES.key_value, uSeed),
-    uColorNoiseScale: getRandomFloat(
-      ...randomSwapRange(VALID_RANGES.color_noise, uSeed),
-      uSeed
+    uLineWidth: gen.float(0, 1),
+    uColor1: palette[0],
+    uColor2: palette[1],
+    uColor3: palette[2],
+    uColor4: palette[3],
+    uColor5: palette[4],
+    uUseColorKey: gen.int(...VALID_RANGES.use_key),
+    uColorKeyValue: gen.int(...VALID_RANGES.key_value),
+    uColorNoiseScale: gen.float(
+      ...randomSwapRange(VALID_RANGES.color_noise, gen.float(0, 1))
     ),
-    uDisplacementNoiseScale: getRandomFloat(
-      ...randomSwapRange(VALID_RANGES.displacement_noise, uSeed),
-      uSeed
+    uDisplacementNoiseScale: gen.float(
+      ...randomSwapRange(VALID_RANGES.displacement_noise, gen.float(0, 1))
     ),
-    uDisplacementAmplitude: getRandomFloat(...VALID_RANGES.amplitude, uSeed),
-    uRoughness: getRandomFloat(...VALID_RANGES.roughness, uSeed),
-    uClearcoat: getRandomFloat(...VALID_RANGES.clearcoat, uSeed),
-    uClearcoatRoughness: getRandomFloat(...VALID_RANGES.cc_roughness, uSeed),
-    uIridescence: getRandomFloat(...VALID_RANGES.iridescence, uSeed),
+    uDisplacementAmplitude: gen.float(...VALID_RANGES.amplitude),
+    uRoughness: gen.float(...VALID_RANGES.roughness),
+    uClearcoat: gen.float(...VALID_RANGES.clearcoat),
+    uClearcoatRoughness: gen.float(...VALID_RANGES.cc_roughness),
+    uIridescence: gen.float(...VALID_RANGES.iridescence),
+    uLineCount: gen.int(...VALID_RANGES.uLineCount),
+    uNoiseOffset: getVector3(gen),
+    uRoughnessPattern: gen.float(0, 1),
+    uNoiseVariant: gen.float(0, 1),
+    uStripesWidth: gen.float(...VALID_RANGES.uStripesWidth),
+    uEmission: gen.float(0, 1),
   };
 }
