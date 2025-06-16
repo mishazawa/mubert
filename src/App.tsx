@@ -121,10 +121,9 @@ function useShaderState() {
   const colors = useColorsControls(defaults);
 
   return {
+    ...defaults,
     ...data,
     ...colors,
-    uSeed: defaults.uSeed,
-    uNoiseOffset: defaults.uNoiseOffset,
   };
 }
 
@@ -198,6 +197,12 @@ function useDebugShader() {
     preset: {
       value: "slai",
       options: ["noise", "organic", "stripes", "slai"],
+    },
+    mesh: {
+      value: 2,
+      min: 0,
+      max: 2,
+      step: 1,
     },
   });
 }

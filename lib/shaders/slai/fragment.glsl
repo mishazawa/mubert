@@ -24,38 +24,25 @@ void main() {
   vec3 background = mix(uColor1, key,  uUseColorKey);
   vec3 newColor = background;
 
-  vec3 POS = normalize(vPosition);
   float animation = uTime * SPEED;
 
-  vec2 ps = ctos(vPosition);
-  float reps = floor(mix(1.0, 12.0, uLineWidth));
-  float rep_f = fract(ps.x*reps+animation*0.1/reps)/reps;
-  rep_f = rep_f / reps;
-  ps.x = rep_f;
-  vec3 reppos = stoc(ps);
-  POS = reppos;
-
+  vec3 reppos = generateSyncedPosition(vPosition);
 
   animation = animation + sin(animation*3.14*4.0)*0.02;
-  vec3 noiseSeed = uNoiseOffset + POS;
+  vec3 noiseSeed = uNoiseOffset + reppos;
 
+  newColor = drawSinLines(background, reppos, animation);
 
-
-  newColor = maybeDrawLines2(background, POS, animation);
-  // vec3 noiseVal = mix(voronoi3d(noiseSeed+newColor), noise3(noiseSeed+newColor, animation), uNoiseVariant);
-  float noisePattern = snoise(noiseSeed+newColor+vec3(0.0,0.0,animation));
-  noisePattern = smoothstep(0.2, 0.8, noisePattern*0.5+0.5);
+  float noisePattern = snoise(noiseSeed + newColor + vec3(0.0, 0.0, animation));
+  noisePattern = smoothstep(0.2, 0.8, noisePattern * 0.5 + 0.5);
   float pattern = noisePattern;
 
   // Debug
   // pattern = 0.0;
-
   // newColor = mix(background, newColor, pattern);
 
   //#include<common_standard_props>
   csm_Roughness = mix(uRoughness, 1. - uRoughness, pattern * uRoughnessPattern);
-
-  // csm_Normal = vec3(0.0, 1.0, 0.0);
   csm_DiffuseColor.rgba = vec4(newColor, 1.0);
 
 
