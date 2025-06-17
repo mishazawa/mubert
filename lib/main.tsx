@@ -1,5 +1,10 @@
 import { Canvas } from "@react-three/fiber";
-import { Center, OrbitControls, StatsGl } from "@react-three/drei";
+import {
+  Center,
+  OrbitControls,
+  PerformanceMonitor,
+  StatsGl,
+} from "@react-three/drei";
 
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
@@ -12,22 +17,27 @@ import {
   randomGenerator,
   randomSwapRange,
 } from "./utils";
+import { useState } from "react";
 
 export default function MubertCanvas(props: {
   data: ShaderControls;
   debug?: any;
 }) {
+  const [dpr, setDpr] = useState(2);
   return (
-    <Canvas className="vis_canvas">
+    <Canvas className="vis_canvas" dpr={dpr}>
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
-
+      <PerformanceMonitor
+        factor={1}
+        onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor, 1))}
+      />
       <Center>
         <EnvironmentLight intensity={10} />
         <Model {...props} />
       </Center>
 
-      <OrbitControls />
+      <OrbitControls enablePan={false} />
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
     </Canvas>
   );
