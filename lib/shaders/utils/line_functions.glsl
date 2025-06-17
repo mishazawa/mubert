@@ -71,7 +71,7 @@ vec3 drawSinLines(in vec3 background, in vec3 pos, float time) {
     float nval = npos.y * (0.5 + rv * 3.0) + time * 3.0 + pt;
     float noise = vnoise1d(nval * 2.0 + rv * 100.0) * 2.0 - 1.0;
     pattern += noise;
-    newColor = mix(newColor, col, smoothstep(0.2, 0.8, noise*0.5+0.5));
+    newColor = mix(newColor, col, smoothstep(0., 1.1 + uLineWidth, noise*0.5+0.5));
   }
 
   return newColor;

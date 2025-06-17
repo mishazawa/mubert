@@ -4,7 +4,7 @@ varying float vDisplacement;
 
 //#include<common_uniforms>
 
-#define DIST_AMP 2.
+#define DIST_AMP 10.
 #define SPEED .5
 #define FREQ 1.
 #define FRAC_SCALE 16.
