@@ -30,7 +30,7 @@ export default function MubertCanvas(props: {
       <StatsGl showPanel={1} className="stats" />
       <PerformanceMonitor
         factor={1}
-        onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor, 1))}
+        onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
       />
       <Center>
         <EnvironmentLight intensity={10} />
