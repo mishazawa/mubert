@@ -9,7 +9,7 @@ export function getVector3(rg: RandomGenerator) {
   return new Vector3(rg.float(0, 1), rg.float(0, 1), rg.float(0, 1));
 }
 function getRandomInt(min: number, max: number, seed?: number) {
-  return Math.floor(MathUtils.seededRandom(seed) * (max - min + 1)) + min;
+  return Math.floor(MathUtils.seededRandom(seed) * (max - min)) + min;
 }
 function getRandomFloat(min: number, max: number, seed?: number) {
   return MathUtils.seededRandom(seed) * (max - min) + min;
