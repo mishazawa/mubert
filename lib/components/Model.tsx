@@ -31,16 +31,24 @@ export function Model({
   data: ShaderControls;
   debug?: Record<string, any>;
 }) {
-  const { vertex, fragment, preset, mesh } = debug ?? {};
+  const { vertex, fragment, preset, mesh, polygon } = debug ?? {};
+
+  const meshResolution = polygon * MESH_DETAIL;
 
   const ref = useTransforms();
   const uniforms = useUniforms(data);
 
-  const sphere = useMemo(() => new SphereGeometry(1, 128, 128), []);
-  const octahedron = useMemo(() => new OctahedronGeometry(1, MESH_DETAIL), []);
+  const sphere = useMemo(
+    () => new SphereGeometry(1, meshResolution, meshResolution),
+    [meshResolution]
+  );
+  const octahedron = useMemo(
+    () => new OctahedronGeometry(1, meshResolution),
+    [meshResolution]
+  );
   const icosahedron = useMemo(
-    () => new IcosahedronGeometry(1, MESH_DETAIL),
-    []
+    () => new IcosahedronGeometry(1, meshResolution),
+    [meshResolution]
   );
 
   const items = [octahedron, sphere, icosahedron];

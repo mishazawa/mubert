@@ -1,6 +1,5 @@
 varying vec2 vUv;
 varying vec3 vPosition;
-varying float vDisplacement;
 
 //#include<common_uniforms>
 
@@ -10,18 +9,22 @@ varying float vDisplacement;
 //#include<snoise>
 //#include<noise3>
 
+vec3 displace (in vec3 P, in float animation) {
+  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + normal + animation, uDisplacementNoiseScale);
+  return P + normal * mask;
+}
+
+//#include<calc_normal>
+
 void main() {
   vPosition = position;
   vNormal = normal;
   vUv = uv;
 
+  float animation = uTime * SPEED;
+  vec3 newPosition = displace(position, animation);
 
-  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + normal + uTime * SPEED, uDisplacementNoiseScale);
-  
-  vec3 newPosition = position + normal * mask;
-
-  vDisplacement = mask.x;
 
   csm_Position = newPosition;
-  csm_PositionRaw = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+  csm_Normal = recalcNormals(csm_Position, animation);
 }

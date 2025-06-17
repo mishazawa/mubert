@@ -1,6 +1,5 @@
 varying vec2 vUv;
 varying vec3 vPosition;
-varying float vDisplacement;
 
 //#include<common_uniforms>
 
@@ -11,12 +10,13 @@ varying float vDisplacement;
 //#include<math>
 //#include<snoise>
 //#include<noise3>
-//#include<calc_bump>
 
 void main() {
   vec3 noiseVal = noise3(uNoiseOffset + (-vPosition * uColorNoiseScale), uTime * SPEED * 2.0) * 15.;
+  
+  float mask = smoothstep(.0, 1. , noiseVal.x);
 
-  float mask = smoothstep(.5, .51 , noiseVal.x);
+  mask = smoothstep(.5, .51 , mask);
 
   vec3 key = vec3(uColorKeyValue);
 

@@ -1,6 +1,6 @@
 varying vec2 vUv;
 varying vec3 vPosition;
-varying float vDisplacement;
+
 
 //#include<common_uniforms>
 
@@ -12,7 +12,7 @@ varying float vDisplacement;
 //#include<math>
 //#include<noise3>
 //#include<voronoi3>
-//#include<calc_bump>
+
 //#include<line_functions>
 
 

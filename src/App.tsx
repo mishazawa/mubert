@@ -213,5 +213,11 @@ function useDebugShader() {
       max: 2,
       step: 1,
     },
+    polygon: {
+      value: 8,
+      min: 1,
+      max: 32,
+      step: 1,
+    },
   });
 }
