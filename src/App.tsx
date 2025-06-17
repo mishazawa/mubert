@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Canvas, { generateShaderParams } from "@lib/main";
-import { useControls } from "leva";
+import { button, useControls } from "leva";
 
 import { Color } from "three";
 import type { ShaderControls } from "@lib/types";
@@ -31,7 +31,16 @@ function useShaderState() {
     });
   }, [defaults.uSeed]);
 
-  const [data, setData] = useControls(() => ({
+  useControls(
+    {
+      Generate: button(() => {
+        set(generateShaderParams(defaults.uSeed + 1));
+      }),
+    },
+    [defaults.uSeed]
+  );
+
+  const [data, setData] = useControls("Parameters", () => ({
     uSeed: {
       value: defaults.uSeed,
       step: 1,
