@@ -5,10 +5,13 @@ varying vec3 vPosition;
 
 #define FREQ 5.0
 #define SPEED .5
+#define NOISE_DIST_AMP .25
 
 //#include<math>
 //#include<snoise>
 //#include<noise3>
+//#include<random>
+//#include<noise_distortion>
 
 float strips(float position) {
   return fit(smoothMod(position, 1.0, 1.5), 0.35, 0.6, 0.0, .5);
@@ -21,7 +24,8 @@ vec3 displace (in vec3 P, in float animation) {
   float pattern = strips(noisePattern.y * FREQ);
 
   float mask = mix(pattern, uDisplacementAmplitude * .5, smoothstep(.4, .6, noiseMask.x)) * uDisplacementAmplitude;
-  return P + normal * mask;
+  vec3 newPosition = P + normal * mask;
+  return newPosition + noiseDistortion(newPosition, mask, animation) * NOISE_DIST_AMP;
 }
 
 //#include<calc_normal>

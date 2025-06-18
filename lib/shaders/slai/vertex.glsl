@@ -8,17 +8,21 @@ varying vec3 vPosition;
 #define FREQ .5
 #define FRAC_SCALE 16.
 
-//#include<random>
+
 //#include<math>
 //#include<noise3>
 //#include<snoise>
 
 //#include<line_functions>
 
+//#include<random>
+//#include<noise_distortion>
+
 vec3 displace (in vec3 P, in float animation) {
   vec3 mask = drawSinLines(vec3(0.0, 0.0, 0.0), generateSyncedPosition(P), animation) * DIST_AMP * uDisplacementAmplitude;
-  mask = smoothstep(0., 1., mask);
-  return P + normal * mask;
+  mask = smoothstep(0., 1., mask) ;
+  vec3 newPosition = P + normal * mask;
+  return newPosition + noiseDistortion(newPosition, mask.x, animation);
 }
 
 

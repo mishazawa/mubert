@@ -10,6 +10,10 @@ export function useShaderStatePublic() {
   const [data, set] = useState(generateShaderParams(0));
 
   const rng = useMemo(() => randomGenerator(666), []);
+  const presets = useMemo(
+    () => ["noise", "organic", "stripes", "slai", "slai", "slai", "slai"],
+    []
+  );
 
   const [_, setData] = useControls(
     () => ({
@@ -17,7 +21,7 @@ export function useShaderStatePublic() {
         const params = generateShaderParams(rng.int(0, 9999));
         set(params);
         setData({ uSeed: params.uSeed });
-        setPreset({ preset: PRESETS[rng.int(0, debug.preset.length)] });
+        setPreset({ preset: presets[rng.int(0, presets.length)] });
       }),
       uSeed: {
         value: data.uSeed,

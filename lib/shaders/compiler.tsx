@@ -6,6 +6,7 @@ import math from "./utils/math.glsl?raw";
 import random from "./utils/random.glsl?raw";
 import calcNormal from "./utils/calc_normal.glsl?raw";
 import lineFunctions from "./utils/line_functions.glsl?raw";
+import noiseDistortion from "./utils/noise_distortion.glsl?raw";
 
 import commonUniforms from "./common/uniforms.glsl?raw";
 import commonStandardProps from "./common/standard_props.glsl?raw";
@@ -59,6 +60,7 @@ const INCLUDE_MAP = {
 
   "//#include<random>": random,
   "//#include<line_functions>": lineFunctions,
+  "//#include<noise_distortion>": noiseDistortion,
 };
 
 function compileShader(raw: string, map: Record<string, string>) {
