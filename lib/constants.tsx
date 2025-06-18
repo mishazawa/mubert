@@ -21,7 +21,7 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   uStripesWidth: [0, 1],
 };
 
-const DEFAULT_COLOR = new Color("#fff");
+const DEFAULT_COLOR = new Color("#ff00ff");
 export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   uTime: { value: 0 },
   uSeed: { value: 0 },

@@ -31,12 +31,12 @@ export function Model({
   data: ShaderControls;
   debug?: Record<string, any>;
 }) {
-  const { vertex, fragment, preset, mesh, polygon } = debug ?? {};
+  const { vertex, fragment, preset, mesh, polygon, speed = 1 } = debug ?? {};
 
   const meshResolution = polygon * MESH_DETAIL;
 
   const ref = useTransforms();
-  const uniforms = useUniforms(data);
+  const uniforms = useUniforms(data, speed);
 
   const sphere = useMemo(
     () => new SphereGeometry(1, meshResolution, meshResolution),
@@ -52,7 +52,7 @@ export function Model({
   );
 
   const items = [octahedron, sphere, icosahedron];
-  const visibleIndex = mesh;
+  const visibleIndex = mesh ?? 2;
 
   const [vertexShader, fragmentShader] = useMemo(
     () =>
@@ -71,9 +71,7 @@ export function Model({
             uniforms={uniforms.current}
             roughness={0}
             iridescence={1}
-            iridescenceIOR={2.3}
             clearcoat={1}
-            clearcoatRoughness={0}
           />
         </mesh>
       ))}
@@ -96,7 +94,8 @@ function useTransforms(): RefObject<Object3D> {
 type ElementType = keyof ShaderControls;
 
 function useUniforms(
-  controls: ShaderControls
+  controls: ShaderControls,
+  speedControls: number
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
@@ -108,7 +107,7 @@ function useUniforms(
   }, [controls]);
   // animate uniforms here
   useFrame(() => {
-    uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER;
+    uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER * speedControls;
   });
 
   return uniforms;
