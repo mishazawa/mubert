@@ -60,6 +60,9 @@ export function Model({
     [vertex, fragment, preset]
   );
 
+  // console.log(vertexShader);
+
+  // console.log(fragmentShader);
   return (
     <group ref={ref}>
       {items.map((i, idx) => (

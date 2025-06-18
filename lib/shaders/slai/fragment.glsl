@@ -10,10 +10,8 @@ varying vec3 vPosition;
 //#include<random>
 //#include<math>
 //#include<noise3>
-//#include<snoise>
 //#include<voronoi3>
 //#include<line_functions>
-
 
 
 void main() {

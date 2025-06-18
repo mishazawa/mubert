@@ -11,12 +11,9 @@ varying vec3 vPosition;
 
 //#include<math>
 //#include<noise3>
-//#include<snoise>
-
-//#include<line_functions>
-
 //#include<random>
 //#include<noise_distortion>
+//#include<line_functions>
 
 vec3 displace (in vec3 P, in float animation) {
   vec3 mask = drawSinLines(vec3(0.0, 0.0, 0.0), generateSyncedPosition(P), animation) * DIST_AMP * uDisplacementAmplitude;
