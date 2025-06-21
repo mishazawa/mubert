@@ -26,11 +26,19 @@ import organicf from "./organic/fragment.glsl?raw";
 import stripesv from "./stripes/vertex.glsl?raw";
 import stripesf from "./stripes/fragment.glsl?raw";
 
-type ShaderKey = "noise" | "organic" | "stripes" | "slai";
+import pnoisev from "./pnoise/vertex.glsl?raw";
+import pnoisef from "./pnoise/fragment.glsl?raw";
+
+export type ShaderKey = "noise" | "organic" | "stripes" | "slai" | "pnoise";
 
 type DebugShaderValue = "vertex" | "fragment";
 
-export function compile(key: ShaderKey, debug?: DebugShaderValue) {
+const POINTS_PRESETS = ["pnoise"];
+
+export function compile(
+  key: ShaderKey,
+  debug?: DebugShaderValue
+): [string, string, boolean] {
   return [
     compileShader(
       debug === "vertex" ? debugv : SHADER_BUNDLE[key][0],
@@ -40,6 +48,7 @@ export function compile(key: ShaderKey, debug?: DebugShaderValue) {
       debug === "fragment" ? debugf : SHADER_BUNDLE[key][1],
       INCLUDE_MAP
     ),
+    isPoints(key),
   ];
 }
 
@@ -48,6 +57,7 @@ const SHADER_BUNDLE: Record<ShaderKey, [string, string]> = {
   organic: [organicv, organicf],
   stripes: [stripesv, stripesf],
   slai: [slaiv, slaif],
+  pnoise: [pnoisev, pnoisef],
 };
 
 const INCLUDE_MAP = {
@@ -70,4 +80,8 @@ function compileShader(raw: string, map: Record<string, string>) {
     copy = copy.replace(key, value);
   });
   return copy;
+}
+
+function isPoints(key: ShaderKey) {
+  return POINTS_PRESETS.includes(key);
 }
