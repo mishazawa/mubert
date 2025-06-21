@@ -4,7 +4,7 @@ varying vec3 vNormal;
 
 #define SPEED 1.
 #define NOISE_DIST_AMP 1.
-#define DIST_AMP 1.
+#define DIST_AMP .05
 //#include<common_uniforms>
 
 //#include<snoise>
