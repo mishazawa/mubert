@@ -1,5 +1,5 @@
-import { SPEED, SPEED_MULTIPLIER, UNIFORM_DEFAULTS } from "@lib/constants";
-import type { GenerativeShaderUniforms, ShaderControls } from "@lib/types";
+import { SPEED, SPEED_MULTIPLIER, UNIFORM_DEFAULTS } from "../constants";
+import type { GenerativeShaderUniforms, ShaderControls } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import {
