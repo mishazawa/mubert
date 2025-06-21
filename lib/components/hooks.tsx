@@ -9,6 +9,7 @@ import {
   type Mesh,
   type Object3D,
 } from "three";
+import { HorizontalLinesGeometry } from "./HorizontalLinesGeometry";
 
 type ElementType = keyof ShaderControls;
 
@@ -25,8 +26,15 @@ export function useGeometry(resolution: number) {
     () => new IcosahedronGeometry(1, resolution),
     [resolution]
   );
+  const edges = useMemo(
+    () =>
+      new HorizontalLinesGeometry(
+        new SphereGeometry(1, resolution, resolution)
+      ),
+    [resolution]
+  );
 
-  return [octahedron, sphere, icosahedron];
+  return [octahedron, sphere, icosahedron, edges];
 }
 
 export function useUniforms(

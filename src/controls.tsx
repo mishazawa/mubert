@@ -6,7 +6,14 @@ import { button, useControls } from "leva";
 import { useEffect, useMemo, useState } from "react";
 import { Color } from "three";
 
-const PRESETS: ShaderKey[] = ["noise", "organic", "stripes", "slai", "pnoise"];
+const PRESETS: ShaderKey[] = [
+  "noise",
+  "organic",
+  "stripes",
+  "slai",
+  "pnoise",
+  "linoise",
+];
 
 export function useShaderStatePublic() {
   const [data, set] = useState(generateShaderParams(0));
@@ -14,14 +21,15 @@ export function useShaderStatePublic() {
   const rng = useMemo(() => randomGenerator(666), []);
   const presets = useMemo(
     () => [
+      "slai",
+      "slai",
+      "slai",
+      "slai",
       "noise",
       "organic",
       "stripes",
-      "slai",
-      "slai",
-      "slai",
-      "slai",
       "points",
+      "linoise",
     ],
     []
   );
@@ -47,7 +55,7 @@ export function useShaderStatePublic() {
   const [debug, setPreset] = useControls(
     () => ({
       preset: {
-        value: "pnoise",
+        value: "linoise",
         options: PRESETS,
       },
       polygon: {
@@ -77,7 +85,7 @@ export function useDebugShader() {
       value: false,
     },
     preset: {
-      value: "pnoise",
+      value: "linoise",
       options: PRESETS,
     },
     mesh: {
