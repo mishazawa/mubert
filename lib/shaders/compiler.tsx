@@ -26,11 +26,31 @@ import organicf from "./organic/fragment.glsl?raw";
 import stripesv from "./stripes/vertex.glsl?raw";
 import stripesf from "./stripes/fragment.glsl?raw";
 
-type ShaderKey = "noise" | "organic" | "stripes" | "slai";
+import pnoisev from "./pnoise/vertex.glsl?raw";
+import pnoisef from "./pnoise/fragment.glsl?raw";
+
+import linoisev from "./linoise/vertex.glsl?raw";
+import linoisef from "./linoise/fragment.glsl?raw";
+
+export type ShaderKey =
+  | "noise"
+  | "organic"
+  | "stripes"
+  | "slai"
+  | "pnoise"
+  | "linoise";
+
+export type MaterialType = "solid" | "point" | "edges";
 
 type DebugShaderValue = "vertex" | "fragment";
 
-export function compile(key: ShaderKey, debug?: DebugShaderValue) {
+const POINTS_PRESETS = ["pnoise"];
+const EDGES_PRESETS = ["linoise"];
+
+export function compile(
+  key: ShaderKey,
+  debug?: DebugShaderValue
+): [string, string, MaterialType] {
   return [
     compileShader(
       debug === "vertex" ? debugv : SHADER_BUNDLE[key][0],
@@ -40,6 +60,7 @@ export function compile(key: ShaderKey, debug?: DebugShaderValue) {
       debug === "fragment" ? debugf : SHADER_BUNDLE[key][1],
       INCLUDE_MAP
     ),
+    getMaterialType(key),
   ];
 }
 
@@ -48,6 +69,8 @@ const SHADER_BUNDLE: Record<ShaderKey, [string, string]> = {
   organic: [organicv, organicf],
   stripes: [stripesv, stripesf],
   slai: [slaiv, slaif],
+  pnoise: [pnoisev, pnoisef],
+  linoise: [linoisev, linoisef],
 };
 
 const INCLUDE_MAP = {
@@ -70,4 +93,10 @@ function compileShader(raw: string, map: Record<string, string>) {
     copy = copy.replace(key, value);
   });
   return copy;
+}
+
+function getMaterialType(key: ShaderKey): MaterialType {
+  if (POINTS_PRESETS.includes(key)) return "point";
+  if (EDGES_PRESETS.includes(key)) return "edges";
+  return "solid";
 }

@@ -1,28 +1,20 @@
-import { useFrame } from "@react-three/fiber";
 import CustomShaderMaterial from "three-custom-shader-material";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 
-import type { RefObject } from "react";
-import type { GenerativeShaderUniforms, ShaderControls } from "../types";
+import type { ShaderControls } from "../types";
 
-import {
-  MESH_DETAIL,
-  SPEED,
-  SPEED_MULTIPLIER,
-  UNIFORM_DEFAULTS,
-} from "../constants";
+import { MESH_DETAIL } from "../constants";
 
 import {
-  Mesh,
+  PointsMaterial,
   MeshPhysicalMaterial,
-  Object3D,
-  OctahedronGeometry,
-  IcosahedronGeometry,
-  SphereGeometry,
+  BufferGeometry,
+  LineBasicMaterial,
 } from "three";
 
-import { compile } from "../shaders/compiler";
+import { compile, type MaterialType } from "../shaders/compiler";
+import { useGeometry, useTransforms, useUniforms } from "./hooks";
 
 export function Model({
   data,
@@ -33,85 +25,82 @@ export function Model({
 }) {
   const { vertex, fragment, preset, mesh, polygon, speed = 1 } = debug ?? {};
 
-  const meshResolution = polygon * MESH_DETAIL;
-
   const ref = useTransforms();
   const uniforms = useUniforms(data, speed);
+  const items = useGeometry(polygon * MESH_DETAIL);
 
-  const sphere = useMemo(
-    () => new SphereGeometry(1, meshResolution, meshResolution),
-    [meshResolution]
-  );
-  const octahedron = useMemo(
-    () => new OctahedronGeometry(1, meshResolution),
-    [meshResolution]
-  );
-  const icosahedron = useMemo(
-    () => new IcosahedronGeometry(1, meshResolution),
-    [meshResolution]
-  );
-
-  const items = [octahedron, sphere, icosahedron];
-  const visibleIndex = mesh ?? 2;
-
-  const [vertexShader, fragmentShader] = useMemo(
+  const [vertexShader, fragmentShader, matType] = useMemo(
     () =>
       compile(preset, vertex ? "vertex" : fragment ? "fragment" : undefined),
     [vertex, fragment, preset]
   );
 
-  // console.log(vertexShader);
+  // show only spheric lines for edge material
+  const visibleIndex = matType === "edges" ? 3 : mesh;
 
-  // console.log(fragmentShader);
   return (
     <group ref={ref}>
       {items.map((i, idx) => (
-        <mesh key={idx} geometry={i} visible={idx === visibleIndex}>
-          <CustomShaderMaterial
-            baseMaterial={MeshPhysicalMaterial}
-            vertexShader={vertexShader}
-            fragmentShader={fragmentShader}
-            uniforms={uniforms.current}
-            roughness={0}
-            iridescence={1}
-            clearcoat={1}
-          />
-        </mesh>
+        <PointedGeometry
+          materialType={matType}
+          key={idx}
+          geometry={i}
+          visible={idx === visibleIndex}
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms.current}
+        />
       ))}
     </group>
   );
 }
 
-function useTransforms(): RefObject<Object3D> {
-  const ref = useRef<Mesh>(null!);
+function PointedGeometry({
+  materialType,
+  geometry,
+  visible,
+  ...props
+}: {
+  materialType: MaterialType;
+  visible: boolean;
+  geometry: BufferGeometry;
+  vertexShader: string;
+  fragmentShader: string;
+  uniforms: any;
+}) {
+  if (materialType === "point")
+    return (
+      <points geometry={geometry} visible={visible}>
+        <CustomShaderMaterial
+          baseMaterial={PointsMaterial}
+          {...props}
+          transparent
+          size={0.01}
+        />
+      </points>
+    );
 
-  // animate mesh here
-  useFrame(() => {
-    ref.current.rotation.x += 0.001;
-    ref.current.rotation.y += 0.001;
-  });
+  if (materialType === "edges") {
+    return (
+      <lineSegments geometry={geometry} visible={visible}>
+        <CustomShaderMaterial
+          baseMaterial={LineBasicMaterial}
+          {...props}
+          linewidth={1}
+        />
+      </lineSegments>
+    );
+  }
 
-  return ref;
-}
-
-type ElementType = keyof ShaderControls;
-
-function useUniforms(
-  controls: ShaderControls,
-  speedControls: number
-): RefObject<GenerativeShaderUniforms> {
-  // initial values for uniforms
-  const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
-  useEffect(() => {
-    Object.keys(controls).map((k) => {
-      const key = k as ElementType;
-      uniforms.current[key].value = controls[key];
-    });
-  }, [controls]);
-  // animate uniforms here
-  useFrame(() => {
-    uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER * speedControls;
-  });
-
-  return uniforms;
+  return (
+    <mesh geometry={geometry} visible={visible}>
+      <CustomShaderMaterial
+        baseMaterial={MeshPhysicalMaterial}
+        {...props}
+        roughness={0}
+        iridescence={1}
+        clearcoat={1}
+      />
+    </mesh>
+  );
 }

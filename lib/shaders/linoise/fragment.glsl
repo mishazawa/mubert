@@ -1,6 +1,7 @@
 varying vec2 vUv;
 varying vec3 vPosition;
 
+
 //#include<common_uniforms>
 
 #define SPEED 1.
@@ -9,8 +10,8 @@ varying vec3 vPosition;
 //#include<snoise>
 //#include<noise3>
 
-void main() {
 
+void main() {
   vec3 noiseVal = noise3(uNoiseOffset + (-vPosition * uColorNoiseScale), uTime * SPEED) * 3.2;
   float mask = smoothstep(.5, .51 , noiseVal.x);
 
@@ -19,8 +20,6 @@ void main() {
   vec3 color1 = mix(uColor1, key,  uUseColorKey);
 
   vec3 newColor = mix(color1, uColor2, mask);
-
-  //#include<common_standard_props>
-
-  csm_DiffuseColor.rgba = vec4(newColor, 1.0);
+  newColor = vec3(smoothstep(.4, .6, fract(vUv.x + uTime * .5)), 0., 0.);
+  csm_DiffuseColor = vec4(newColor, newColor.r);
 }
