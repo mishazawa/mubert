@@ -6,6 +6,7 @@ import {
   IcosahedronGeometry,
   OctahedronGeometry,
   SphereGeometry,
+  TorusKnotGeometry,
   type Mesh,
   type Object3D,
 } from "three";
@@ -29,7 +30,9 @@ export function useGeometry(resolution: number) {
   const edges = useMemo(
     () =>
       new HorizontalLinesGeometry(
-        new SphereGeometry(1, resolution, resolution)
+        new TorusKnotGeometry(1, 0.25, 300, 32),
+        //new SphereGeometry(1, resolution, resolution),
+        "y"
       ),
     [resolution]
   );

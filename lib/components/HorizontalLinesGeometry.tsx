@@ -1,5 +1,6 @@
 //@ts-ignore
 import {
+  BufferAttribute,
   BufferGeometry,
   Float32BufferAttribute,
   Triangle,
@@ -10,6 +11,7 @@ const _v0 = /*@__PURE__*/ new Vector3();
 const _v1 = /*@__PURE__*/ new Vector3();
 const _normal = /*@__PURE__*/ new Vector3();
 const _triangle = /*@__PURE__*/ new Triangle();
+const _uvtriangle = /*@__PURE__*/ new Triangle();
 /**
  * Can be used as a helper object to view the edges of a geometry.
  *
@@ -34,7 +36,10 @@ class HorizontalLinesGeometry extends BufferGeometry {
    * @param {number} [thresholdAngle=1] - An edge is only rendered if the angle (in degrees)
    * between the face normals of the adjoining faces exceeds this value.
    */
-  constructor(geometry: BufferGeometry | null = null) {
+  constructor(
+    geometry: BufferGeometry | null = null,
+    direction: "x" | "y" = "y"
+  ) {
     super();
 
     this.type = "HorizontalLinesGeometry";
@@ -54,17 +59,18 @@ class HorizontalLinesGeometry extends BufferGeometry {
       const precisionPoints = 4;
       const precision = Math.pow(10, precisionPoints);
 
-      //@ts-ignore
-      const indexAttr = geometry!.getIndex();
-      //@ts-ignore
-      const positionAttr = geometry!.getAttribute("position");
+      const indexAttr = geometry.getIndex();
+      const positionAttr = geometry.getAttribute("position");
       const indexCount = indexAttr ? indexAttr.count : positionAttr.count;
+      const uvAttr: BufferAttribute = geometry.getAttribute(
+        "uv"
+      ) as BufferAttribute;
 
       const indexArr = [0, 0, 0];
-      const vertKeys = ["a", "b", "c"];
+      const vertKeys: Array<"a" | "b" | "c"> = ["a", "b", "c"];
       const hashes = new Array(3);
 
-      const edgeData = {};
+      const edgeData: Record<string, any> = {};
       const vertices = [];
       for (let i = 0; i < indexCount; i += 3) {
         if (indexAttr) {
@@ -77,12 +83,17 @@ class HorizontalLinesGeometry extends BufferGeometry {
           indexArr[2] = i + 2;
         }
 
-        const { a, b, c } = _triangle;
-        a.fromBufferAttribute(positionAttr, indexArr[0]);
-        b.fromBufferAttribute(positionAttr, indexArr[1]);
-        c.fromBufferAttribute(positionAttr, indexArr[2]);
+        _triangle.a.fromBufferAttribute(positionAttr, indexArr[0]);
+        _triangle.b.fromBufferAttribute(positionAttr, indexArr[1]);
+        _triangle.c.fromBufferAttribute(positionAttr, indexArr[2]);
+
         _triangle.getNormal(_normal);
 
+        _uvtriangle.a.fromBufferAttribute(uvAttr, indexArr[0]);
+        _uvtriangle.b.fromBufferAttribute(uvAttr, indexArr[1]);
+        _uvtriangle.c.fromBufferAttribute(uvAttr, indexArr[2]);
+
+        const { a, b, c } = _triangle;
         // create hashes for the edge from the vertices
         hashes[0] = `${Math.round(a.x * precision)},${Math.round(
           a.y * precision
@@ -110,27 +121,23 @@ class HorizontalLinesGeometry extends BufferGeometry {
           const vecHash0 = hashes[j];
           const vecHash1 = hashes[jNext];
 
-          //@ts-ignore
           const v0 = _triangle[vertKeys[j]];
-          //@ts-ignore
           const v1 = _triangle[vertKeys[jNext]];
-
+          const uv0 = _uvtriangle[vertKeys[j]];
+          const uv1 = _uvtriangle[vertKeys[jNext]];
           const hash = `${vecHash0}_${vecHash1}`;
           const reverseHash = `${vecHash1}_${vecHash0}`;
 
-          //@ts-ignore
           if (reverseHash in edgeData && edgeData[reverseHash]) {
             // check if vertices only horizontal
-            if (v0.y === v1.y) {
+            if (uv0[direction] === uv1[direction]) {
               vertices.push(v0.x, v0.y, v0.z);
               vertices.push(v1.x, v1.y, v1.z);
             }
 
-            //@ts-ignore
             edgeData[reverseHash] = null;
           } else if (!(hash in edgeData)) {
             // if we've already got an edge here then skip adding a new one
-            //@ts-ignore
 
             edgeData[hash] = {
               index0: indexArr[j],
