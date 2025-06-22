@@ -4,11 +4,14 @@ import {
   BufferGeometry,
   Float32BufferAttribute,
   Triangle,
+  Vector2,
   Vector3,
 } from "three";
 
 const _v0 = /*@__PURE__*/ new Vector3();
 const _v1 = /*@__PURE__*/ new Vector3();
+const _uv0 = /*@__PURE__*/ new Vector2();
+const _uv1 = /*@__PURE__*/ new Vector2();
 const _normal = /*@__PURE__*/ new Vector3();
 const _triangle = /*@__PURE__*/ new Triangle();
 const _uvtriangle = /*@__PURE__*/ new Triangle();
@@ -72,6 +75,7 @@ class HorizontalLinesGeometry extends BufferGeometry {
 
       const edgeData: Record<string, any> = {};
       const vertices = [];
+      const uvs = [];
       for (let i = 0; i < indexCount; i += 3) {
         if (indexAttr) {
           indexArr[0] = indexAttr.getX(i);
@@ -133,6 +137,9 @@ class HorizontalLinesGeometry extends BufferGeometry {
             if (uv0[direction] === uv1[direction]) {
               vertices.push(v0.x, v0.y, v0.z);
               vertices.push(v1.x, v1.y, v1.z);
+
+              uvs.push(uv0.x, uv0.y);
+              uvs.push(uv1.x, uv1.y);
             }
 
             edgeData[reverseHash] = null;
@@ -150,21 +157,24 @@ class HorizontalLinesGeometry extends BufferGeometry {
 
       // iterate over all remaining, unmatched edges and add them to the vertex array
       for (const key in edgeData) {
-        //@ts-ignore
-
         if (edgeData[key]) {
-          //@ts-ignore
-
           const { index0, index1 } = edgeData[key];
           _v0.fromBufferAttribute(positionAttr, index0);
           _v1.fromBufferAttribute(positionAttr, index1);
 
+          _uv0.fromBufferAttribute(uvAttr, index0);
+          _uv1.fromBufferAttribute(uvAttr, index1);
+
           vertices.push(_v0.x, _v0.y, _v0.z);
           vertices.push(_v1.x, _v1.y, _v1.z);
+
+          uvs.push(_uv0.x, _uv0.y);
+          uvs.push(_uv1.x, _uv1.y);
         }
       }
 
       this.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+      this.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
     }
   }
 

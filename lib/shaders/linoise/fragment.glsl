@@ -20,6 +20,6 @@ void main() {
   vec3 color1 = mix(uColor1, key,  uUseColorKey);
 
   vec3 newColor = mix(color1, uColor2, mask);
-
-  csm_DiffuseColor = vec4(newColor, 1.);
+  newColor = vec3(smoothstep(.4, .6, fract(vUv.x + uTime * .5)), 0., 0.);
+  csm_DiffuseColor = vec4(newColor, newColor.r);
 }
