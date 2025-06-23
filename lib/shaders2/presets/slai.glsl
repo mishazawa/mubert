@@ -41,7 +41,7 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data, float anima
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   vec3 background = mix(uColor1, vec3(uColorKeyValue),  uUseColorKey);
-  vec3 reppos = stoc(ctos(data.position)) * fit(uDisplacementNoiseScale, 0.01, 2.0, 1., 4.);
+  vec3 reppos = generateSyncedPosition(vPosition);
   vec3 newColor = drawSinLines(background, reppos, animation);
   return CoatOutput(newColor, data.normal, 1., uRoughness);
 }
