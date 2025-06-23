@@ -18,12 +18,14 @@ import {
   randomSwapRange,
 } from "./utils";
 import { useState } from "react";
+import { compile } from "./shaders2/compiler";
 
 export default function MubertCanvas(props: {
   data: ShaderControls;
   debug?: any;
 }) {
   const [dpr, setDpr] = useState(2);
+
   return (
     <Canvas className="vis_canvas" dpr={dpr}>
       {/* TO BE REMOVED */}

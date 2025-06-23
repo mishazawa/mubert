@@ -14,6 +14,7 @@ import {
 } from "three";
 
 import { compile, type MaterialType } from "../shaders/compiler";
+import { compile as c2 } from "../shaders2/compiler";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
 
 export function Model({
@@ -29,11 +30,35 @@ export function Model({
   const uniforms = useUniforms(data, speed);
   const items = useGeometry(polygon * MESH_DETAIL);
 
-  const [vertexShader, fragmentShader, matType] = useMemo(
+  const [_vertexShader, _fragmentShader, matType] = useMemo(
     () =>
       compile(preset, vertex ? "vertex" : fragment ? "fragment" : undefined),
     [vertex, fragment, preset]
   );
+
+  const vertexShader = useMemo(
+    () =>
+      c2({
+        shaderType: "vertex",
+        defines: { SPEED: ".1" },
+        presetType: "wireframe",
+        preset: "noop",
+      }),
+    []
+  );
+
+  const fragmentShader = useMemo(
+    () =>
+      c2({
+        shaderType: "fragment",
+        defines: { SPEED: ".1" },
+        presetType: "wireframe",
+        preset: "noop",
+      }),
+    []
+  );
+
+  console.log(vertexShader);
 
   // show only spheric lines for edge material
   const visibleIndex = matType === "edges" ? 3 : mesh;
