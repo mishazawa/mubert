@@ -55,7 +55,7 @@ export function useShaderStatePublic() {
   const [debug, setPreset] = useControls(
     () => ({
       preset: {
-        value: "linoise",
+        value: "noop",
         options: PRESETS,
       },
       polygon: {
@@ -85,7 +85,7 @@ export function useDebugShader() {
       value: false,
     },
     preset: {
-      value: "linoise",
+      value: "noop",
       options: PRESETS,
     },
     mesh: {

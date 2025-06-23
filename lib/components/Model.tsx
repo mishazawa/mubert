@@ -1,6 +1,6 @@
 import CustomShaderMaterial from "three-custom-shader-material";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import type { ShaderControls } from "../types";
 
@@ -13,9 +13,24 @@ import {
   LineBasicMaterial,
 } from "three";
 
-import { compile, type MaterialType } from "../shaders/compiler";
-import { compile as c2 } from "../shaders2/compiler";
+import { compile, type CompilerMetadata } from "../shaders2/compiler";
+import type { MaterialType } from "../shaders2/types";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
+
+const PRESET_PARAMS: Record<string, Omit<CompilerMetadata, "shaderType">> = {
+  noop: {
+    defines: { SPEED: ".1" },
+    presetType: "wireframe",
+    preset: "noop",
+    presetStyle: "wireframe",
+  },
+  slai: {
+    defines: { SPEED: ".1", DIST_AMP: "5.", FREQ: "1." },
+    presetType: "solid",
+    preset: "slai",
+    presetStyle: "solid",
+  },
+};
 
 export function Model({
   data,
@@ -30,44 +45,32 @@ export function Model({
   const uniforms = useUniforms(data, speed);
   const items = useGeometry(polygon * MESH_DETAIL);
 
-  const [_vertexShader, _fragmentShader, matType] = useMemo(
-    () =>
-      compile(preset, vertex ? "vertex" : fragment ? "fragment" : undefined),
-    [vertex, fragment, preset]
+  const params = PRESET_PARAMS[preset as string];
+  const [vertexShader, fragmentShader, materialType] = useMemo(
+    () => [
+      compile({ ...params, shaderType: "vertex" }),
+      compile({ ...params, shaderType: "fragment" }),
+      params.presetStyle,
+    ],
+    [preset]
   );
 
-  const vertexShader = useMemo(
-    () =>
-      c2({
-        shaderType: "vertex",
-        defines: { SPEED: ".1" },
-        presetType: "wireframe",
-        preset: "noop",
-      }),
-    []
-  );
-
-  const fragmentShader = useMemo(
-    () =>
-      c2({
-        shaderType: "fragment",
-        defines: { SPEED: ".1" },
-        presetType: "wireframe",
-        preset: "noop",
-      }),
-    []
-  );
-
-  console.log(vertexShader);
+  // debug
+  useEffect(() => {
+    console.groupCollapsed("Shader Code");
+    console.log(vertexShader);
+    console.log(fragmentShader);
+    console.groupEnd();
+  }, [vertexShader, fragmentShader]);
 
   // show only spheric lines for edge material
-  const visibleIndex = matType === "edges" ? 3 : mesh;
+  const visibleIndex = materialType === "wireframe" ? 3 : mesh;
 
   return (
     <group ref={ref}>
       {items.map((i, idx) => (
         <PointedGeometry
-          materialType={matType}
+          materialType={materialType}
           key={idx}
           geometry={i}
           visible={idx === visibleIndex}
@@ -105,7 +108,7 @@ function PointedGeometry({
       </points>
     );
 
-  if (materialType === "edges") {
+  if (materialType === "wireframe") {
     return (
       <lineSegments geometry={geometry} visible={visible}>
         <CustomShaderMaterial

@@ -1,7 +1,5 @@
 import simplex3d from "./utils/simplex3d.glsl?raw";
-
 import voronoi3d from "./utils/voronoi3d.glsl?raw";
-
 import math from "./utils/math.glsl?raw";
 import random from "./utils/random.glsl?raw";
 import calcNormal from "./utils/calc_normal.glsl?raw";
@@ -31,6 +29,7 @@ import pnoisef from "./pnoise/fragment.glsl?raw";
 
 import linoisev from "./linoise/vertex.glsl?raw";
 import linoisef from "./linoise/fragment.glsl?raw";
+import type { MaterialType } from "../shaders2/types";
 
 export type ShaderKey =
   | "noise"
@@ -39,8 +38,6 @@ export type ShaderKey =
   | "slai"
   | "pnoise"
   | "linoise";
-
-export type MaterialType = "solid" | "point" | "edges";
 
 type DebugShaderValue = "vertex" | "fragment";
 
@@ -97,6 +94,6 @@ function compileShader(raw: string, map: Record<string, string>) {
 
 function getMaterialType(key: ShaderKey): MaterialType {
   if (POINTS_PRESETS.includes(key)) return "point";
-  if (EDGES_PRESETS.includes(key)) return "edges";
+  if (EDGES_PRESETS.includes(key)) return "wireframe";
   return "solid";
 }

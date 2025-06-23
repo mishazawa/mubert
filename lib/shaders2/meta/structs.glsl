@@ -3,7 +3,6 @@ struct DisplacePatternInput
   vec3 position;
   vec3 normal;
   vec2 uv;
-  float animation;
 };
 
 

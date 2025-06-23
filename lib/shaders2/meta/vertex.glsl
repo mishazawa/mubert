@@ -8,11 +8,10 @@ void main() {
   DisplacePatternInput data_in = DisplacePatternInput(
     vPosition,
     vNormal,
-    vUv,
-    animation
+    vUv
   );
 
-  DisplacePatternOutput data_out = displace_pattern(data_in);
+  DisplacePatternOutput data_out = displace_pattern(data_in, animation);
 
   vNormalD   = data_out.normal;
   vPositionD = data_out.position;

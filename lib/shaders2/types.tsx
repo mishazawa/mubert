@@ -33,3 +33,5 @@ export type ShaderControls = {
     ? V
     : never;
 };
+
+export type MaterialType = "solid" | "point" | "wireframe";

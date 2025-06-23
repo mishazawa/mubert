@@ -7,18 +7,21 @@ import FRAGMENT_BODY from "./meta/fragment.glsl?raw";
 import SOLID_PARAMETERS from "./meta/parameters.glsl?raw";
 import type { ShaderPreset } from "./presets";
 import PRESETS from "./presets";
+import type { MaterialType } from "./types";
+import { includeStdLib } from "./stdlib";
 
-type CompilerMetadata = {
+export type CompilerMetadata = {
   shaderType: "vertex" | "fragment";
-  presetType: "solid" | "wireframe";
   preset: ShaderPreset;
+  presetType: "solid" | "wireframe";
+  presetStyle: MaterialType;
   defines: Record<string, string>;
 };
 
 export function compile(metadata: CompilerMetadata): string {
   const uniforms = generateUniforms();
   const varyings = generateVaryings(metadata.presetType, metadata.shaderType);
-  const defines = generateDefines(metadata.defines);
+  const defines = generateDefines(metadata.defines, metadata.shaderType);
   const implementation = generateImplementation(metadata.preset);
   const body = generateShaderBody(metadata.presetType, metadata.shaderType);
   return `
@@ -67,8 +70,11 @@ function generateVaryings(
     .join("\n");
 }
 
-function generateDefines(data: Record<string, string> = {}): string {
-  return Object.entries(data)
+function generateDefines(
+  data: Record<string, string> = {},
+  shaderType: "vertex" | "fragment"
+): string {
+  return Object.entries({ ...data, VERTEX: +(shaderType === "vertex") })
     .map(([dkey, dvalue]) => {
       return `#define ${dkey} ${dvalue}`;
     })
@@ -76,7 +82,7 @@ function generateDefines(data: Record<string, string> = {}): string {
 }
 
 function generateImplementation(preset: ShaderPreset): string {
-  return PRESETS[preset];
+  return includeStdLib(PRESETS[preset]);
 }
 
 function generateShaderBody(
@@ -90,18 +96,3 @@ function generateShaderBody(
         presetType === "solid" ? SOLID_PARAMETERS : "// solid params ignored. "
       );
 }
-
-/*
-//#include<uniforms>
-//#include<varyings>
-//#include<defines>
-//#include<structs>
-
-//#include<implementation>
-
-void main() {
-  //#include<shader_body>
-}
-
-
-*/

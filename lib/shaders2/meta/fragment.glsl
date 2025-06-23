@@ -2,14 +2,13 @@ void main() {
   float animation = uTime * SPEED;
 
   DisplacePatternInput data_in = DisplacePatternInput(
-    vPositionD,
-    vNormalD,
-    vUv,
-    animation
+    vPosition,
+    vNormal,
+    vUv
   );
 
-  DisplacePatternOutput data_out = displace_pattern(data_in);
-  CoatOutput coat              = coat_pattern(data_out);
+  DisplacePatternOutput data_out = displace_pattern(data_in, animation);
+  CoatOutput coat              = coat_pattern(data_out, animation);
 
 
   //#inlude<solid_parameters>
