@@ -18,7 +18,6 @@ import {
   randomSwapRange,
 } from "./utils";
 import { useState } from "react";
-import { compile } from "./shaders2/compiler";
 
 export default function MubertCanvas(props: {
   data: ShaderControls;
