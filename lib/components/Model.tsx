@@ -13,24 +13,10 @@ import {
   LineBasicMaterial,
 } from "three";
 
-import { compile, type CompilerMetadata } from "../shaders2/compiler";
-import type { MaterialType } from "../shaders2/types";
+import { compile } from "../shaders/compiler";
+import type { MaterialType } from "../shaders/types";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
-
-const PRESET_PARAMS: Record<string, Omit<CompilerMetadata, "shaderType">> = {
-  noop: {
-    defines: { SPEED: ".1" },
-    presetType: "wireframe",
-    preset: "noop",
-    presetStyle: "wireframe",
-  },
-  slai: {
-    defines: { SPEED: ".1", DIST_AMP: "5.", FREQ: "1." },
-    presetType: "solid",
-    preset: "slai",
-    presetStyle: "solid",
-  },
-};
+import { PRESET_PARAMS } from "./presets";
 
 export function Model({
   data,
@@ -48,11 +34,19 @@ export function Model({
   const params = PRESET_PARAMS[preset as string];
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
-      compile({ ...params, shaderType: "vertex" }),
-      compile({ ...params, shaderType: "fragment" }),
+      compile({
+        ...params,
+        shaderType: "vertex",
+        preset: vertex ? "debug" : preset,
+      }),
+      compile({
+        ...params,
+        shaderType: "fragment",
+        preset: fragment ? "debug" : preset,
+      }),
       params.presetStyle,
     ],
-    [preset]
+    [preset, vertex, fragment]
   );
 
   // debug

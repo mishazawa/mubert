@@ -3,7 +3,7 @@ void main() {
 
   DisplacePatternInput data_in = DisplacePatternInput(
     vPosition,
-    vNormal,
+    //#inlude<vNormal>
     vUv
   );
 
