@@ -19,20 +19,23 @@ export function useGeometry(resolution: number) {
     () => new SphereGeometry(1, resolution, resolution),
     [resolution]
   );
+
   const octahedron = useMemo(
     () => new OctahedronGeometry(1, resolution),
     [resolution]
   );
+
   const icosahedron = useMemo(
     () => new IcosahedronGeometry(1, resolution),
     [resolution]
   );
+
   const edges = useMemo(
     () =>
       new HorizontalLinesGeometry(
         new TorusKnotGeometry(1, 0.25, 300, 32),
         //new SphereGeometry(1, resolution, resolution),
-        "y"
+        "x"
       ),
     [resolution]
   );

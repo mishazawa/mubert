@@ -24,6 +24,7 @@ export default function MubertCanvas(props: {
   debug?: any;
 }) {
   const [dpr, setDpr] = useState(2);
+
   return (
     <Canvas className="vis_canvas" dpr={dpr}>
       {/* TO BE REMOVED */}
