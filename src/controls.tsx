@@ -1,6 +1,7 @@
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
-import type { ShaderControls } from "@lib/types";
+import type { ShaderControls } from "@lib/shaders/types";
+
 import { randomGenerator } from "@lib/utils";
 import { button, useControls } from "leva";
 import { useEffect, useMemo, useState } from "react";

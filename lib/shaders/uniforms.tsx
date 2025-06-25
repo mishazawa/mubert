@@ -1,4 +1,4 @@
-import type { UniformKey, GlslType, GenerativeShaderUniforms } from "./types";
+import type { UniformKey, GlslType } from "./types";
 
 export const UNIFORM_KEYS = [
   "uTime",

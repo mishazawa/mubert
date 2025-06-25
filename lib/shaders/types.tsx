@@ -31,10 +31,8 @@ type ProgramableUniforms = Omit<
 >;
 
 export type ShaderControls = {
-  -readonly [P in keyof ProgramableUniforms]: GenerativeShaderUniforms[P] extends UniformValue<
-    infer V
-  >
-    ? V
+  -readonly [P in keyof ProgramableUniforms]: GenerativeShaderUniforms[P] extends UniformValue<any>
+    ? any
     : never;
 };
 

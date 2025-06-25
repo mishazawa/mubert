@@ -1,4 +1,4 @@
-import { SPEED, SPEED_MULTIPLIER, UNIFORM_DEFAULTS } from "../constants";
+import { SPEED_MULTIPLIER, UNIFORM_DEFAULTS } from "../constants";
 import type { CanvasProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
