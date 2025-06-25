@@ -7,11 +7,13 @@ const noop: ShaderMetadata = {
   presetType: "wireframe",
   presetStyle: "wireframe",
 };
+
 const slai: ShaderMetadata = {
   defines: { SPEED: ".1", DIST_AMP: "5.", FREQ: "1." },
   presetType: "solid",
   presetStyle: "solid",
 };
+
 const stripes: ShaderMetadata = {
   defines: {
     DIST_AMP: ".05",
@@ -23,6 +25,7 @@ const stripes: ShaderMetadata = {
   presetType: "solid",
   presetStyle: "solid",
 };
+
 const linoise: ShaderMetadata = {
   defines: {
     DIST_AMP: ".05",
@@ -34,6 +37,7 @@ const linoise: ShaderMetadata = {
   presetType: "wireframe",
   presetStyle: "wireframe",
 };
+
 const pnoise: ShaderMetadata = {
   defines: {
     DIST_AMP: ".05",
