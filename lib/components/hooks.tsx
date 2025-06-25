@@ -1,5 +1,5 @@
 import { SPEED, SPEED_MULTIPLIER, UNIFORM_DEFAULTS } from "../constants";
-import type { GenerativeShaderUniforms, ShaderControls } from "../types";
+import type { CanvasProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import {
@@ -11,6 +11,11 @@ import {
   type Object3D,
 } from "three";
 import { HorizontalLinesGeometry } from "./HorizontalLinesGeometry";
+import type {
+  GenerativeShaderUniforms,
+  ShaderControls,
+  UniformValue,
+} from "../shaders/types";
 
 type ElementType = keyof ShaderControls;
 
@@ -45,7 +50,8 @@ export function useGeometry(resolution: number) {
 
 export function useUniforms(
   controls: ShaderControls,
-  speedControls: number
+  speedControls: number,
+  analyser: Pick<CanvasProps, "getFFT" | "getRMS">
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
@@ -55,9 +61,16 @@ export function useUniforms(
       uniforms.current[key].value = controls[key];
     });
   }, [controls]);
+
   // animate uniforms here
   useFrame(() => {
-    uniforms.current.uTime.value += SPEED * SPEED_MULTIPLIER * speedControls;
+    const [rms] = analyser.getRMS();
+
+    uniforms.current.uRMS.value = rms;
+    uniforms.current.uFFT.value = analyser.getFFT();
+
+    (uniforms.current.uTime as UniformValue<number>).value +=
+      SPEED_MULTIPLIER * speedControls * rms;
   });
 
   return uniforms;

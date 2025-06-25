@@ -1,4 +1,4 @@
-import type { UniformKey, GlslType } from "./types";
+import type { UniformKey, GlslType, GenerativeShaderUniforms } from "./types";
 
 export const UNIFORM_KEYS = [
   "uTime",
@@ -24,7 +24,8 @@ export const UNIFORM_KEYS = [
   "uNoiseVariant",
   "uStripesWidth",
   "uEmission",
-  "asd",
+  "uFFT",
+  "uRMS",
 ] as const;
 
 export const UNIFORM_TYPES: Record<UniformKey, GlslType> = {
@@ -51,7 +52,15 @@ export const UNIFORM_TYPES: Record<UniformKey, GlslType> = {
   uNoiseVariant: "float",
   uStripesWidth: "float",
   uEmission: "float",
-  asd: "float",
+  uFFT: "int|[32]",
+  uRMS: "float",
 };
 
-export const GLSL_TYPES = ["float", "int", "vec2", "vec3", "vec4"] as const;
+export const GLSL_TYPES = [
+  "float",
+  "int",
+  "vec2",
+  "vec3",
+  "vec4",
+  "int|[32]" /* array test */,
+] as const;

@@ -9,7 +9,7 @@ import {
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
 import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
-import type { ShaderControls } from "./types";
+import type { CanvasProps } from "./types";
 
 import {
   getColors,
@@ -18,11 +18,13 @@ import {
   randomSwapRange,
 } from "./utils";
 import { useState } from "react";
+import type { ShaderControls } from "./shaders/types";
 
-export default function MubertCanvas(props: {
-  data: ShaderControls;
-  debug?: any;
-}) {
+export default function MubertCanvas(
+  props: CanvasProps & {
+    debug?: any;
+  }
+) {
   const [dpr, setDpr] = useState(2);
 
   return (
