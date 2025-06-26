@@ -4,13 +4,11 @@ type ShaderMetadata = Omit<CompilerMetadata, "shaderType" | "preset">;
 
 const noop: ShaderMetadata = {
   defines: { SPEED: ".1" },
-  presetType: "wireframe",
   presetStyle: "wireframe",
 };
 
 const slai: ShaderMetadata = {
   defines: { SPEED: ".1", DIST_AMP: "5.", FREQ: "1." },
-  presetType: "solid",
   presetStyle: "solid",
 };
 
@@ -22,7 +20,6 @@ const stripes: ShaderMetadata = {
     FREQ: "1.",
     FRAC_SCALE: "16",
   },
-  presetType: "solid",
   presetStyle: "solid",
 };
 
@@ -34,7 +31,6 @@ const linoise: ShaderMetadata = {
     FREQ: "1.",
     FRAC_SCALE: "16",
   },
-  presetType: "wireframe",
   presetStyle: "wireframe",
 };
 
@@ -46,7 +42,6 @@ const pnoise: ShaderMetadata = {
     FREQ: "1.",
     FRAC_SCALE: "16",
   },
-  presetType: "wireframe",
   presetStyle: "point",
 };
 

@@ -11,8 +11,8 @@ import imgUrl from "./test_sound.mp3";
 function App() {
   const aref = useRef(null!);
   // const { data, debug } = useShaderStatePublic(); // uncomment for demo
-  const data = useShaderState();
   const debug = useDebugShader();
+  const data = useShaderState();
   const fftfns = useSound(aref.current);
   return (
     <>
@@ -22,9 +22,4 @@ function App() {
   );
 }
 
-
-
-
-
 export default App;
-

@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 
 import type { CanvasProps } from "../types";
 
-import { MESH_DETAIL } from "../constants";
+import { MESH_DETAIL, SHADER_STYLE } from "../constants";
 
 import {
   PointsMaterial,
@@ -13,10 +13,9 @@ import {
   LineBasicMaterial,
 } from "three";
 
-import { compile } from "../shaders/compiler";
+import { compile, type CompilerMetadata } from "../shaders/compiler";
 import type { MaterialType } from "../shaders/types";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
-import { PRESET_PARAMS } from "./presets";
 
 export function Model({
   data,
@@ -25,13 +24,31 @@ export function Model({
 }: CanvasProps & {
   debug?: Record<string, any>;
 }) {
-  const { vertex, fragment, preset, mesh, polygon, speed = 1 } = debug ?? {};
+  const {
+    vertex,
+    fragment,
+    preset,
+    mesh,
+    polygon,
+    speed = 1,
+    style,
+  } = debug ?? {};
 
   const ref = useTransforms();
   const uniforms = useUniforms(data, speed, fns);
   const items = useGeometry(polygon * MESH_DETAIL);
 
-  const params = PRESET_PARAMS[preset as string];
+  // const params = PRESET_PARAMS[preset as string];
+  const params: Omit<CompilerMetadata, "shaderType" | "preset"> = {
+    defines: {
+      DIST_AMP: ".05",
+      NOISE_DIST_AMP: "1.",
+      SPEED: "1.",
+      FREQ: "1.",
+      FRAC_SCALE: "16",
+    },
+    presetStyle: SHADER_STYLE[style],
+  };
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
       compile({
@@ -46,7 +63,7 @@ export function Model({
       }),
       params.presetStyle,
     ],
-    [preset, vertex, fragment]
+    [preset, vertex, fragment, params]
   );
 
   // debug

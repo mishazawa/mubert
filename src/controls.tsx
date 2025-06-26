@@ -56,6 +56,12 @@ export function useShaderStatePublic() {
         value: "pnoise",
         options: PRESETS,
       },
+      style: {
+        value: 0,
+        min: 1,
+        max: 2,
+        step: 1,
+      },
       polygon: {
         value: 16,
         min: 1,
@@ -85,6 +91,12 @@ export function useDebugShader() {
     preset: {
       value: "pnoise",
       options: PRESETS,
+    },
+    style: {
+      value: 0,
+      min: 0,
+      max: 2,
+      step: 1,
     },
     mesh: {
       value: 2,

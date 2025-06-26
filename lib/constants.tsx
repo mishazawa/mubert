@@ -6,7 +6,7 @@ export const SPEED = 10; // suppose to be bpm?
 export const SPEED_MULTIPLIER = 0.001;
 export const MESH_DETAIL = 8;
 export const AMBIENT_LIGHT_COLOR = 0x404040;
-
+export const SHADER_STYLE = ["solid", "point", "wireframe"] as const;
 export const VALID_RANGES: Record<string, [number, number]> = {
   use_key: [0, 0], // not included 2
   key_value: [0, 2], // not included 2
@@ -81,6 +81,6 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
     value: 0,
   },
   uAudioTex: {
-    value: null,
+    value: 0,
   },
 };

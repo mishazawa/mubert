@@ -1,6 +1,7 @@
 import type { Color, Vector2, Vector3 } from "three";
 import type { UNIFORM_KEYS, GLSL_TYPES } from "./uniforms";
 import type { VARYINGS_KEYS_SOLID, VARYINGS_KEYS_WIREFRAME } from "./varyings";
+import type { SHADER_STYLE } from "../constants";
 
 export type UniformValue<T> = {
   value: T;
@@ -36,4 +37,4 @@ export type ShaderControls = {
     : never;
 };
 
-export type MaterialType = "solid" | "point" | "wireframe";
+export type MaterialType = (typeof SHADER_STYLE)[number];
