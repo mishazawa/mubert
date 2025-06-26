@@ -11,13 +11,13 @@
 
 
 float gen_mask (vec2 uv, float animation) {
-  return plot(fract(uv.x + animation * .5), .1);
+  return plot(fract(uv.x + animation), .1);
 }
 
 vec3 displace (in vec3 P, in vec3 N, in float animation) {
-  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + N + animation * SPEED, uDisplacementNoiseScale);
+  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + N + animation * SPEED, uDisplacementNoiseScale * uRMS);
   vec3 newPosition = P + N * mask ;
-  return newPosition + noiseDistortion(newPosition, mask.x, animation) * NOISE_DIST_AMP * gen_mask(vUv, animation);
+  return newPosition + noiseDistortion(newPosition, mask.x, animation) * (NOISE_DIST_AMP * uRMS) * gen_mask(vUv, animation);
 }
 
 

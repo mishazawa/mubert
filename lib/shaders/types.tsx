@@ -2,7 +2,7 @@ import type { Color, Vector2, Vector3 } from "three";
 import type { UNIFORM_KEYS, GLSL_TYPES } from "./uniforms";
 import type { VARYINGS_KEYS_SOLID, VARYINGS_KEYS_WIREFRAME } from "./varyings";
 
-type UniformValue<T> = {
+export type UniformValue<T> = {
   value: T;
 };
 
@@ -17,20 +17,22 @@ export type UniformKey = (typeof UNIFORM_KEYS)[number];
 export type GlslType = (typeof GLSL_TYPES)[number];
 
 type ShaderInt = number;
+type ShaderIntArray = number[];
 type ShaderFloat = number;
-type GenerativeShaderUniforms = {
+export type GenerativeShaderUniforms = {
   readonly [P in UniformKey]: UniformValue<
-    ShaderFloat | ShaderInt | Color | Vector3 | Vector2
+    ShaderFloat | ShaderInt | ShaderIntArray | Color | Vector3 | Vector2
   >;
 };
 
-type ProgramableUniforms = Omit<GenerativeShaderUniforms, "uTime">;
+type ProgramableUniforms = Omit<
+  GenerativeShaderUniforms,
+  "uTime" | "uFFT" | "uRMS" | "uAudioTex"
+>;
 
 export type ShaderControls = {
-  -readonly [P in keyof ProgramableUniforms]: GenerativeShaderUniforms[P] extends UniformValue<
-    infer V
-  >
-    ? V
+  -readonly [P in keyof ProgramableUniforms]: GenerativeShaderUniforms[P] extends UniformValue<any>
+    ? any
     : never;
 };
 

@@ -1,5 +1,5 @@
 import { Color, Vector3 } from "three";
-import type { GenerativeShaderUniforms } from "./types";
+import type { GenerativeShaderUniforms } from "./shaders/types";
 
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
@@ -73,5 +73,14 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   },
   uEmission: {
     value: 0,
+  },
+  uRMS: {
+    value: 0,
+  },
+  uFFT: {
+    value: 0,
+  },
+  uAudioTex: {
+    value: null,
   },
 };

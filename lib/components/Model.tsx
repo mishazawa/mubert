@@ -2,7 +2,7 @@ import CustomShaderMaterial from "three-custom-shader-material";
 
 import { useEffect, useMemo } from "react";
 
-import type { ShaderControls } from "../types";
+import type { CanvasProps } from "../types";
 
 import { MESH_DETAIL } from "../constants";
 
@@ -21,14 +21,14 @@ import { PRESET_PARAMS } from "./presets";
 export function Model({
   data,
   debug,
-}: {
-  data: ShaderControls;
+  ...fns
+}: CanvasProps & {
   debug?: Record<string, any>;
 }) {
   const { vertex, fragment, preset, mesh, polygon, speed = 1 } = debug ?? {};
 
   const ref = useTransforms();
-  const uniforms = useUniforms(data, speed);
+  const uniforms = useUniforms(data, speed, fns);
   const items = useGeometry(polygon * MESH_DETAIL);
 
   const params = PRESET_PARAMS[preset as string];

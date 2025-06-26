@@ -52,7 +52,8 @@ ${body}
 
 function generateUniforms(): string {
   return UNIFORM_KEYS.map((ukey) => {
-    return `uniform ${UNIFORM_TYPES[ukey]} ${ukey};`;
+    const [t, l] = UNIFORM_TYPES[ukey].split("|");
+    return `uniform ${t} ${ukey}${l ?? ""};`;
   }).join("\n");
 }
 
