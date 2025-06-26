@@ -1,8 +1,16 @@
+#define DIST_AMP 5.
+#define NOISE_DIST_AMP 1.
+#define SPEED .1
+#define FREQ 1.
+#define FRAC_SCALE 16
+
 //#include<math>
 //#include<noise3>
 //#include<random>
 //#include<noise_distortion>
 //#include<line_functions>
+
+
 
 vec3 pattern_(in vec3 P, in float animation) {
   return drawAudioLines(vec3(.0), generateSyncedPosition(P), animation) * DIST_AMP * uDisplacementAmplitude;

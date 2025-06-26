@@ -13,7 +13,7 @@ import {
   LineBasicMaterial,
 } from "three";
 
-import { compile, type CompilerMetadata } from "../shaders/compiler";
+import { compile } from "../shaders/compiler";
 import type { MaterialType } from "../shaders/types";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
 
@@ -38,32 +38,21 @@ export function Model({
   const uniforms = useUniforms(data, speed, fns);
   const items = useGeometry(polygon * MESH_DETAIL);
 
-  // const params = PRESET_PARAMS[preset as string];
-  const params: Omit<CompilerMetadata, "shaderType" | "preset"> = {
-    defines: {
-      DIST_AMP: ".05",
-      NOISE_DIST_AMP: "1.",
-      SPEED: "1.",
-      FREQ: "1.",
-      FRAC_SCALE: "16",
-    },
-    presetStyle: SHADER_STYLE[style],
-  };
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
       compile({
-        ...params,
+        presetStyle: SHADER_STYLE[style],
         shaderType: "vertex",
         preset: vertex ? "debug" : preset,
       }),
       compile({
-        ...params,
+        presetStyle: SHADER_STYLE[style],
         shaderType: "fragment",
         preset: fragment ? "debug" : preset,
       }),
-      params.presetStyle,
+      SHADER_STYLE[style],
     ],
-    [preset, vertex, fragment, params]
+    [preset, vertex, fragment, style]
   );
 
   // debug

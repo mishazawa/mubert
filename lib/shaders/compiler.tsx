@@ -14,7 +14,7 @@ export type CompilerMetadata = {
   shaderType: "vertex" | "fragment";
   preset: ShaderPreset;
   presetStyle: MaterialType;
-  defines: Record<string, string>;
+  defines?: Record<string, string>;
 };
 
 export function compile(metadata: CompilerMetadata): string {
