@@ -1,69 +1,30 @@
-import type { UniformKey, GlslType } from "./types";
-
-export const UNIFORM_KEYS = [
-  "uTime",
-  "uSeed",
-  "uColor1",
-  "uColor2",
-  "uColor3",
-  "uColor4",
-  "uColor5",
-  "uUseColorKey",
-  "uColorKeyValue",
-  "uColorNoiseScale",
-  "uDisplacementNoiseScale",
-  "uDisplacementAmplitude",
-  "uRoughness",
-  "uClearcoat",
-  "uClearcoatRoughness",
-  "uIridescence",
-  "uLineWidth",
-  "uLineCount",
-  "uNoiseOffset",
-  "uRoughnessPattern",
-  "uNoiseVariant",
-  "uStripesWidth",
-  "uEmission",
-  "uFFT",
-  "uAudioTex",
-  "uRMS",
-] as const;
-
-export const UNIFORM_TYPES: Record<UniformKey, GlslType> = {
-  uTime: "float",
-  uSeed: "float",
-  uColor1: "vec3",
-  uColor2: "vec3",
-  uColor3: "vec3",
-  uColor4: "vec3",
-  uColor5: "vec3",
-  uUseColorKey: "float",
-  uColorKeyValue: "float",
-  uColorNoiseScale: "float",
-  uDisplacementNoiseScale: "float",
-  uDisplacementAmplitude: "float",
-  uRoughness: "float",
-  uClearcoat: "float",
-  uClearcoatRoughness: "float",
-  uIridescence: "float",
-  uLineWidth: "float",
-  uLineCount: "int",
-  uNoiseOffset: "vec3",
-  uRoughnessPattern: "float",
-  uNoiseVariant: "float",
-  uStripesWidth: "float",
-  uEmission: "float",
-  uFFT: "int|[32]",
-  uAudioTex: "sampler2D",
-  uRMS: "float",
-};
-
-export const GLSL_TYPES = [
-  "float",
-  "int",
-  "vec2",
-  "vec3",
-  "vec4",
-  "int|[32]" /* array test */,
-  "sampler2D",
-] as const;
+//  ¯\_(ツ)_/¯
+// as const
+// does not support multiple spaces between tokens
+export const UNIFORMS = `
+uniform float uTime;
+uniform float uSeed;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
+uniform vec3 uColor3;
+uniform vec3 uColor4;
+uniform vec3 uColor5;
+uniform float uUseColorKey;
+uniform float uColorKeyValue;
+uniform float uColorNoiseScale;
+uniform float uDisplacementNoiseScale;
+uniform float uDisplacementAmplitude;
+uniform float uRoughness;
+uniform float uClearcoat;
+uniform float uClearcoatRoughness;
+uniform float uIridescence;
+uniform float uLineWidth;
+uniform int uLineCount;
+uniform vec3 uNoiseOffset;
+uniform float uRoughnessPattern;
+uniform float uNoiseVariant;
+uniform float uStripesWidth;
+uniform float uEmission;
+uniform float uRMS;
+uniform sampler2D uAudioTex;
+` as const;

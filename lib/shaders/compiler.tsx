@@ -1,6 +1,6 @@
 import STRUCTS_DEFINITION from "./structs";
 
-import { UNIFORM_KEYS, UNIFORM_TYPES } from "./uniforms";
+import { UNIFORMS } from "./uniforms";
 import { VARYINGS_SOLID, VARYINGS_WIRE } from "./varyings";
 import VERTEX_BODY from "./meta/vertex.glsl?raw";
 import FRAGMENT_BODY from "./meta/fragment.glsl?raw";
@@ -9,6 +9,7 @@ import type { ShaderPreset } from "./presets";
 import PRESETS from "./presets";
 import type { MaterialType } from "./types";
 import { includeStdLib } from "./stdlib";
+import { FFT_SIZE } from "../constants";
 
 export type CompilerMetadata = {
   shaderType: "vertex" | "fragment";
@@ -18,7 +19,6 @@ export type CompilerMetadata = {
 };
 
 export function compile(metadata: CompilerMetadata): string {
-  const uniforms = generateUniforms();
   const varyings = generateVaryings(metadata.presetStyle, metadata.shaderType);
   const defines = generateDefines(
     metadata.defines,
@@ -32,7 +32,9 @@ export function compile(metadata: CompilerMetadata): string {
 // ${metadata.presetStyle} ${metadata.shaderType} ${metadata.preset}
 
 // Uniforms;
-${uniforms}
+${UNIFORMS}
+// crutch for declaring array
+uniform int uFFT[${FFT_SIZE}]; 
 
 // Varyings;
 ${varyings}
@@ -51,13 +53,6 @@ ${body}
 
 // End of shader.
   `;
-}
-
-function generateUniforms(): string {
-  return UNIFORM_KEYS.map((ukey) => {
-    const [t, l] = UNIFORM_TYPES[ukey].split("|");
-    return `uniform ${t} ${ukey}${l ?? ""};`;
-  }).join("\n");
 }
 
 function generateVaryings(

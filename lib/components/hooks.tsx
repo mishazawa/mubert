@@ -3,10 +3,12 @@ import type { CanvasProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import {
+  BufferGeometry,
   IcosahedronGeometry,
   OctahedronGeometry,
   SphereGeometry,
   TorusKnotGeometry,
+  WireframeGeometry,
   type Mesh,
   type Object3D,
 } from "three";
@@ -27,6 +29,8 @@ import {
   LinearFilter,
 } from "three";
 
+const BYPASS_NORMALS = false;
+
 type ElementType = keyof ShaderControls;
 
 export function useGeometry(resolution: number) {
@@ -45,17 +49,61 @@ export function useGeometry(resolution: number) {
     [resolution]
   );
 
-  const edges = useMemo(
-    () =>
-      new HorizontalLinesGeometry(
-        new TorusKnotGeometry(1, 0.25, 300, 32),
-        //new SphereGeometry(1, resolution, resolution),
-        "x"
-      ),
-    [resolution]
+  const torus = useMemo(() => new TorusKnotGeometry(1, 0.25, 300, 32), []);
+
+  const edgesTorusX = useMemo(
+    () => recomputeNormals(new HorizontalLinesGeometry(torus, "x")),
+    [torus]
+  );
+  const edgesTorusY = useMemo(
+    () => recomputeNormals(new HorizontalLinesGeometry(torus, "y")),
+    [torus]
+  );
+  const edgesSphereX = useMemo(
+    () => recomputeNormals(new HorizontalLinesGeometry(sphere, "x")),
+    [torus]
+  );
+  const edgesSphereY = useMemo(
+    () => recomputeNormals(new HorizontalLinesGeometry(sphere, "y")),
+    [torus]
   );
 
-  return [octahedron, sphere, icosahedron, edges];
+  const wireframeSphere = useMemo(
+    () => recomputeNormals(new WireframeGeometry(sphere)),
+    [sphere]
+  );
+  const wireframeOctahedron = useMemo(
+    () => recomputeNormals(new WireframeGeometry(octahedron)),
+    [octahedron]
+  );
+  const wireframeIcosahedron = useMemo(
+    () => recomputeNormals(new WireframeGeometry(icosahedron)),
+    [icosahedron]
+  );
+  const wireframeTorus = useMemo(
+    () => recomputeNormals(new WireframeGeometry(torus)),
+    [torus]
+  );
+
+  return [
+    // style solid or points
+    sphere,
+    octahedron,
+    icosahedron,
+    torus,
+
+    // style wireframe
+    wireframeSphere,
+    wireframeOctahedron,
+    wireframeIcosahedron,
+    wireframeTorus,
+
+    // style edges
+    edgesSphereX,
+    edgesSphereY,
+    edgesTorusX,
+    edgesTorusY,
+  ];
 }
 
 export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
@@ -96,6 +144,7 @@ export function useUniforms(
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
+
   useEffect(() => {
     Object.keys(controls).map((k) => {
       const key = k as ElementType;
@@ -140,4 +189,10 @@ export function useTransforms(): RefObject<Object3D> {
   });
 
   return ref;
+}
+
+function recomputeNormals(g: BufferGeometry) {
+  if (BYPASS_NORMALS) return g;
+  g.computeVertexNormals();
+  return g;
 }

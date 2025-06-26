@@ -50,7 +50,9 @@ export function Model({
         shaderType: "fragment",
         preset: fragment ? "debug" : preset,
       }),
-      SHADER_STYLE[style],
+      SHADER_STYLE[
+        style >= SHADER_STYLE.length ? SHADER_STYLE.length - 1 : style
+      ],
     ],
     [preset, vertex, fragment, style]
   );
@@ -64,7 +66,8 @@ export function Model({
   }, [vertexShader, fragmentShader]);
 
   // show only spheric lines for edge material
-  const visibleIndex = materialType === "wireframe" ? 3 : mesh;
+
+  const visibleIndex = getOffsetByShaderStyle(mesh, style);
 
   return (
     <group ref={ref}>
@@ -131,4 +134,13 @@ function PointedGeometry({
       />
     </mesh>
   );
+}
+
+// lines -> 8, 9, 10, 11
+// wireframe -> 4, 5, 6, 7
+// solid -> 1, 2, 3, 4
+function getOffsetByShaderStyle(mesh: number, style: number): number {
+  if (style === 3) return mesh + 8;
+  if (style === 2) return mesh + 4;
+  return mesh;
 }
