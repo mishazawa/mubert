@@ -1,19 +1,11 @@
 import type { Color, DataTexture, Vector2, Vector3, Vector4 } from "three";
 
-import type { VARYINGS_KEYS_SOLID, VARYINGS_KEYS_WIREFRAME } from "./varyings";
 import type { SHADER_STYLE } from "../constants";
 import type { UNIFORMS } from "./uniforms";
 
 export type UniformValue<T> = {
   value: T;
 };
-
-type VaryingKeySolid = (typeof VARYINGS_KEYS_SOLID)[number];
-type VaryingKeyWireframe = (typeof VARYINGS_KEYS_WIREFRAME)[number];
-
-export type VaryingKey<T extends "solid" | "wireframe"> = T extends "solid"
-  ? VaryingKeySolid
-  : VaryingKeyWireframe;
 
 export type MaterialType = (typeof SHADER_STYLE)[number];
 

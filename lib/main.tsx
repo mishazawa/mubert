@@ -19,6 +19,7 @@ import {
 } from "./utils";
 import { useState } from "react";
 import type { ShaderControls } from "./shaders/types";
+import type { Color } from "three";
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -29,7 +30,7 @@ export default function MubertCanvas(
 
   return (
     <Canvas className="vis_canvas" dpr={dpr}>
-      <color attach="background" args={[props.data.uColor5]} />
+      <color attach="background" args={[props.data.uColor5 as Color]} />
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
       <PerformanceMonitor

@@ -1,7 +1,12 @@
 import STRUCTS_DEFINITION from "./structs";
 
 import { UNIFORMS } from "./uniforms";
-import { VARYINGS_SOLID, VARYINGS_WIRE } from "./varyings";
+import {
+  VARYINGS_SOLID_FRAGMENT,
+  VARYINGS_SOLID_VERTEX,
+  VARYINGS_WIRE_FRAGMENT,
+  VARYINGS_WIRE_VERTEX,
+} from "./varyings";
 import VERTEX_BODY from "./meta/vertex.glsl?raw";
 import FRAGMENT_BODY from "./meta/fragment.glsl?raw";
 import SOLID_PARAMETERS from "./meta/parameters.glsl?raw";
@@ -59,16 +64,12 @@ function generateVaryings(
   presetStyle: MaterialType,
   shaderType: "vertex" | "fragment"
 ): string {
-  return Object.entries(
-    presetStyle === "solid" ? VARYINGS_SOLID : VARYINGS_WIRE
-  )
-    .map(
-      ([vkey, vtype]) =>
-        `${
-          shaderType === "fragment" && vkey === "vNormal" ? "//" : ""
-        } varying ${vtype} ${vkey};`
-    )
-    .join("\n");
+  if (presetStyle === "solid") {
+    if (shaderType === "fragment") return VARYINGS_SOLID_FRAGMENT;
+    return VARYINGS_SOLID_VERTEX;
+  }
+  if (shaderType === "fragment") return VARYINGS_WIRE_FRAGMENT;
+  return VARYINGS_WIRE_VERTEX;
 }
 
 function generateDefines(
