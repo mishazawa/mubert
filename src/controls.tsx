@@ -56,6 +56,12 @@ export function useShaderStatePublic() {
         value: "pnoise",
         options: PRESETS,
       },
+      style: {
+        value: 0,
+        min: 1,
+        max: 2,
+        step: 1,
+      },
       polygon: {
         value: 16,
         min: 1,
@@ -86,10 +92,16 @@ export function useDebugShader() {
       value: "pnoise",
       options: PRESETS,
     },
+    style: {
+      value: 0,
+      min: 0,
+      max: 3,
+      step: 1,
+    },
     mesh: {
       value: 2,
       min: 0,
-      max: 2,
+      max: 3,
       step: 1,
     },
     polygon: {
@@ -225,19 +237,19 @@ export function useShaderState() {
 }
 
 function useColorsControls(defaults: ShaderControls) {
-  const [color1, setColor1] = useState(defaults.uColor1);
-  const [color2, setColor2] = useState(defaults.uColor2);
-  const [color3, setColor3] = useState(defaults.uColor3);
-  const [color4, setColor4] = useState(defaults.uColor4);
-  const [color5, setColor5] = useState(defaults.uColor5);
+  const [color1, setColor1] = useState<Color>(defaults.uColor1 as Color);
+  const [color2, setColor2] = useState<Color>(defaults.uColor2 as Color);
+  const [color3, setColor3] = useState<Color>(defaults.uColor3 as Color);
+  const [color4, setColor4] = useState<Color>(defaults.uColor4 as Color);
+  const [color5, setColor5] = useState<Color>(defaults.uColor5 as Color);
 
   useEffect(() => {
     setData({
-      uColor1: `#${defaults.uColor1.getHexString()}`,
-      uColor2: `#${defaults.uColor2.getHexString()}`,
-      uColor3: `#${defaults.uColor3.getHexString()}`,
-      uColor4: `#${defaults.uColor4.getHexString()}`,
-      uColor5: `#${defaults.uColor5.getHexString()}`,
+      uColor1: `#${(defaults.uColor1 as Color).getHexString()}`,
+      uColor2: `#${(defaults.uColor2 as Color).getHexString()}`,
+      uColor3: `#${(defaults.uColor3 as Color).getHexString()}`,
+      uColor4: `#${(defaults.uColor4 as Color).getHexString()}`,
+      uColor5: `#${(defaults.uColor5 as Color).getHexString()}`,
     });
   }, [defaults.uSeed]);
 

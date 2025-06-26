@@ -1,3 +1,5 @@
+#define SPEED 1.
+
 #ifdef VERTEX
 #else
 #endif

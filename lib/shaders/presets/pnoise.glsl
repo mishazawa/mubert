@@ -1,13 +1,19 @@
+#define DIST_AMP .05
+#define NOISE_DIST_AMP 1.
+#define SPEED 1.
+#define FREQ 1.
+#define FRAC_SCALE 16.
+
 //#include<snoise>
 //#include<noise3>
 //#include<random>
 //#include<noise_distortion>
 //#include<math>
 //#include<line_functions>
+
 #ifdef VERTEX
 #else
 #endif
-
 
 float gen_mask (vec2 uv, float animation) {
   return plot(fract(uv.x + animation * .5), .1);
@@ -18,9 +24,9 @@ vec3 displace (in vec3 P, in vec3 N, in float animation) {
   // vec3 newPosition = P + N * mask ;
 
   float fftVal = float(uFFT[3])/1024.0;
-  vec3 newPosition = P + N * fftVal*0.0 ;
+  vec3 newPosition = P + N * fftVal ;
 
-  vec3 noiseVal = noiseDistortion(newPosition*0.5, mask.x, animation*0.5) * NOISE_DIST_AMP * 18.0;
+  vec3 noiseVal = noiseDistortion(newPosition * 0.5 * FRAC_SCALE, mask.x, animation * 0.5) * NOISE_DIST_AMP;
   
   newPosition += noiseVal;
   

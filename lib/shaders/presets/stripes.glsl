@@ -1,3 +1,9 @@
+#define DIST_AMP .05
+#define NOISE_DIST_AMP 1.
+#define SPEED 1.
+#define FREQ 1.
+#define FRAC_SCALE 16
+
 //#include<random>
 //#include<math>
 //#include<noise3>

@@ -1,12 +1,13 @@
-import { Color, Vector3 } from "three";
+import { Color, DataTexture, Vector3 } from "three";
 import type { GenerativeShaderUniforms } from "./shaders/types";
 
+export const FFT_SIZE = 64;
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
 export const SPEED_MULTIPLIER = 0.001;
 export const MESH_DETAIL = 8;
 export const AMBIENT_LIGHT_COLOR = 0x404040;
-
+export const SHADER_STYLE = ["solid", "point", "wireframe"] as const;
 export const VALID_RANGES: Record<string, [number, number]> = {
   use_key: [0, 0], // not included 2
   key_value: [0, 2], // not included 2
@@ -22,6 +23,7 @@ export const VALID_RANGES: Record<string, [number, number]> = {
 };
 
 const DEFAULT_COLOR = new Color("#ff00ff");
+
 export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   uTime: { value: 0 },
   uSeed: { value: 0 },
@@ -78,9 +80,9 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
     value: 0,
   },
   uFFT: {
-    value: 0,
+    value: [],
   },
   uAudioTex: {
-    value: null,
+    value: new DataTexture(),
   },
 };
