@@ -25,6 +25,7 @@ export const UNIFORM_KEYS = [
   "uStripesWidth",
   "uEmission",
   "uFFT",
+  "uAudioTex",
   "uRMS",
 ] as const;
 
@@ -53,6 +54,7 @@ export const UNIFORM_TYPES: Record<UniformKey, GlslType> = {
   uStripesWidth: "float",
   uEmission: "float",
   uFFT: "int|[32]",
+  uAudioTex: "sampler2D",
   uRMS: "float",
 };
 
@@ -63,4 +65,5 @@ export const GLSL_TYPES = [
   "vec3",
   "vec4",
   "int|[32]" /* array test */,
+  "sampler2D",
 ] as const;

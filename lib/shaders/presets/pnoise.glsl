@@ -15,10 +15,17 @@ float gen_mask (vec2 uv, float animation) {
 
 vec3 displace (in vec3 P, in vec3 N, in float animation) {
   vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + N + animation * SPEED, uDisplacementNoiseScale);
-  vec3 newPosition = P + N * mask ;
-  return newPosition + noiseDistortion(newPosition, mask.x, animation) * NOISE_DIST_AMP * gen_mask(vUv, animation) * float(uFFT[0]) * .1;
-}
+  // vec3 newPosition = P + N * mask ;
 
+  float fftVal = float(uFFT[3])/1024.0;
+  vec3 newPosition = P + N * fftVal*0.0 ;
+
+  vec3 noiseVal = noiseDistortion(newPosition*0.5, mask.x, animation*0.5) * NOISE_DIST_AMP * 18.0;
+  
+  newPosition += noiseVal;
+  
+  return newPosition;
+}
 
 DisplacePatternOutput displace_pattern(in DisplacePatternInput data, float animation) {
   vec3 newPosition = displace(data.position,data.normal, animation);

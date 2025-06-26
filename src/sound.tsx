@@ -10,6 +10,7 @@ export function useSound(audioRef: HTMLAudioElement) {
     return a;
   }, [ctx]);
 
+
   const data = useRef<Uint8Array>(new Uint8Array(analyser.frequencyBinCount));
 
   const getFFT = useCallback(() => {
@@ -17,16 +18,25 @@ export function useSound(audioRef: HTMLAudioElement) {
     return Array.from(data.current);
   }, []);
 
-  const getRMS = useCallback((): [number, number] => {
-    const max = data.current[0];
-    // const max = Math.max(...data.current);
+  // const getRMS = useCallback((): [number, number] => {
+  //   const max = data.current[0];
+  //   // const max = Math.max(...data.current);
 
-    const res = data.current
-      .map((val) => val * val)
-      .reduce((acum, val) => acum + val);
-    const rms = Math.sqrt(res / data.current.length);
-    return [rms, max];
+  //   const res = data.current
+  //     .map((val) => val * val)
+  //     .reduce((acum, val) => acum + val);
+  //   const rms = Math.sqrt(res / data.current.length);
+  //   return [rms, max];
+  // }, []);
+
+  const getRMS = useCallback((): [number, number] => {
+    const arr = data.current;
+    const sum = arr.reduce((acc, v) => acc + v, 0);
+    const max = sum / arr.length / 255;
+    return [max, max];
+    
   }, []);
+
 
   useEffect(() => {
     if (!audioRef) return;

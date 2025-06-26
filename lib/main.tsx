@@ -29,6 +29,7 @@ export default function MubertCanvas(
 
   return (
     <Canvas className="vis_canvas" dpr={dpr}>
+      <color attach="background" args={[props.data.uColor5]} />
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
       <PerformanceMonitor

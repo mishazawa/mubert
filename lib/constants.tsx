@@ -80,4 +80,7 @@ export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
   uFFT: {
     value: 0,
   },
+  uAudioTex: {
+    value: null,
+  },
 };
