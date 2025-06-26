@@ -20,3 +20,8 @@ struct CoatOutput
   float scale;
   float roughness;
 };
+
+struct Neighbours {
+  vec3 a;
+  vec3 b;
+};
