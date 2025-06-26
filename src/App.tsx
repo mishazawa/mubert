@@ -5,19 +5,17 @@ import {
   useShaderState,
   // useShaderStatePublic, // uncomment for demo
 } from "./controls";
+
 import { useSound } from "./sound";
-import { useRef } from "react";
-import imgUrl from "./test_sound.mp3";
+
 function App() {
-  const aref = useRef(null!);
   // const { data, debug } = useShaderStatePublic(); // uncomment for demo
   const debug = useDebugShader();
   const data = useShaderState();
-  const fftfns = useSound(aref.current);
+  const fftfns = useSound();
   return (
     <>
       <Canvas data={data} debug={debug} {...fftfns} />
-      <audio ref={aref} src={imgUrl} controls autoPlay />
     </>
   );
 }
