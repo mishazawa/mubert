@@ -12,9 +12,12 @@ const _v0 = /*@__PURE__*/ new Vector3();
 const _v1 = /*@__PURE__*/ new Vector3();
 const _uv0 = /*@__PURE__*/ new Vector2();
 const _uv1 = /*@__PURE__*/ new Vector2();
+const _n0 = /*@__PURE__*/ new Vector3();
+const _n1 = /*@__PURE__*/ new Vector3();
 const _normal = /*@__PURE__*/ new Vector3();
 const _triangle = /*@__PURE__*/ new Triangle();
 const _uvtriangle = /*@__PURE__*/ new Triangle();
+const _normtriangle = /*@__PURE__*/ new Triangle();
 /**
  * Can be used as a helper object to view the edges of a geometry.
  *
@@ -68,7 +71,9 @@ class HorizontalLinesGeometry extends BufferGeometry {
       const uvAttr: BufferAttribute = geometry.getAttribute(
         "uv"
       ) as BufferAttribute;
-
+      const normAttr: BufferAttribute = geometry.getAttribute(
+        "normal"
+      ) as BufferAttribute;
       const indexArr = [0, 0, 0];
       const vertKeys: Array<"a" | "b" | "c"> = ["a", "b", "c"];
       const hashes = new Array(3);
@@ -76,6 +81,7 @@ class HorizontalLinesGeometry extends BufferGeometry {
       const edgeData: Record<string, any> = {};
       const vertices = [];
       const uvs = [];
+      const normals = [];
       for (let i = 0; i < indexCount; i += 3) {
         if (indexAttr) {
           indexArr[0] = indexAttr.getX(i);
@@ -96,6 +102,10 @@ class HorizontalLinesGeometry extends BufferGeometry {
         _uvtriangle.a.fromBufferAttribute(uvAttr, indexArr[0]);
         _uvtriangle.b.fromBufferAttribute(uvAttr, indexArr[1]);
         _uvtriangle.c.fromBufferAttribute(uvAttr, indexArr[2]);
+
+        _normtriangle.a.fromBufferAttribute(normAttr, indexArr[0]);
+        _normtriangle.b.fromBufferAttribute(normAttr, indexArr[1]);
+        _normtriangle.c.fromBufferAttribute(normAttr, indexArr[2]);
 
         const { a, b, c } = _triangle;
         // create hashes for the edge from the vertices
@@ -127,8 +137,13 @@ class HorizontalLinesGeometry extends BufferGeometry {
 
           const v0 = _triangle[vertKeys[j]];
           const v1 = _triangle[vertKeys[jNext]];
+
           const uv0 = _uvtriangle[vertKeys[j]];
           const uv1 = _uvtriangle[vertKeys[jNext]];
+
+          const n0 = _normtriangle[vertKeys[j]];
+          const n1 = _normtriangle[vertKeys[jNext]];
+
           const hash = `${vecHash0}_${vecHash1}`;
           const reverseHash = `${vecHash1}_${vecHash0}`;
 
@@ -140,6 +155,9 @@ class HorizontalLinesGeometry extends BufferGeometry {
 
               uvs.push(uv0.x, uv0.y);
               uvs.push(uv1.x, uv1.y);
+
+              normals.push(n0.x, n0.y, n0.z);
+              normals.push(n1.x, n1.y, n1.z);
             }
 
             edgeData[reverseHash] = null;
@@ -165,16 +183,23 @@ class HorizontalLinesGeometry extends BufferGeometry {
           _uv0.fromBufferAttribute(uvAttr, index0);
           _uv1.fromBufferAttribute(uvAttr, index1);
 
+          _n0.fromBufferAttribute(normAttr, index0);
+          _n1.fromBufferAttribute(normAttr, index1);
+
           vertices.push(_v0.x, _v0.y, _v0.z);
           vertices.push(_v1.x, _v1.y, _v1.z);
 
           uvs.push(_uv0.x, _uv0.y);
           uvs.push(_uv1.x, _uv1.y);
+
+          normals.push(_n0.x, _n0.y, _n0.z);
+          normals.push(_n1.x, _n1.y, _n1.z);
         }
       }
 
       this.setAttribute("position", new Float32BufferAttribute(vertices, 3));
       this.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+      this.setAttribute("normal", new Float32BufferAttribute(normals, 3));
     }
   }
 

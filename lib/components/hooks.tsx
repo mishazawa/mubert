@@ -29,6 +29,8 @@ import {
   LinearFilter,
 } from "three";
 
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+
 const BYPASS_NORMALS = false;
 
 type ElementType = keyof ShaderControls;
@@ -52,37 +54,38 @@ export function useGeometry(resolution: number) {
   const torus = useMemo(() => new TorusKnotGeometry(1, 0.25, 300, 32), []);
 
   const edgesTorusX = useMemo(
-    () => recomputeNormals(new HorizontalLinesGeometry(torus, "x")),
-    [torus]
+    () => mergeVertices(new HorizontalLinesGeometry(torus, "x")),
+    [torus, resolution]
   );
   const edgesTorusY = useMemo(
-    () => recomputeNormals(new HorizontalLinesGeometry(torus, "y")),
-    [torus]
+    () => mergeVertices(new HorizontalLinesGeometry(torus, "y")),
+    [torus, resolution]
   );
   const edgesSphereX = useMemo(
-    () => recomputeNormals(new HorizontalLinesGeometry(sphere, "x")),
-    [torus]
+    () => mergeVertices(new HorizontalLinesGeometry(sphere, "x")),
+    [torus, resolution]
   );
   const edgesSphereY = useMemo(
-    () => recomputeNormals(new HorizontalLinesGeometry(sphere, "y")),
-    [torus]
+    () => mergeVertices(new HorizontalLinesGeometry(sphere, "y")),
+    [torus, resolution]
   );
 
   const wireframeSphere = useMemo(
     () => recomputeNormals(new WireframeGeometry(sphere)),
-    [sphere]
+    [sphere, resolution]
   );
+
   const wireframeOctahedron = useMemo(
     () => recomputeNormals(new WireframeGeometry(octahedron)),
-    [octahedron]
+    [octahedron, resolution]
   );
   const wireframeIcosahedron = useMemo(
     () => recomputeNormals(new WireframeGeometry(icosahedron)),
-    [icosahedron]
+    [icosahedron, resolution]
   );
   const wireframeTorus = useMemo(
     () => recomputeNormals(new WireframeGeometry(torus)),
-    [torus]
+    [torus, resolution]
   );
 
   return [
@@ -193,6 +196,7 @@ export function useTransforms(): RefObject<Object3D> {
 
 function recomputeNormals(g: BufferGeometry) {
   if (BYPASS_NORMALS) return g;
-  g.computeVertexNormals();
-  return g;
+  const a = mergeVertices(g);
+  a.computeVertexNormals();
+  return a;
 }
