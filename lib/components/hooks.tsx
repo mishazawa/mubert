@@ -123,19 +123,22 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
   }, []);
 
   useFrame(() => {
-    // 1. scroll everything down by one line (drops last row)
-    buffer.copyWithin(ROW, 0, buffer.length - ROW);
+    try {
+      // 1. scroll everything down by one line (drops last row)
+      buffer.copyWithin(ROW, 0, buffer.length - ROW);
 
-    // 2. write new FFT row at the top
-    const fft = analyser.getFFT(); // 64 values 0-255
-    for (let i = 0; i < fft.length; i++) {
-      const v = fft[i];
-      const idx = i * 4; // row 0 offset
-      buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
-      buffer[idx + 3] = 255; // alpha
-    }
+      // 2. write new FFT row at the top
+      const fft = analyser.getFFT(); // 64 values 0-255
 
-    texture.needsUpdate = true;
+      for (let i = 0; i < fft.length; i++) {
+        const v = fft[i];
+        const idx = i * 4; // row 0 offset
+        buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
+        buffer[idx + 3] = 255; // alpha
+      }
+
+      texture.needsUpdate = true;
+    } catch (_) {}
   });
 
   return texture; // DataTexture 64×64
