@@ -10,7 +10,7 @@
   <div id="root"></div>
   <div class="audio_ctrl">
     <button id="audio_btn">Play</button>
-    <audio id="audio" controls crossorigin="anonymous" />
+    <audio id="audio" controls crossorigin="anonymous" src="/test_sound.mp3" />
   </div>
   <script type="module" src="/main.tsx"></script>
 </body>
@@ -34,7 +34,7 @@
 
   audioBtn.onclick = () => {
     new Promise((resolve, reject) => {
-      setTimeout(() => resolve('/test_sound.mp3'), 500);
+      setTimeout(() => resolve(audio.src), 500);
     }).then(src => {
       audio.src = src;
       audio.play();
