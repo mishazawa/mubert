@@ -8,40 +8,51 @@
 
 <body>
   <div id="root"></div>
-  <audio id="audio" controls crossorigin="anonymous" src="/test_sound.mp3" />
+  <div class="audio_ctrl">
+    <button id="audio_btn">Play</button>
+    <audio id="audio" controls crossorigin="anonymous" />
+  </div>
   <script type="module" src="/main.tsx"></script>
 </body>
 <script>
   var audio = document.getElementById("audio");
+  var audioBtn = document.getElementById("audio_btn");
 
-  var ctx = new AudioContext();
+  audio.autoplay = true;
+  var ctx = new (window.AudioContext || window.webkitAudioContext)();
   var analyser = ctx.createAnalyser();
   analyser.fftSize = 64;
   var data = new Uint8Array(analyser.frequencyBinCount);
-  var uint8 = new Uint8Array(2);
-  var source;
+  let audioReady = false;
 
-  if (!source) {
-    source = ctx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(ctx.destination);
+  function renderLoop() {
+    if (audioReady) {
+      analyser.getByteFrequencyData(dataArray);
+    }
+    requestAnimationFrame(renderLoop);
   }
 
-  function getFFT() {
-    analyser.getByteFrequencyData(data);
-    return Array.from(data);
+  audioBtn.onclick = () => {
+    new Promise((resolve, reject) => {
+      setTimeout(() => resolve('/test_sound.mp3'), 500);
+    }).then(src => {
+      audio.src = src;
+      audio.play();
+    })
   }
 
-  function getRMS() {
-    var arr = data;
-    var sum = arr.reduce((acc, v) => acc + v, 0);
-    var max = sum / arr.length / 255;
-    return [max, max];
-  }
+  audio.addEventListener('canplay', async () => {
+    await ctx.resume();
+    if (!audioReady) {
+      source = ctx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+      audioReady = true;
+    }
+  });
 
-  window.getFFT = getFFT;
-  window.getRMS = getRMS;
-
+  window.dataArray = data;
+  renderLoop();
 </script>
 
 </html>
