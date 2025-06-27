@@ -24,3 +24,9 @@ body {
 .vis_canvas {
   max-width: 1024px;
 }
+
+#audio {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
