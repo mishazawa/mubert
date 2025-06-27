@@ -25,7 +25,8 @@ body {
   max-width: 1024px;
 }
 
-#audio {
+.audio_ctrl {
+  display: flex;
   position: fixed;
   left: 0;
   bottom: 0;
