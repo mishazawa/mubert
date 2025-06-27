@@ -1,6 +1,3 @@
-import { Color, DataTexture, Vector3 } from "three";
-import type { GenerativeShaderUniforms } from "./shaders/types";
-
 export const FFT_SIZE = 64;
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
@@ -20,69 +17,4 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   iridescence: [0, 5],
   uLineCount: [0, 5],
   uStripesWidth: [0, 1],
-};
-
-const DEFAULT_COLOR = new Color("#ff00ff");
-
-export const UNIFORM_DEFAULTS: GenerativeShaderUniforms = {
-  uTime: { value: 0 },
-  uSeed: { value: 0 },
-  uColor1: { value: DEFAULT_COLOR },
-  uColor2: { value: DEFAULT_COLOR },
-  uColor3: { value: DEFAULT_COLOR },
-  uColor4: { value: DEFAULT_COLOR },
-  uColor5: { value: DEFAULT_COLOR },
-  uUseColorKey: { value: 0 },
-  uColorKeyValue: { value: 0 },
-  uColorNoiseScale: {
-    value: 0,
-  },
-  uDisplacementNoiseScale: {
-    value: 0,
-  },
-  uDisplacementAmplitude: {
-    value: 0,
-  },
-  uRoughness: {
-    value: 0,
-  },
-  uClearcoat: {
-    value: 0,
-  },
-  uClearcoatRoughness: {
-    value: 0,
-  },
-  uIridescence: {
-    value: 0,
-  },
-  uLineWidth: {
-    value: 0.1,
-  },
-  uLineCount: {
-    value: 0,
-  },
-  uNoiseOffset: {
-    value: new Vector3(),
-  },
-  uRoughnessPattern: {
-    value: 0,
-  },
-  uNoiseVariant: {
-    value: 0,
-  },
-  uStripesWidth: {
-    value: 0,
-  },
-  uEmission: {
-    value: 0,
-  },
-  uRMS: {
-    value: 0,
-  },
-  uFFT: {
-    value: [],
-  },
-  uAudioTex: {
-    value: new DataTexture(),
-  },
 };

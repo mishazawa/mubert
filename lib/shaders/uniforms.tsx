@@ -1,5 +1,8 @@
 //  ¯\_(ツ)_/¯
 // as const
+
+import type { GenerativeShaderUniforms } from "./types";
+
 // does not support multiple spaces between tokens
 export const UNIFORMS = `
 uniform float uTime;
@@ -28,3 +31,16 @@ uniform float uEmission;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
 ` as const;
+
+export function generateDefaults() {
+  return {
+    ...UNIFORMS.split(";\n")
+      .filter((l) => l)
+      .map((line) => line.split(" ")[2])
+      .reduce((acc, i) => {
+        acc[i] = { value: 0 };
+        return acc;
+      }, {} as Record<string, any>),
+    uFFT: { value: [1] },
+  } as GenerativeShaderUniforms;
+}

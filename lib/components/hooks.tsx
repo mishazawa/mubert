@@ -1,4 +1,4 @@
-import { SPEED_MULTIPLIER, UNIFORM_DEFAULTS } from "../constants";
+import { SPEED_MULTIPLIER } from "../constants";
 import type { CanvasProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
@@ -30,6 +30,7 @@ import {
 } from "three";
 
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { generateDefaults } from "../shaders/uniforms";
 
 const BYPASS_NORMALS = false;
 
@@ -146,7 +147,7 @@ export function useUniforms(
   analyser: Pick<CanvasProps, "getFFT" | "getRMS">
 ): RefObject<GenerativeShaderUniforms> {
   // initial values for uniforms
-  const uniforms = useRef<GenerativeShaderUniforms>(UNIFORM_DEFAULTS);
+  const uniforms = useRef<GenerativeShaderUniforms>(generateDefaults());
 
   useEffect(() => {
     Object.keys(controls).map((k) => {
