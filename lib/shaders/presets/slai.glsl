@@ -26,7 +26,9 @@ vec3 displace (in vec3 P, in vec3 N, in vec3 patt, in float animation) {
   vec3 mask = vec3(length(patt));
   vec3 newPosition = P + N * mask;
   mask = smoothstep(-1.0, 1.0, mask);
+
   return newPosition + noiseDistortion(newPosition, mask.x, animation * 10.0);
+  
 }
 
 
@@ -36,7 +38,7 @@ vec3 displace (in vec3 P, in vec3 N, in vec3 patt, in float animation) {
 DisplacePatternOutput displace_pattern(in DisplacePatternInput data, float animation) {
   Neighbours samples = getNeighbours(data.position, data.normal);
 
-  vec3 patt = pattern_(vec3(0.), animation);
+  vec3 patt = pattern_(data.position, animation);
   vec3 p = displace(data.position, data.normal, patt, animation);
   
   vec3 n = calcNormalFromSamples(
@@ -45,11 +47,13 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data, float anima
     displace(samples.b, data.normal, patt, animation)
   );
   
+  // return DisplacePatternOutput(data.position, data.normal, patt);
   return DisplacePatternOutput(p, n, patt);
 }
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   vec3 background = mix(uColor1, vec3(uColorKeyValue),  uUseColorKey);
-  vec3 newColor = mix(background, uColor2,  data.pattern);
+  // vec3 newColor = mix(background, uColor2,  data.pattern);
+  vec3 newColor = data.pattern;
   return CoatOutput(newColor, data.normal, 1., uRoughness);
 }
