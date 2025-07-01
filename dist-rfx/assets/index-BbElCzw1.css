@@ -1,0 +1,1 @@
+body{margin:0;display:grid;align-items:center;justify-items:center;min-height:100svh;position:relative}#root{display:grid;align-items:center;justify-items:center;min-height:100svh;width:100%}.stats{position:fixed;top:0;left:0;z-index:2}.vis_canvas{max-width:1024px}.audio_ctrl{display:flex;position:fixed;left:0;bottom:0}

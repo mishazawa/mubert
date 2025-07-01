@@ -14,6 +14,7 @@
     "dev": "vite --config vite.config.app.ts",
     "build:lib": "vite build --config vite.config.lib.ts",
     "build:app": "vite build --config vite.config.app.ts",
+    "build:rfx": "vite build --config vite.config.rfx.ts",
     "build:ts": "tsc -b",
     "build:all": "tsc -b && npm run build:lib && npm run build:app",
     "deploy": "firebase deploy --only hosting"
