@@ -112,7 +112,7 @@ export function useGeometry(resolution: number) {
 
 export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
   const { texture, buffer, ROW } = useMemo(() => {
-    const SIZE = 64;
+    const SIZE = 128;
     const ROW = SIZE * 4; // bytes per row  (RGBA)
     const data = new Uint8Array(SIZE * SIZE * 4);
     const tex = new DataTexture(data, SIZE, SIZE, RGBAFormat, UnsignedByteType);
@@ -129,6 +129,7 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
 
       // 2. write new FFT row at the top
       const fft = analyser.getFFT(); // 64 values 0-255
+      // console.log("FFT", fft);
 
       for (let i = 0; i < fft.length; i++) {
         const v = fft[i];

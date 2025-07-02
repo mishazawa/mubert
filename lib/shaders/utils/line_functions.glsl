@@ -41,57 +41,92 @@ vec3 maybeDrawLines(in vec3 background, in vec3 pos) {
 }
 
 
+
+vec3 getColorIdx(int idx) {
+  idx = idx % 5;
+  if (idx == 0) return uColor1;
+  if (idx == 1) return uColor2;
+  if (idx == 2) return uColor3;
+  if (idx == 3) return uColor4;
+  if (idx == 4) return uColor5;
+  return vec3(0.0);
+}
+
+float gain( float x, float k ) 
+{
+    float a = 0.5*pow(2.0*((x<0.5)?x:1.0-x), k);
+    return (x<0.5)?a:1.0-a;
+}
+
 vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
   int lineCount = max(uLineCount, 1);
   float timeFreq = uTime * FREQ;
   float timeSpeed = uTime * SPEED;
   vec3 noiseOffset = uNoiseOffset + uColorNoiseScale * vec3(uColorNoiseScale, 0., 0.);
 
-  vec3 newColor = uColor1;
+  vec3 newColor = getColorIdx(0);
 
   float pattern = 0.0;
 
-  pos = sinnoise_distort(pos + noiseOffset, 0.95, 0.25, vec3(time, 0.0, 0.0));
+  pos = sinnoise_distort(pos, 0.5, 0.2, vec3(time, 0.0, 0.0));
 
-  for (int i = 0; i < lineCount; i++) {
-    float pt = float(i) / float(lineCount);
-    float rv = random(pt + uSeed);
-    float rv2 = random(pt + uSeed + 10.5);
-    float rv3 = random(pt + uSeed + 20.5);
-    float rv4 = random(pt + uSeed + 30.5);
+  int nc = 5;
+  int nl = 4+uLineCount*0;
 
-    vec3 col;
-    if (i==0) { col = uColor2; }
-    if (i==1) { col = uColor3; }
-    if (i==2) { col = uColor4; }
-    if (i==3) { col = uColor5; }
+  for (int i = 0; i < nl; i++) {
+
+
+    float pt = float(i) / float(nl);
+    float rnd1 = random(pt + uSeed + 0.5);
+    float rnd2 = random(pt + uSeed + 10.5);
+    float rnd3 = random(pt + uSeed + 20.5);
+    float rnd4 = random(pt + uSeed + 30.5);
+    float rnd5 = random(pt + uSeed + 40.5);
+
+
+
+    vec3 npos = (pos*0.3);
+    float rot_speed = 2.0;
+    npos.xy = rotate2d(npos.xy, uTime*rnd1*rot_speed);
+    npos.yz = rotate2d(npos.yz, uTime*rnd2*rot_speed);
+    npos.xz = rotate2d(npos.xz, uTime*rnd3*rot_speed);
+
+
+    float scale = 0.5;
+    float speeds = 1.0;
+    npos.x *= rnd4*scale;
+    vec2 puv = vec2(
+      npos.x * 0.5 + 0.5,
+      npos.y * 0.5 + 0.5
+    );
+    puv.y *= rnd5*speeds;
+
+    vec2 auv = puv;
+    auv = vec2(
+      clamp(mix(0.0, 0.4, auv.x), 0.0, 1.0),
+      clamp(mix(0.0, 1.0, auv.y), 0.0, 1.0)
+    );
+    float audio = texture(uAudioTex, auv).r;
+    audio = gain(pow(audio, 1.0), 8.0);  
     
-    vec3 npos = pos;
-    // npos.xy = rotate2d(npos.xy, 0.03);
-    // npos.xz = rotate2d(npos.xz, rv);
-    npos.yz = rotate2d(npos.yz, rv);
 
 
-    // float nval = npos.y * (0.5 + rv * 3.0) + time * 3.0 + pt;
-    // float noise = vnoise1d(nval * 2.0 + rv * 100.0) * 2.0 - 1.0;
-    float nval = npos.y;
-    nval *= 0.3;
-    nval = nval*0.5+0.5;
-    nval = smoothstep(0.0, 1.0, nval);
 
-    float noise = texture(uAudioTex, vec2(rv2+npos.z*0.00, nval)).r;
-    noise *= 2.0;
-    float contrast = 1.0;
-    noise = smoothstep(0.5-contrast*0.5, 0.5+contrast*0.5, noise);
-    // noise = (noise * 2.0 - 1.0);
-    // noise *= 100.0;
 
-    pattern += noise*2.0-1.0;
-    newColor = mix(newColor, col, noise);
+    vec3 col1 = getColorIdx(i+1);
+    float matte = audio;
+
+
+    vec3 col = mix(newColor, col1, matte);
+    newColor = col;
+
   }
-  // return vec3(pattern*0.5+0.5);
+
   return newColor;
 }
+
+
+
 
 vec3 drawSinLines(in vec3 background, in vec3 pos, float time) {
   int lineCount = max(uLineCount, 1);
