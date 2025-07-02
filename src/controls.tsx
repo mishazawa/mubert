@@ -89,7 +89,7 @@ export function useDebugShader() {
       value: false,
     },
     preset: {
-      value: "pnoise",
+      value: "slai",
       options: PRESETS,
     },
     style: {

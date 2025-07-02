@@ -9,19 +9,20 @@
 <body>
   <div id="root"></div>
   <div class="audio_ctrl">
-    <button id="audio_btn">Play</button>
+    <!-- <button id="audio_btn">Play</button> -->
     <audio id="audio" controls crossorigin="anonymous" src="/test_sound.mp3" />
   </div>
   <script type="module" src="/main.tsx"></script>
 </body>
 <script>
   var audio = document.getElementById("audio");
-  var audioBtn = document.getElementById("audio_btn");
+  // var audioBtn = document.getElementById("audio_btn");
 
   audio.autoplay = true;
   var ctx = new (window.AudioContext || window.webkitAudioContext)();
   var analyser = ctx.createAnalyser();
-  analyser.fftSize = 64;
+  analyser.fftSize = 128;
+  window.fftSize = analyser.fftSize;
   var data = new Uint8Array(analyser.frequencyBinCount);
   let audioReady = false;
 
@@ -32,23 +33,19 @@
     requestAnimationFrame(renderLoop);
   }
 
-  audioBtn.onclick = () => {
-    new Promise((resolve, reject) => {
-      setTimeout(() => resolve(audio.src), 500);
-    }).then(src => {
-      audio.src = src;
-      audio.play();
-    })
-  }
-
-  audio.addEventListener('canplay', async () => {
-    await ctx.resume();
-    if (!audioReady) {
-      source = ctx.createMediaElementSource(audio);
+  audio.addEventListener('play', async () => {
+    await ctx.resume();               // unlock AudioContext on user gesture
+    if (!audioReady) {                // connect only once
+      const source = ctx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(ctx.destination);
       audioReady = true;
     }
+  });
+
+  audio.addEventListener('ended', () => {
+    audio.currentTime = 0;
+    audio.play();
   });
 
   window.dataArray = data;
