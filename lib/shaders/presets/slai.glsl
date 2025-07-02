@@ -97,14 +97,9 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float roughness = snoise(data.pattern - 3.3 + vec3(0.0, 0.0, uSeed*10.0))*0.5+0.5;
   roughness = gain(roughness, 2.0);
 
-  vec3 worldPos = data.position;
-  worldPos = (viewMatrix * vec4(worldPos, 1.0)).xyz;
-
-  vec3 viewDir = normalize(vec3(0.0) - worldPos); // or -normalize(fragPos) in view space
   vec3 reflected = reflect(-viewDir, normalize(data.normal));
   float eta = 1.0 / 1.5;                   // air to glass
   vec3 refracted = refract(viewDir, normalize(data.normal), eta);
-
 
   return CoatOutput(newColor, data.normal, 1., roughness);
 

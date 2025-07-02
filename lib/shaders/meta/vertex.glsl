@@ -2,6 +2,7 @@ void main() {
   vPosition = position;
   vNormal = normal;
   vUv = uv;
+  viewDir = normalize(cameraPosition);
 
   float animation = uTime * SPEED;
 

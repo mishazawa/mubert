@@ -15,9 +15,7 @@ const PRESETS: ShaderPreset[] = [
   "linoise",
 ];
 
-export function useShaderStatePublic() {
-  const [data, set] = useState(generateShaderParams(0));
-
+export function useShaderState(): [ShaderControls, any] {
   const rng = useMemo(() => randomGenerator(666), []);
   const presets = useMemo(
     (): ShaderPreset[] => [
@@ -32,89 +30,7 @@ export function useShaderStatePublic() {
     []
   );
 
-  const [_, setData] = useControls(
-    () => ({
-      Generate: button(() => {
-        const params = generateShaderParams(rng.int(0, 9999));
-        set(params);
-        setData({ uSeed: params.uSeed });
-        setPreset({ preset: presets[rng.int(0, presets.length)] });
-      }),
-      uSeed: {
-        value: data.uSeed,
-        step: 1,
-        onChange: (v: any) => {
-          set(generateShaderParams(v));
-        },
-      },
-    }),
-    [data.uSeed]
-  );
-  const [debug, setPreset] = useControls(
-    () => ({
-      preset: {
-        value: "pnoise",
-        options: PRESETS,
-      },
-      style: {
-        value: 0,
-        min: 1,
-        max: 2,
-        step: 1,
-      },
-      polygon: {
-        value: 16,
-        min: 1,
-        max: 32,
-        step: 1,
-      },
-      speed: {
-        value: 1,
-        min: 0.5,
-        max: 5,
-        step: 0.1,
-      },
-    }),
-    [data.uSeed]
-  );
-  return { data, debug };
-}
-
-export function useDebugShader() {
-  return useControls("Debug", {
-    vertex: {
-      value: false,
-    },
-    fragment: {
-      value: false,
-    },
-    preset: {
-      value: "slai",
-      options: PRESETS,
-    },
-    style: {
-      value: 0,
-      min: 0,
-      max: 3,
-      step: 1,
-    },
-    mesh: {
-      value: 2,
-      min: 0,
-      max: 3,
-      step: 1,
-    },
-    polygon: {
-      value: 8,
-      min: 1,
-      max: 32,
-      step: 1,
-    },
-  });
-}
-
-export function useShaderState() {
-  const [defaults, set] = useState(generateShaderParams(0));
+  const [defaults, set] = useState(generateShaderParams(rng.int(0, 1024)));
 
   useEffect(() => {
     const {
@@ -134,11 +50,48 @@ export function useShaderState() {
   useControls(
     {
       Generate: button(() => {
-        set(generateShaderParams(defaults.uSeed + 1));
+        const params = generateShaderParams(rng.int(0, 9999));
+        set(params);
+        setData({ uSeed: params.uSeed });
+        setPreset({
+          preset: presets[rng.int(0, presets.length)],
+          style: rng.casino(0.7),
+        });
       }),
     },
     [defaults.uSeed]
   );
+
+  const [debug, setPreset] = useControls("Presets", () => ({
+    preset: {
+      value: "slai",
+      options: PRESETS,
+    },
+    style: {
+      value: 0,
+      min: 0,
+      max: 3,
+      step: 1,
+    },
+    vertex: {
+      value: false,
+    },
+    fragment: {
+      value: false,
+    },
+    mesh: {
+      value: 2,
+      min: 0,
+      max: 3,
+      step: 1,
+    },
+    polygon: {
+      value: 8,
+      min: 1,
+      max: 32,
+      step: 1,
+    },
+  }));
 
   const [data, setData] = useControls("Parameters", () => ({
     uSeed: {
@@ -229,11 +182,14 @@ export function useShaderState() {
   }));
   const colors = useColorsControls(defaults);
 
-  return {
-    ...defaults,
-    ...data,
-    ...colors,
-  };
+  return [
+    {
+      ...defaults,
+      ...data,
+      ...colors,
+    },
+    debug,
+  ];
 }
 
 function useColorsControls(defaults: ShaderControls) {
