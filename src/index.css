@@ -21,9 +21,7 @@ body {
   z-index: 2;
 }
 
-.vis_canvas {
-  max-width: 1024px;
-}
+
 
 .audio_ctrl {
   display: flex;
