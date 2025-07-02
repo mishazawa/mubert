@@ -25,6 +25,7 @@ export function randomSwapRange(
 type RandomGenerator = {
   int: (min: number, max: number) => number;
   float: (min: number, max: number) => number;
+  casino: (thresh: number) => 0 | 1;
 };
 
 export function randomGenerator(seed: number): RandomGenerator {
@@ -37,6 +38,10 @@ export function randomGenerator(seed: number): RandomGenerator {
     float(min: number, max: number) {
       counter++;
       return getRandomFloat(min, max, seed + counter);
+    },
+    casino: function (thresh: number): 0 | 1 {
+      counter++;
+      return getRandomFloat(0, 1, seed + counter) > thresh ? 1 : 0;
     },
   };
 }
