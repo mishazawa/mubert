@@ -19,6 +19,8 @@ struct CoatOutput
   vec3 bump;
   float scale;
   float roughness;
+  float emission;
+  float iridescence;
 };
 
 struct Neighbours {

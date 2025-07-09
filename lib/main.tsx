@@ -29,8 +29,8 @@ export default function MubertCanvas(
   const [dpr, setDpr] = useState(2);
 
   return (
-    <Canvas className="vis_canvas" dpr={dpr}>
-      <color attach="background" args={[props.data.uColor5 as Color]} />
+    <Canvas className="vis_canvas" dpr={dpr} camera={{ position: [0, 0, 10], fov: 30 }} >
+      <color attach="background" args={[props.data.uColor1 as Color]} />
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
       <PerformanceMonitor
@@ -42,7 +42,7 @@ export default function MubertCanvas(
         <Model {...props} />
       </Center>
 
-      <OrbitControls enablePan={false} />
+      <OrbitControls enablePan={false} target={[-0.1, 0.0, -0.1]}/>
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
     </Canvas>
   );

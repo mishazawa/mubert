@@ -106,7 +106,7 @@ function PointedGeometry({
           baseMaterial={PointsMaterial}
           {...props}
           transparent
-          size={0.01}
+          size={0.1}
         />
       </points>
     );

@@ -13,4 +13,8 @@ void main() {
 
   //#inlude<solid_parameters>
   csm_DiffuseColor.rgba = vec4(coat.color, 1.0);
+
+
+
+
 }

@@ -68,10 +68,12 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
 
   float pattern = 0.0;
 
-  pos = sinnoise_distort(pos, 0.5, 0.2, vec3(time, 0.0, 0.0));
+  pos = sinnoise_distort(pos, 0.9, 0.3*random(uSeed+10.2), vec3(time, 0.0, 0.0));
 
   int nc = 5;
   int nl = 4+uLineCount*0;
+
+  vec3 npos_accum = vec3(0.0);
 
   for (int i = 0; i < nl; i++) {
 
@@ -87,10 +89,13 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
 
     vec3 npos = (pos*0.3);
     float rot_speed = 2.0;
+    vec3 npos_vec = vec3(0.0, 1.0, 0.0);
     npos.xy = rotate2d(npos.xy, uTime*rnd1*rot_speed);
     npos.yz = rotate2d(npos.yz, uTime*rnd2*rot_speed);
     npos.xz = rotate2d(npos.xz, uTime*rnd3*rot_speed);
-
+    npos_vec.xy = rotate2d(npos_vec.xy, uTime*rnd1*rot_speed);
+    npos_vec.yz = rotate2d(npos_vec.yz, uTime*rnd2*rot_speed);
+    npos_vec.xz = rotate2d(npos_vec.xz, uTime*rnd3*rot_speed);
 
     float scale = 0.5;
     float speeds = 1.0;
@@ -107,8 +112,9 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
       clamp(mix(0.0, 1.0, auv.y), 0.0, 1.0)
     );
     float audio = texture(uAudioTex, auv).r;
-    audio = gain(pow(audio, 1.0), 8.0);  
-    
+    // audio = gain(pow(audio, 1.0), 8.0);
+    audio = gain(pow(audio, 1.0), VERTEX==1?5.0:8.0);
+
 
 
 
@@ -119,10 +125,21 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
 
     vec3 col = mix(newColor, col1, matte);
     newColor = col;
+    pattern += audio*2.0-1.0;
+    npos_accum += npos_vec * audio * 0.5;
 
   }
 
-  return newColor;
+
+  float pscale = 0.1 + random(uSeed + 100.0) * 0.2;
+  npos_accum *= pscale;
+  vec3 new = vec3(
+    snoise(npos_accum + vec3(0.5, 0.0, 0.0)),
+    snoise(npos_accum + vec3(10.5, 0.0, 0.0)),
+    snoise(npos_accum + vec3(20.5, 0.0, 0.0))
+  );
+
+  return vec3(npos_accum);
 }
 
 

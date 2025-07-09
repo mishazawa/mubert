@@ -132,8 +132,17 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
       // console.log("FFT", fft);
 
       for (let i = 0; i < fft.length; i++) {
-        const v = fft[i];
+        let v = fft[i];
         const idx = i * 4; // row 0 offset
+        const mix_min = 0.05;
+        const max_max = 0.99;
+        let pv = buffer[idx];
+        if (pv > v) {
+          v = pv * (1.0 - mix_min) + v * mix_min; // smooth
+        } else if (pv < v) {
+          v = pv * (1.0 - max_max) + v * max_max; // smooth
+        }
+
         buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
         buffer[idx + 3] = 255; // alpha
       }
