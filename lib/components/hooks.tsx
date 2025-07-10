@@ -31,6 +31,7 @@ import {
 
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { generateDefaults } from "../shaders/uniforms";
+import { DipyramidGeometry } from "./Dipyramid";
 
 const BYPASS_NORMALS = false;
 
@@ -52,6 +53,10 @@ export function useGeometry(resolution: number) {
     [resolution]
   );
 
+  const dipyramid = useMemo(
+    () => new DipyramidGeometry(4, resolution, 1, 1),
+    [resolution]
+  );
   const torus = useMemo(() => new TorusKnotGeometry(1, 0.25, 300, 32), []);
 
   const edgesTorusX = useMemo(
@@ -91,7 +96,7 @@ export function useGeometry(resolution: number) {
 
   return [
     // style solid or points
-    sphere,
+    dipyramid,
     octahedron,
     icosahedron,
     torus,
@@ -206,7 +211,6 @@ export function useTransforms(): RefObject<Object3D> {
     // ref.current.position.x = 0.0;
     // ref.current.position.y = 0.0;
     // ref.current.position.z = 0.0;
-
     // ref.current.rotation.x += 0.1;
     // ref.current.rotation.y += 0.08;
     // ref.current.rotation.y += 0.06;

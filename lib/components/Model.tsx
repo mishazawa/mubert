@@ -1,6 +1,6 @@
 import CustomShaderMaterial from "three-custom-shader-material";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import type { CanvasProps } from "../types";
 
@@ -16,7 +16,8 @@ import {
 import { compile } from "../shaders/compiler";
 import type { MaterialType } from "../shaders/types";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
-import { Bounds } from "@react-three/drei";
+import { Bounds, useHelper } from "@react-three/drei";
+import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
 
 export function Model({
   data,
@@ -34,7 +35,6 @@ export function Model({
     speed = 1,
     style,
   } = debug ?? {};
-
   const ref = useTransforms();
   const uniforms = useUniforms(data, speed, fns);
   const items = useGeometry(MESH_DETAIL);
@@ -69,7 +69,6 @@ export function Model({
   // show only spheric lines for edge material
 
   const visibleIndex = getOffsetByShaderStyle(mesh, style);
-
   return (
     <Bounds observe margin={2} maxDuration={0}>
       <group ref={ref} position={[0, 0, 0]}>
@@ -125,9 +124,11 @@ function PointedGeometry({
       </lineSegments>
     );
   }
+  const meshRef = useRef(null!);
+  useHelper(false && visible && meshRef, VertexNormalsHelper, 0.1, 0xff0000);
 
   return (
-    <mesh geometry={geometry} visible={visible}>
+    <mesh ref={meshRef} geometry={geometry} visible={visible}>
       <CustomShaderMaterial
         baseMaterial={MeshPhysicalMaterial}
         {...props}
