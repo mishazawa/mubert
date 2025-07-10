@@ -68,7 +68,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
 
   float pattern = 0.0;
 
-  pos = sinnoise_distort(pos, 0.9, 0.3*random(uSeed+10.2), vec3(time, 0.0, 0.0));
+  pos = sinnoise_distort(pos, 0.9, 0.3*random(uSeed+10.2), vec3(time*0.5, 0.0, 0.0));
 
   int nc = 5;
   int nl = 4+uLineCount*0;
@@ -99,7 +99,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
 
     float scale = 0.5;
     float speeds = 1.0;
-    npos.x *= rnd4*scale;
+    npos.x *= (0.2+rnd4*0.8);
     vec2 puv = vec2(
       npos.x * 0.5 + 0.5,
       npos.y * 0.5 + 0.5
@@ -131,7 +131,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
   }
 
 
-  float pscale = 0.1 + random(uSeed + 100.0) * 0.2;
+  float pscale = 0.2 + random(uSeed + 100.0) * 0.1;
   npos_accum *= pscale;
   vec3 new = vec3(
     snoise(npos_accum + vec3(0.5, 0.0, 0.0)),

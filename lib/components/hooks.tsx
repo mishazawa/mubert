@@ -201,8 +201,15 @@ export function useTransforms(): RefObject<Object3D> {
 
   // animate mesh here
   useFrame(() => {
-    ref.current.rotation.x += 0.001;
-    ref.current.rotation.y += 0.001;
+    // console.log("useTransforms", ref);
+    // ref.current.geometry.center();
+    // ref.current.position.x = 0.0;
+    // ref.current.position.y = 0.0;
+    // ref.current.position.z = 0.0;
+
+    // ref.current.rotation.x += 0.1;
+    // ref.current.rotation.y += 0.08;
+    // ref.current.rotation.y += 0.06;
   });
 
   return ref;

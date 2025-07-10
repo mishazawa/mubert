@@ -106,7 +106,7 @@ function PointedGeometry({
           baseMaterial={PointsMaterial}
           {...props}
           transparent
-          size={0.1}
+          size={0.05}
         />
       </points>
     );
@@ -128,7 +128,7 @@ function PointedGeometry({
       <CustomShaderMaterial
         baseMaterial={MeshPhysicalMaterial}
         {...props}
-        roughness={0}
+        roughness={1}
         iridescence={1}
         clearcoat={1}
       />

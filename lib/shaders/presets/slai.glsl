@@ -3,7 +3,7 @@
 #define SPEED .1
 #define FREQ 1.
 #define FRAC_SCALE 16
-#define DISPLACE_SCALE (0.5+random(uSeed+69.0));
+#define DISPLACE_SCALE (1.0+random(uSeed+69.0)*0.5);
 
 //#include<math>
 //#include<noise3>
@@ -65,7 +65,7 @@ vec3 displace_ (in vec3 P, in vec3 N, in vec3 patt, in float animation) {
     snoise(newPosition + vec3(0.5, 0.0, 0.0)),
     snoise(newPosition + vec3(10.5, 0.0, 0.0)),
     snoise(newPosition + vec3(20.5, 0.0, 0.0))
-  )*0.3;
+  )*0.3+random(uSeed+4.0)*0.2;
 
 
 
