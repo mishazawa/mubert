@@ -30,14 +30,14 @@ export function Model({
     fragment,
     preset,
     mesh,
-    polygon,
+
     speed = 1,
     style,
   } = debug ?? {};
 
   const ref = useTransforms();
   const uniforms = useUniforms(data, speed, fns);
-  const items = useGeometry(polygon * MESH_DETAIL);
+  const items = useGeometry(MESH_DETAIL);
 
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
