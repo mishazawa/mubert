@@ -101,10 +101,10 @@ function generateShaderBody(
   return shaderType === "vertex"
     ? VERTEX_BODY
     : FRAGMENT_BODY.replace(
-        "//#inlude<solid_parameters>",
+        "//#include<solid_parameters>",
         presetStyle === "solid" ? SOLID_PARAMETERS : "// solid params ignored. "
       ).replace(
-        "//#inlude<vNormal>",
+        "//#include<vNormal>",
         presetStyle === "solid" ? "vNormal," : "vec3(0.),"
       );
 }
