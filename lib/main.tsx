@@ -38,7 +38,7 @@ export default function MubertCanvas(
 
       <EnvironmentLight intensity={10} />
       <Model {...props} />
-      <OrbitControls enablePan={true} makeDefault={true} />
+      <OrbitControls enablePan={false} makeDefault={true} />
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
     </Canvas>
   );

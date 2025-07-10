@@ -71,8 +71,8 @@ export function Model({
   const visibleIndex = getOffsetByShaderStyle(mesh, style);
 
   return (
-    <Bounds fit observe margin={1.2} maxDuration={0}>
-      <group ref={ref}>
+    <Bounds observe margin={2} maxDuration={0}>
+      <group ref={ref} position={[0, 0, 0]}>
         {items.map((i, idx) => (
           <PointedGeometry
             materialType={materialType}
