@@ -1,10 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import {
-  Center,
-  OrbitControls,
-  PerformanceMonitor,
-  StatsGl,
-} from "@react-three/drei";
+import { OrbitControls, PerformanceMonitor, StatsGl } from "@react-three/drei";
 
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
@@ -26,10 +21,13 @@ export default function MubertCanvas(
     debug?: any;
   }
 ) {
-  const [dpr, setDpr] = useState(2);
-
+  const [dpr, setDpr] = useState(1);
   return (
-    <Canvas className="vis_canvas" dpr={dpr} camera={{ position: [0, 0, 5], fov: 45 }} >
+    <Canvas
+      className="vis_canvas"
+      dpr={dpr}
+      camera={{ position: [0, 0, 5], fov: 45 }}
+    >
       <color attach="background" args={[props.data.uColor1 as Color]} />
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
@@ -37,13 +35,10 @@ export default function MubertCanvas(
         factor={1}
         onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
       />
-      <Center>
-        <EnvironmentLight intensity={10} />
-        <Model {...props} />
 
-      </Center>
-
-      <OrbitControls enablePan={true}/>
+      <EnvironmentLight intensity={10} />
+      <Model {...props} />
+      <OrbitControls enablePan={true} makeDefault={true} />
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
     </Canvas>
   );

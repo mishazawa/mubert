@@ -16,6 +16,7 @@ import {
 import { compile } from "../shaders/compiler";
 import type { MaterialType } from "../shaders/types";
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
+import { Bounds } from "@react-three/drei";
 
 export function Model({
   data,
@@ -70,19 +71,21 @@ export function Model({
   const visibleIndex = getOffsetByShaderStyle(mesh, style);
 
   return (
-    <group ref={ref}>
-      {items.map((i, idx) => (
-        <PointedGeometry
-          materialType={materialType}
-          key={idx}
-          geometry={i}
-          visible={idx === visibleIndex}
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-          uniforms={uniforms.current}
-        />
-      ))}
-    </group>
+    <Bounds fit observe margin={1.2} maxDuration={0}>
+      <group ref={ref}>
+        {items.map((i, idx) => (
+          <PointedGeometry
+            materialType={materialType}
+            key={idx}
+            geometry={i}
+            visible={idx === visibleIndex}
+            vertexShader={vertexShader}
+            fragmentShader={fragmentShader}
+            uniforms={uniforms.current}
+          />
+        ))}
+      </group>
+    </Bounds>
   );
 }
 
