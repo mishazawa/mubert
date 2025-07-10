@@ -23,9 +23,14 @@ export function useShaderState(): [ShaderControls, any] {
       "slai",
       "slai",
       "slai",
-      "stripes",
-      "linoise",
-      "pnoise",
+      "slai",
+      "slai",
+      "slai",
+      // "stripes",
+      // "stripes",
+      // "stripes",
+      // "linoise",
+      // "pnoise",
     ],
     []
   );
@@ -86,12 +91,12 @@ export function useShaderState(): [ShaderControls, any] {
       step: 1,
     },
     polygon: {
-      value: 8,
+      value: 4,
       min: 1,
       max: 32,
       step: 1,
     },
-  }));
+  }), { collapsed: true });
 
   const [data, setData] = useControls("Parameters", () => ({
     uSeed: {
@@ -179,7 +184,7 @@ export function useShaderState(): [ShaderControls, any] {
       min: 0,
       max: 1,
     },
-  }));
+  }), { collapsed: true });
   const colors = useColorsControls(defaults);
 
   return [
@@ -240,7 +245,7 @@ function useColorsControls(defaults: ShaderControls) {
         setColor5(new Color(v));
       },
     },
-  }));
+  }), { collapsed: true });
 
   return {
     uColor1: color1,

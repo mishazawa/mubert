@@ -1,0 +1,107 @@
+#define DIST_AMP 5.
+#define NOISE_DIST_AMP 1.
+#define SPEED .1
+#define FREQ 1.
+#define FRAC_SCALE 16
+
+//#include<math>
+//#include<noise3>
+//#include<random>
+//#include<noise_distortion>
+//#include<line_functions>
+
+
+
+vec3 pattern_(in vec3 P, in float animation) {
+  return drawAudioLines(vec3(.0), generateSyncedPosition(P), animation) * DIST_AMP * uDisplacementAmplitude;
+}
+
+vec3 displace (in vec3 P, in vec3 N, in float animation) {
+  vec3 mask = vec3(1.0);
+  vec3 newPosition = P + N * mask;
+  return newPosition + noiseDistortion(newPosition, mask.x, animation);
+}
+
+vec3 displace_ (in vec3 P, in vec3 N, in vec3 patt, in float animation) {
+
+  vec3 mask = vec3(length(patt));
+  mask = smoothstep(-1.0, 1.0, mask);
+
+  float PHASE = animation*1.0 + fract(uSeed/100.0) * 100.0;
+  float strength = random(uSeed + 1.0)*0.5;
+  strength = 1.0;
+  float freq = 0.2 + random(uSeed + 2.5)*0.5;
+  float gainn = 1.0 + random(uSeed + 3.5)*3.0;
+
+  float noise3 = snoise(patt+N*freq*0.2 - 3.3 + vec3(0.0, 0.0, PHASE));
+  float noise4 = snoise(patt - 4.4 + vec3(0.0, 0.0, -PHASE));
+  vec3 newPosition = P + N*(noise3*0.5);
+  for (int j = 0; j < 3; j++) {
+    vec3 pos_ = newPosition;
+    vec3 npos2 = pos_*freq;
+    vec3 noise2 = vec3(
+        snoise(npos2 + 11.1 + vec3(0.0, 0.0, PHASE)),
+        snoise(npos2 + 22.2 + vec3(0.0, PHASE, 0.0)),
+        snoise(npos2 + 33.3 + vec3(PHASE, 0.0, 0.0))
+      );
+    vec3 newpos_ = pos_;
+    float ss = noise3*0.5+0.5;
+    ss *= 0.2;
+    newpos_.xy = rotate2d(newpos_.xy, noise2.x*strength*ss);
+    newpos_.yz = rotate2d(newpos_.yz, noise2.y*strength*ss);
+    newpos_.xz = rotate2d(newpos_.xz, noise2.z*strength*ss);
+    newpos_ += noise2*0.1*ss;
+    // noise2 = vec3(
+    //     gain(noise2.x*0.5+0.5, gainn),
+    //     gain(noise2.y*0.5+0.5, gainn),
+    //     gain(noise2.z*0.5+0.5, gainn)
+    //   )*2.0-1.0;
+    newPosition = newpos_;
+  }
+
+
+  return newPosition;
+  
+}
+
+
+//#include<calc_normal>
+
+
+DisplacePatternOutput displace_pattern(in DisplacePatternInput data, float animation) {
+  Neighbours samples = getNeighbours(data.position, data.normal);
+
+  vec3 patt = pattern_(data.position, animation);
+
+  // vec3 p = data.position;
+  // vec3 n = data.normal;
+
+  vec3 p = displace_(data.position, data.normal, patt, animation);
+  vec3 n = calcNormalFromSamples(
+    p,
+    displace_(samples.a, data.normal, patt, animation),
+    displace_(samples.b, data.normal, patt, animation)
+  );
+
+
+  
+  // return DisplacePatternOutput(data.position, data.normal, patt);
+  return DisplacePatternOutput(p, n, patt);
+}
+
+CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
+  vec3 background = mix(uColor1, vec3(uColorKeyValue),  uUseColorKey);
+  // vec3 newColor = mix(background, uColor2,  data.pattern);
+  vec3 newColor = data.pattern;
+
+  float roughness = snoise(data.pattern - 3.3 + vec3(0.0, 0.0, uSeed*10.0))*0.5+0.5;
+  roughness = gain(roughness, 2.0);
+
+  vec3 reflected = reflect(-viewDir, normalize(data.normal));
+  float eta = 1.0 / 1.5;                   // air to glass
+  vec3 refracted = refract(viewDir, normalize(data.normal), eta);
+
+  return CoatOutput(newColor, data.normal, 1., roughness);
+
+
+}

@@ -15,26 +15,31 @@
 #else
 #endif
 
-float gen_mask (vec2 uv, float animation) {
+float gen_mask(vec2 uv, float animation) {
   return plot(fract(uv.x + animation * .5), .1);
 }
 
-vec3 displace (in vec3 P, in vec3 N, in float animation) {
-  vec3 mask = (DIST_AMP + uDisplacementAmplitude) * turbulence(uNoiseOffset + N + animation * SPEED, uDisplacementNoiseScale);
+vec3 displace(in vec3 P, in vec3 N, in float animation) {
+  vec3 mask =
+      (DIST_AMP + uDisplacementAmplitude) *
+      turbulence(uNoiseOffset + N + animation * SPEED, uDisplacementNoiseScale);
   // vec3 newPosition = P + N * mask ;
 
-  float fftVal = float(uFFT[3])/1024.0;
-  vec3 newPosition = P + N * fftVal ;
+  float fftVal = float(uFFT[3]) / 1024.0;
+  vec3 newPosition = P + N * fftVal;
 
-  vec3 noiseVal = noiseDistortion(newPosition * 0.5 * FRAC_SCALE, mask.x, animation * 0.5) * NOISE_DIST_AMP;
-  
+  vec3 noiseVal =
+      noiseDistortion(newPosition * 0.5 * FRAC_SCALE, mask.x, animation * 0.5) *
+      NOISE_DIST_AMP;
+
   newPosition += noiseVal;
-  
+
   return newPosition;
 }
 
-DisplacePatternOutput displace_pattern(in DisplacePatternInput data, float animation) {
-  vec3 newPosition = displace(data.position,data.normal, animation);
+DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
+                                       float animation) {
+  vec3 newPosition = displace(data.position, data.normal, animation);
   return DisplacePatternOutput(newPosition, data.normal, vec3(0.));
 }
 
@@ -43,5 +48,6 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   vec3 background = mix(uColor1, key, uUseColorKey);
 
   vec3 newColor = mix(background, uColor2, gen_mask(vUv, animation));
-  return CoatOutput(newColor, data.normal, 1., uRoughness);
+  return CoatOutput(newColor, data.normal, 1., uRoughness, uEmission,
+                    uIridescence);
 }

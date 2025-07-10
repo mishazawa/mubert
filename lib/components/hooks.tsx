@@ -132,8 +132,17 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
       // console.log("FFT", fft);
 
       for (let i = 0; i < fft.length; i++) {
-        const v = fft[i];
+        let v = fft[i];
         const idx = i * 4; // row 0 offset
+        const mix_min = 0.05;
+        const max_max = 0.99;
+        let pv = buffer[idx];
+        if (pv > v) {
+          v = pv * (1.0 - mix_min) + v * mix_min; // smooth
+        } else if (pv < v) {
+          v = pv * (1.0 - max_max) + v * max_max; // smooth
+        }
+
         buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
         buffer[idx + 3] = 255; // alpha
       }
@@ -192,8 +201,15 @@ export function useTransforms(): RefObject<Object3D> {
 
   // animate mesh here
   useFrame(() => {
-    ref.current.rotation.x += 0.001;
-    ref.current.rotation.y += 0.001;
+    // console.log("useTransforms", ref);
+    // ref.current.geometry.center();
+    // ref.current.position.x = 0.0;
+    // ref.current.position.y = 0.0;
+    // ref.current.position.z = 0.0;
+
+    // ref.current.rotation.x += 0.1;
+    // ref.current.rotation.y += 0.08;
+    // ref.current.rotation.y += 0.06;
   });
 
   return ref;
