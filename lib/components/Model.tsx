@@ -14,7 +14,7 @@ import {
 } from "three";
 
 import { compile } from "../shaders/compiler";
-import type { MaterialType } from "../shaders/types";
+
 import { useGeometry, useTransforms, useUniforms } from "./hooks";
 import { Bounds, useHelper } from "@react-three/drei";
 import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
@@ -66,64 +66,86 @@ export function Model({
     console.groupEnd();
   }, [vertexShader, fragmentShader]);
 
-  // show only spheric lines for edge material
+  const visibleIndex =
+    mesh >= items[materialType].length ? items[materialType].length - 1 : mesh;
 
-  const visibleIndex = getOffsetByShaderStyle(mesh, style);
   return (
     <Bounds observe margin={2} maxDuration={0}>
       <group ref={ref} position={[0, 0, 0]}>
-        {items.map((i, idx) => (
-          <PointedGeometry
-            materialType={materialType}
-            key={idx}
-            geometry={i}
-            visible={idx === visibleIndex}
-            vertexShader={vertexShader}
-            fragmentShader={fragmentShader}
-            uniforms={uniforms.current}
-          />
-        ))}
+        <group visible={materialType === "solid"}>
+          {items.solid.map((i, idx) => (
+            <RenderSolid
+              key={idx}
+              geometry={i}
+              visible={idx === visibleIndex}
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms.current}
+            />
+          ))}
+        </group>
+        <group visible={materialType === "point"}>
+          {items.point.map((i, idx) => (
+            <RenderPoints
+              key={idx}
+              geometry={i}
+              visible={idx === visibleIndex}
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms.current}
+            />
+          ))}
+        </group>
+        <group visible={materialType === "wireframe"}>
+          {items.wireframe.map((i, idx) => (
+            <RenderLines
+              key={idx}
+              geometry={i}
+              visible={idx === visibleIndex}
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms.current}
+            />
+          ))}
+        </group>
       </group>
     </Bounds>
   );
 }
-
-function PointedGeometry({
-  materialType,
-  geometry,
-  visible,
-  ...props
-}: {
-  materialType: MaterialType;
+type RendererProps = {
   visible: boolean;
   geometry: BufferGeometry;
   vertexShader: string;
   fragmentShader: string;
   uniforms: any;
-}) {
-  if (materialType === "point")
-    return (
-      <points geometry={geometry} visible={visible}>
-        <CustomShaderMaterial
-          baseMaterial={PointsMaterial}
-          {...props}
-          transparent
-          size={0.05}
-        />
-      </points>
-    );
+};
 
-  if (materialType === "wireframe") {
-    return (
-      <lineSegments geometry={geometry} visible={visible}>
-        <CustomShaderMaterial
-          baseMaterial={LineBasicMaterial}
-          {...props}
-          linewidth={1}
-        />
-      </lineSegments>
-    );
-  }
+function RenderPoints({ geometry, visible, ...props }: RendererProps) {
+  return (
+    <points geometry={geometry} visible={visible}>
+      <CustomShaderMaterial
+        baseMaterial={PointsMaterial}
+        {...props}
+        transparent
+        size={0.05}
+      />
+    </points>
+  );
+}
+
+function RenderLines({ geometry, visible, ...props }: RendererProps) {
+  return (
+    <lineSegments geometry={geometry} visible={visible}>
+      <CustomShaderMaterial
+        baseMaterial={LineBasicMaterial}
+        {...props}
+        linewidth={1}
+      />
+    </lineSegments>
+  );
+}
+
+function RenderSolid({ geometry, visible, ...props }: RendererProps) {
   const meshRef = useRef(null!);
   useHelper(false && visible && meshRef, VertexNormalsHelper, 0.1, 0xff0000);
 
@@ -138,13 +160,4 @@ function PointedGeometry({
       />
     </mesh>
   );
-}
-
-// lines -> 8, 9, 10, 11
-// wireframe -> 4, 5, 6, 7
-// solid -> 1, 2, 3, 4
-function getOffsetByShaderStyle(mesh: number, style: number): number {
-  if (style === 3) return mesh + 8;
-  if (style === 2) return mesh + 4;
-  return mesh;
 }

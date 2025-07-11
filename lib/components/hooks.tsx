@@ -1,22 +1,22 @@
-import { SPEED_MULTIPLIER } from "../constants";
+import { POINT_DETAIL_DIVIDER, SPEED_MULTIPLIER } from "../constants";
 import type { CanvasProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
+  CapsuleGeometry,
   IcosahedronGeometry,
-  OctahedronGeometry,
   SphereGeometry,
+  TorusGeometry,
   TorusKnotGeometry,
   WireframeGeometry,
   type Mesh,
   type Object3D,
 } from "three";
 
-import { HorizontalLinesGeometry } from "./HorizontalLinesGeometry";
-
 import type {
   GenerativeShaderUniforms,
+  MaterialType,
   ShaderControls,
   UniformValue,
 } from "../shaders/types";
@@ -31,88 +31,54 @@ import {
 
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { generateDefaults } from "../shaders/uniforms";
-import { DipyramidGeometry } from "./Dipyramid";
 
 const BYPASS_NORMALS = false;
 
 type ElementType = keyof ShaderControls;
 
-export function useGeometry(resolution: number) {
-  const sphere = useMemo(
-    () => new SphereGeometry(1, resolution, resolution),
-    [resolution]
-  );
-
-  const octahedron = useMemo(
-    () => new OctahedronGeometry(1, resolution),
-    [resolution]
-  );
-
+export function useGeometry(
+  resolution: number
+): Record<MaterialType, BufferGeometry[]> {
   const icosahedron = useMemo(
     () => new IcosahedronGeometry(1, resolution),
     [resolution]
   );
-
-  const dipyramid = useMemo(
-    () => new DipyramidGeometry(4, resolution, 1, 1),
+  const sphere = useMemo(
+    () =>
+      new SphereGeometry(
+        1,
+        resolution / POINT_DETAIL_DIVIDER,
+        resolution / POINT_DETAIL_DIVIDER
+      ),
     [resolution]
   );
-  const torus = useMemo(() => new TorusKnotGeometry(1, 0.25, 300, 32), []);
-
-  const edgesTorusX = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(torus, "x")),
-    [torus, resolution]
-  );
-  const edgesTorusY = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(torus, "y")),
-    [torus, resolution]
-  );
-  const edgesSphereX = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(sphere, "x")),
-    [torus, resolution]
-  );
-  const edgesSphereY = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(sphere, "y")),
-    [torus, resolution]
+  const pill = useMemo(
+    () => new CapsuleGeometry(1, 1, 16, 32, 8),
+    [resolution]
   );
 
-  const wireframeSphere = useMemo(
-    () => recomputeNormals(new WireframeGeometry(sphere)),
-    [sphere, resolution]
+  const torusknot = useMemo(
+    () => new TorusKnotGeometry(1, 0.25, resolution * 2, resolution / 2),
+    []
   );
-
-  const wireframeOctahedron = useMemo(
-    () => recomputeNormals(new WireframeGeometry(octahedron)),
-    [octahedron, resolution]
+  const torus = useMemo(
+    () => new TorusGeometry(1, 0.25, resolution * 2, resolution / 2),
+    []
   );
-  const wireframeIcosahedron = useMemo(
-    () => recomputeNormals(new WireframeGeometry(icosahedron)),
-    [icosahedron, resolution]
-  );
-  const wireframeTorus = useMemo(
+  const torusw = useMemo(
     () => recomputeNormals(new WireframeGeometry(torus)),
     [torus, resolution]
   );
+  const torusknotw = useMemo(
+    () => recomputeNormals(new WireframeGeometry(torusknot)),
+    [torusknot, resolution]
+  );
 
-  return [
-    // style solid or points
-    dipyramid,
-    octahedron,
-    icosahedron,
-    torus,
-
-    // style wireframe
-    wireframeSphere,
-    wireframeOctahedron,
-    wireframeIcosahedron,
-    wireframeTorus,
-
-    // style edges
-    edgesSphereX,
-    edgesSphereY,
-    edgesTorusX,
-    edgesTorusY,
-  ];
+  return {
+    solid: [icosahedron, torus, torusknot, pill],
+    point: [sphere, pill],
+    wireframe: [torusw, torusknotw],
+  };
 }
 
 export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
