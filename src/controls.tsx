@@ -1,4 +1,4 @@
-import { LIGHT_PRESET } from "@lib/components/EnvironmentLight";
+import { LIGHT_PRESET } from "@lib/components/lights";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
