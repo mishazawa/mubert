@@ -91,6 +91,18 @@ export function useShaderState(): [ShaderControls, any] {
         min: 0.01,
         max: 1,
       },
+      lens: {
+        value: 45,
+        min: 1,
+        max: 90,
+        step: 1,
+      },
+      distance: {
+        value: 5,
+        min: 2,
+        max: 15,
+        step: 0.1,
+      },
       vertex: {
         value: false,
       },

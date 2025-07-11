@@ -140,5 +140,5 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // norm = newNorm;
   // newColor = newPosition;
 
-  return CoatOutput(newColor, norm, 1., roughness, emission, iridescence);
+  return CoatOutput(newColor, norm, 1., uRoughness, emission, iridescence);
 }

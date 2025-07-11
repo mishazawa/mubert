@@ -1,5 +1,10 @@
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, PerformanceMonitor, StatsGl } from "@react-three/drei";
+import { Canvas, useThree } from "@react-three/fiber";
+import {
+  OrbitControls,
+  PerformanceMonitor,
+  PerspectiveCamera as Camera,
+  StatsGl,
+} from "@react-three/drei";
 
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
@@ -12,9 +17,9 @@ import {
   randomGenerator,
   randomSwapRange,
 } from "./utils";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ShaderControls } from "./shaders/types";
-import type { Color } from "three";
+import { PerspectiveCamera, type Color } from "three";
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -22,12 +27,9 @@ export default function MubertCanvas(
   }
 ) {
   const [dpr, setDpr] = useState(1);
+
   return (
-    <Canvas
-      className="vis_canvas"
-      dpr={dpr}
-      camera={{ position: [0, 0, 5], fov: 45 }}
-    >
+    <Canvas className="vis_canvas" dpr={dpr}>
       <color attach="background" args={[props.data.uColor1 as Color]} />
       {/* TO BE REMOVED */}
       <StatsGl showPanel={1} className="stats" />
@@ -38,10 +40,22 @@ export default function MubertCanvas(
 
       <EnvironmentLight intensity={10} />
       <Model {...props} />
-      <OrbitControls enablePan={false} makeDefault={true} />
+      <LensCamera {...props.debug} />
+      <OrbitControls enablePan={false} />
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
     </Canvas>
   );
+}
+
+function LensCamera({ distance, lens }: any) {
+  const cam = useRef<PerspectiveCamera>(null!);
+
+  useEffect(() => {
+    if (!cam.current) return;
+    cam.current.setFocalLength(lens);
+  }, [lens]);
+
+  return <Camera ref={cam} position={[0, 0, distance]} makeDefault={true} />;
 }
 
 export function generateShaderParams(uSeed: number): ShaderControls {
