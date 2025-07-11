@@ -8,4 +8,5 @@ export type CanvasProps = {
 
 export type EnvironmentLightProps = {
   intensity: number;
+  preset: number;
 };

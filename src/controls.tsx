@@ -1,3 +1,4 @@
+import { LIGHT_PRESET } from "@lib/components/EnvironmentLight";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
@@ -81,7 +82,7 @@ export function useShaderState(): [ShaderControls, any] {
         step: 1,
       },
       mesh: {
-        value: 2,
+        value: 0,
         min: 0,
         max: 3,
         step: 1,
@@ -98,10 +99,16 @@ export function useShaderState(): [ShaderControls, any] {
         step: 1,
       },
       distance: {
-        value: 5,
+        value: 10,
         min: 2,
         max: 15,
         step: 0.1,
+      },
+      light: {
+        value: 0,
+        min: 0,
+        max: LIGHT_PRESET.length - 1,
+        step: 1,
       },
       vertex: {
         value: false,

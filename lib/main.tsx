@@ -1,4 +1,4 @@
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import {
   OrbitControls,
   PerformanceMonitor,
@@ -38,7 +38,7 @@ export default function MubertCanvas(
         onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
       />
 
-      <EnvironmentLight intensity={10} />
+      <EnvironmentLight intensity={10} preset={props.debug.light} />
       <Model {...props} />
       <LensCamera {...props.debug} />
       <OrbitControls enablePan={false} />
