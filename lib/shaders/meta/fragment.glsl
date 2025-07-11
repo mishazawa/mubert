@@ -12,7 +12,7 @@ void main() {
 
   //#include<solid_parameters>
 
-#ifdef IS_POINT
+#if IS_POINT
   // draw round circle
   vec2 uv = vec2(gl_PointCoord.x, 1. - gl_PointCoord.y);
   vec2 cUV = 2. * uv - 1.;
