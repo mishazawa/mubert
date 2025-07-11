@@ -5,11 +5,11 @@ import { useEffect, useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
   CapsuleGeometry,
+  EdgesGeometry,
   IcosahedronGeometry,
   SphereGeometry,
   TorusGeometry,
   TorusKnotGeometry,
-  WireframeGeometry,
   type Mesh,
   type Object3D,
 } from "three";
@@ -62,15 +62,15 @@ export function useGeometry(
     []
   );
   const torus = useMemo(
-    () => new TorusGeometry(1, 0.25, resolution * 2, resolution / 2),
+    () => new TorusGeometry(1, 0.25, resolution, resolution),
     []
   );
   const torusw = useMemo(
-    () => recomputeNormals(new WireframeGeometry(torus)),
+    () => recomputeNormals(new EdgesGeometry(torus, 0.2)),
     [torus, resolution]
   );
   const torusknotw = useMemo(
-    () => recomputeNormals(new WireframeGeometry(torusknot)),
+    () => recomputeNormals(new EdgesGeometry(torusknot, 10.85)),
     [torusknot, resolution]
   );
 

@@ -31,7 +31,7 @@ export function Model({
     fragment,
     preset,
     mesh,
-
+    pointSize,
     speed = 1,
     style,
   } = debug ?? {};
@@ -93,6 +93,7 @@ export function Model({
               vertexShader={vertexShader}
               fragmentShader={fragmentShader}
               uniforms={uniforms.current}
+              size={pointSize}
             />
           ))}
         </group>
@@ -120,14 +121,18 @@ type RendererProps = {
   uniforms: any;
 };
 
-function RenderPoints({ geometry, visible, ...props }: RendererProps) {
+function RenderPoints({
+  geometry,
+  visible,
+  ...props
+}: RendererProps & { size: number }) {
   return (
     <points geometry={geometry} visible={visible}>
       <CustomShaderMaterial
         baseMaterial={PointsMaterial}
         {...props}
         transparent
-        size={0.05}
+        sizeAttenuation={true}
       />
     </points>
   );

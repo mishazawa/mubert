@@ -80,17 +80,22 @@ export function useShaderState(): [ShaderControls, any] {
         max: 3,
         step: 1,
       },
-      vertex: {
-        value: false,
-      },
-      fragment: {
-        value: false,
-      },
       mesh: {
         value: 2,
         min: 0,
         max: 3,
         step: 1,
+      },
+      pointSize: {
+        value: 0.05,
+        min: 0.01,
+        max: 1,
+      },
+      vertex: {
+        value: false,
+      },
+      fragment: {
+        value: false,
       },
     }),
     { collapsed: true }
