@@ -2,13 +2,13 @@ import { Canvas } from "@react-three/fiber";
 import {
   OrbitControls,
   PerformanceMonitor,
-  PerspectiveCamera as Camera,
+  PerspectiveCamera as CameraPer,
   StatsGl,
 } from "@react-three/drei";
 
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
-import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
+import { AMBIENT_LIGHT_COLOR, SHADER_STYLE, VALID_RANGES } from "./constants";
 import type { CanvasProps } from "./types";
 
 import {
@@ -20,6 +20,17 @@ import {
 import { useEffect, useRef, useState } from "react";
 import type { ShaderControls } from "./shaders/types";
 import { PerspectiveCamera, type Color } from "three";
+import {
+  DepthOfField,
+  Bloom,
+  Noise,
+  EffectComposer,
+  SSAO,
+  ChromaticAberration,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
+
+const DISABLE_SSAO = true;
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -43,6 +54,47 @@ export default function MubertCanvas(
       <LensCamera {...props.debug} />
       <OrbitControls enablePan={false} />
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
+
+      <EffectComposer enableNormalPass={!DISABLE_SSAO}>
+        <SSAO
+          blendFunction={BlendFunction.MULTIPLY} // blend mode
+          samples={30} // amount of samples per pixel (shouldn't be a multiple of the ring count)
+          rings={4} // amount of rings in the occlusion sampling pattern
+          distanceThreshold={1.0} // global distance threshold at which the occlusion effect starts to fade out. min: 0, max: 1
+          distanceFalloff={0.0} // distance falloff. min: 0, max: 1
+          rangeThreshold={0.5} // local occlusion range threshold at which the occlusion starts to fade out. min: 0, max: 1
+          rangeFalloff={0.1} // occlusion range falloff. min: 0, max: 1
+          luminanceInfluence={0.9} // how much the luminance of the scene influences the ambient occlusion
+          radius={20} // occlusion sampling radius
+          bias={0.5} // occlusion bias
+        />
+
+        <Bloom
+          intensity={
+            props.debug.bloom *
+            (SHADER_STYLE[props.debug.style] !== "solid" ? 5 : 1)
+          }
+          luminanceThreshold={
+            props.debug.bloom -
+            (SHADER_STYLE[props.debug.style] !== "solid" ? 0.9 : 2)
+          }
+          luminanceSmoothing={0.9}
+        />
+
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL} // blend mode
+          offset={[
+            props.debug.chromaticAberration,
+            props.debug.chromaticAberration,
+          ]} // color offset
+        />
+        <DepthOfField
+          focusDistance={props.debug.focusDistance}
+          focalLength={props.debug.focalLength}
+          bokehScale={props.debug.bokehScale}
+        />
+        <Noise opacity={props.debug.noise} />
+      </EffectComposer>
     </Canvas>
   );
 }
@@ -55,7 +107,7 @@ function LensCamera({ distance, lens }: any) {
     cam.current.setFocalLength(lens);
   }, [lens]);
 
-  return <Camera ref={cam} position={[0, 0, distance]} makeDefault={true} />;
+  return <CameraPer ref={cam} position={[0, 0, distance]} makeDefault={true} />;
 }
 
 export function generateShaderParams(uSeed: number): ShaderControls {

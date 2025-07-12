@@ -132,6 +132,7 @@ function RenderPoints({
         baseMaterial={PointsMaterial}
         {...props}
         transparent
+        toneMapped={false}
         sizeAttenuation={true}
       />
     </points>
@@ -144,6 +145,7 @@ function RenderLines({ geometry, visible, ...props }: RendererProps) {
       <CustomShaderMaterial
         baseMaterial={LineBasicMaterial}
         {...props}
+        toneMapped={false}
         linewidth={1}
       />
     </lineSegments>
@@ -161,6 +163,7 @@ function RenderSolid({ geometry, visible, ...props }: RendererProps) {
         {...props}
         roughness={1}
         iridescence={1}
+        toneMapped={false}
         clearcoat={1}
       />
     </mesh>

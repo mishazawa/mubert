@@ -116,6 +116,35 @@ export function useShaderState(): [ShaderControls, any] {
       fragment: {
         value: false,
       },
+      focusDistance: {
+        value: 1,
+        min: 0,
+        max: 1,
+      },
+      focalLength: {
+        value: 0.01,
+        min: 0,
+        max: 1,
+      },
+      bokehScale: {
+        value: 0.01,
+        min: 0,
+      },
+      noise: {
+        value: 0.1,
+        min: 0,
+        max: 1,
+      },
+      bloom: {
+        value: 0.1,
+        min: 0,
+        max: 1,
+      },
+      chromaticAberration: {
+        value: 0.002,
+        min: 0,
+        max: 0.05,
+      },
     }),
     { collapsed: true }
   );
