@@ -1,9 +1,9 @@
 import { Canvas } from "@react-three/fiber";
 import {
-  OrbitControls,
   PerformanceMonitor,
   PerspectiveCamera as CameraPer,
   StatsGl,
+  TrackballControls,
 } from "@react-three/drei";
 
 import { Model } from "./components/Model";
@@ -52,7 +52,10 @@ export default function MubertCanvas(
       <EnvironmentLight intensity={10} preset={props.debug.light} />
       <Model {...props} />
       <LensCamera {...props.debug} />
-      <OrbitControls enablePan={false} />
+      <TrackballControls
+        noPan
+        dynamicDampingFactor={props.debug.dampingFactor}
+      />
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
 
       <EffectComposer enableNormalPass={!DISABLE_SSAO}>

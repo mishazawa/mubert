@@ -145,6 +145,11 @@ export function useShaderState(): [ShaderControls, any] {
         min: 0,
         max: 0.05,
       },
+      dampingFactor: {
+        value: 0,
+        min: 0,
+        max: 0.2,
+      },
     }),
     { collapsed: true }
   );
