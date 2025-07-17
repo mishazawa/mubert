@@ -35,6 +35,8 @@ import {
   Noise,
   EffectComposer,
   ChromaticAberration,
+  N8AO,
+  SMAA,
 } from "@react-three/postprocessing";
 
 import { BlendFunction } from "postprocessing";
@@ -76,7 +78,8 @@ function SceneWrapper() {
         />
         <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
 
-        <EffectComposer>
+        <EffectComposer multisampling={0}>
+          <N8AO {...ctx.debug.ao} />
           <ChromaticAberration
             blendFunction={BlendFunction.NORMAL} // blend mode
             offset={[
@@ -85,8 +88,8 @@ function SceneWrapper() {
             ]} // color offset
           />
           <Noise opacity={ctx.debug.noise} />
-
           <Bloom mipmapBlur levels={7} intensity={1} />
+          <SMAA />
         </EffectComposer>
       </Canvas>
     </ContextBridge>
