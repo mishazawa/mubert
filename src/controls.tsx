@@ -91,6 +91,7 @@ export function useShaderState(): [ShaderControls, any] {
         step: 1,
       },
       background: true,
+      postfx: true,
       pointSize: {
         value: 0.05,
         min: 0.01,
@@ -174,22 +175,26 @@ export function useShaderState(): [ShaderControls, any] {
     { collapsed: true }
   );
 
-  const [ao] = useControls("AO", () => ({
-    aoRadius: 5,
-    aoSamples: { value: 16, step: 1 },
-    denoiseSamples: { value: 4, step: 1 },
-    denoiseRadius: { value: 12, step: 1 },
-    distanceFalloff: 1,
-    intensity: 1,
+  const [ao] = useControls(
+    "AO",
+    () => ({
+      aoRadius: 5,
+      aoSamples: { value: 16, step: 1 },
+      denoiseSamples: { value: 4, step: 1 },
+      denoiseRadius: { value: 12, step: 1 },
+      distanceFalloff: 1,
+      intensity: 1,
 
-    quality: { options: ["performance", "low", "medium", "high", "ultra"] },
+      quality: { options: ["performance", "low", "medium", "high", "ultra"] },
 
-    color: `#000`,
-    halfRes: true,
-    depthAwareUpsampling: false,
-    screenSpaceRadius: true,
-    renderMode: { step: 1, min: 0, max: 4, value: 0 },
-  }));
+      color: `#000`,
+      halfRes: true,
+      depthAwareUpsampling: false,
+      screenSpaceRadius: true,
+      renderMode: { step: 1, min: 0, max: 4, value: 0 },
+    }),
+    { collapsed: true }
+  );
 
   const [data, setData] = useControls(
     "Parameters",

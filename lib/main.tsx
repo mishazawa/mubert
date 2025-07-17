@@ -30,17 +30,8 @@ import {
 
 import type { ShaderControls } from "./shaders/types";
 import { PerspectiveCamera, type Color } from "three";
-import {
-  Bloom,
-  Noise,
-  EffectComposer,
-  SMAA,
-  DepthOfField,
-} from "@react-three/postprocessing";
 
-import { SolidOnlyAO } from "./effects/N8AO";
-import { AudioGlitch } from "./effects/AudioGlitch";
-import { AudioChromaticAberration } from "./effects/AudioChromaticAberration";
+import { FX } from "./effects";
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -97,20 +88,7 @@ function SceneWrapper() {
           dynamicDampingFactor={ctx.debug.dampingFactor}
         />
         <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
-        <EffectComposer multisampling={0}>
-          <DepthOfField
-            focusDistance={ctx.debug.focusDistance}
-            focalLength={ctx.debug.focalLength}
-            bokehScale={ctx.debug.bokehScale}
-          />
-          <SolidOnlyAO />
-
-          <AudioGlitch />
-          <AudioChromaticAberration radialModulation />
-          <Noise opacity={ctx.debug.noise} />
-          <Bloom mipmapBlur levels={7} intensity={1} />
-          <SMAA />
-        </EffectComposer>
+        <FX />
       </Canvas>
     </ContextBridge>
   );
