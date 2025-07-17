@@ -1,3 +1,4 @@
+import { LIGHT_PRESET } from "@lib/components/lights";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
@@ -13,6 +14,7 @@ const PRESETS: ShaderPreset[] = [
   "slai",
   "pnoise",
   "linoise",
+  "slai_flat"
 ];
 
 export function useShaderState(): [ShaderControls, any] {
@@ -61,130 +63,190 @@ export function useShaderState(): [ShaderControls, any] {
         setPreset({
           preset: presets[rng.int(0, presets.length)],
           style: rng.casino(0.7),
+          light: rng.int(0, LIGHT_PRESET.length - 1),
         });
       }),
     },
     [defaults.uSeed]
   );
 
-  const [debug, setPreset] = useControls("Presets", () => ({
-    preset: {
-      value: "slai",
-      options: PRESETS,
-    },
-    style: {
-      value: 0,
-      min: 0,
-      max: 3,
-      step: 1,
-    },
-    vertex: {
-      value: false,
-    },
-    fragment: {
-      value: false,
-    },
-    mesh: {
-      value: 2,
-      min: 0,
-      max: 3,
-      step: 1,
-    },
-    polygon: {
-      value: 4,
-      min: 1,
-      max: 32,
-      step: 1,
-    },
-  }), { collapsed: true });
-
-  const [data, setData] = useControls("Parameters", () => ({
-    uSeed: {
-      value: defaults.uSeed,
-      step: 1,
-      onChange: (v: any) => {
-        set(generateShaderParams(v));
+  const [debug, setPreset] = useControls(
+    "Presets",
+    () => ({
+      preset: {
+        value: "slai",
+        options: PRESETS,
       },
-    },
-    uUseColorKey: {
-      value: defaults.uUseColorKey,
-      min: 0,
-      max: 1,
-      step: 1,
-    },
-    uColorKeyValue: {
-      value: defaults.uColorKeyValue,
-      min: 0,
-      max: 1,
-      step: 1,
-    },
-    uColorNoiseScale: {
-      value: defaults.uColorNoiseScale,
-      min: 0.5,
-      max: 20,
-    },
-    uDisplacementNoiseScale: {
-      value: defaults.uDisplacementNoiseScale,
-      min: 0.01,
-      max: 2,
-    },
-    uDisplacementAmplitude: {
-      value: defaults.uDisplacementAmplitude,
-      min: 0.01,
-      max: 0.1,
-    },
-    uRoughness: {
-      value: defaults.uRoughness,
-      min: 0,
-      max: 1,
-    },
-    uRoughnessPattern: {
-      value: defaults.uRoughnessPattern,
-      min: 0,
-      max: 1,
-    },
-    uClearcoat: {
-      value: defaults.uClearcoat,
-      min: 0,
-      max: 5,
-    },
-    uClearcoatRoughness: {
-      value: defaults.uClearcoatRoughness,
-      min: 0,
-      max: 1,
-    },
-    uIridescence: {
-      value: defaults.uIridescence,
-      min: 0,
-      max: 5,
-    },
-    uEmission: {
-      value: defaults.uEmission,
-      min: 0,
-      max: 1,
-    },
-    uLineWidth: {
-      value: defaults.uLineWidth,
-      min: 0.01,
-      max: 1,
-    },
-    uLineCount: {
-      value: defaults.uLineCount,
-      step: 1,
-      min: 0,
-      max: 4,
-    },
-    uStripesWidth: {
-      value: defaults.uStripesWidth,
-      min: 0,
-      max: 1,
-    },
-    uNoiseVariant: {
-      value: defaults.uNoiseVariant,
-      min: 0,
-      max: 1,
-    },
-  }), { collapsed: true });
+      style: {
+        value: 0,
+        min: 0,
+        max: 3,
+        step: 1,
+      },
+      mesh: {
+        value: 0,
+        min: 0,
+        max: 4,
+        step: 1,
+      },
+      pointSize: {
+        value: 0.05,
+        min: 0.01,
+        max: 1,
+      },
+      lens: {
+        value: 45,
+        min: 1,
+        max: 90,
+        step: 1,
+      },
+      distance: {
+        value: 7,
+        min: 2,
+        max: 15,
+        step: 0.1,
+      },
+      light: {
+        value: 0,
+        min: 0,
+        max: LIGHT_PRESET.length - 1,
+        step: 1,
+      },
+      vertex: {
+        value: false,
+      },
+      fragment: {
+        value: false,
+      },
+      focusDistance: {
+        value: 1,
+        min: 0,
+        max: 1,
+      },
+      focalLength: {
+        value: 0.01,
+        min: 0,
+        max: 1,
+      },
+      bokehScale: {
+        value: 0.01,
+        min: 0,
+      },
+      noise: {
+        value: 0.02,
+        min: 0,
+        max: 1,
+      },
+      bloom: {
+        value: 0.01,
+        min: 0,
+        max: 1,
+      },
+      chromaticAberration: {
+        value: 0.0003,
+        min: 0,
+        max: 0.001,
+      },
+      dampingFactor: {
+        value: 0.5,
+        min: 0,
+        max: 1.0,
+      },
+    }),
+    { collapsed: true }
+  );
+
+  const [data, setData] = useControls(
+    "Parameters",
+    () => ({
+      uSeed: {
+        value: defaults.uSeed,
+        step: 1,
+        onChange: (v: any) => {
+          set(generateShaderParams(v));
+        },
+      },
+      uUseColorKey: {
+        value: defaults.uUseColorKey,
+        min: 0,
+        max: 1,
+        step: 1,
+      },
+      uColorKeyValue: {
+        value: defaults.uColorKeyValue,
+        min: 0,
+        max: 1,
+        step: 1,
+      },
+      uColorNoiseScale: {
+        value: defaults.uColorNoiseScale,
+        min: 0.5,
+        max: 20,
+      },
+      uDisplacementNoiseScale: {
+        value: defaults.uDisplacementNoiseScale,
+        min: 0.01,
+        max: 2,
+      },
+      uDisplacementAmplitude: {
+        value: defaults.uDisplacementAmplitude,
+        min: 0.01,
+        max: 0.1,
+      },
+      uRoughness: {
+        value: defaults.uRoughness,
+        min: 0,
+        max: 1,
+      },
+      uRoughnessPattern: {
+        value: defaults.uRoughnessPattern,
+        min: 0,
+        max: 1,
+      },
+      uClearcoat: {
+        value: defaults.uClearcoat,
+        min: 0,
+        max: 5,
+      },
+      uClearcoatRoughness: {
+        value: defaults.uClearcoatRoughness,
+        min: 0,
+        max: 1,
+      },
+      uIridescence: {
+        value: defaults.uIridescence,
+        min: 0,
+        max: 5,
+      },
+      uEmission: {
+        value: defaults.uEmission,
+        min: 0,
+        max: 1,
+      },
+      uLineWidth: {
+        value: defaults.uLineWidth,
+        min: 0.01,
+        max: 1,
+      },
+      uLineCount: {
+        value: defaults.uLineCount,
+        step: 1,
+        min: 0,
+        max: 4,
+      },
+      uStripesWidth: {
+        value: defaults.uStripesWidth,
+        min: 0,
+        max: 1,
+      },
+      uNoiseVariant: {
+        value: defaults.uNoiseVariant,
+        min: 0,
+        max: 1,
+      },
+    }),
+    { collapsed: true }
+  );
   const colors = useColorsControls(defaults);
 
   return [
@@ -214,38 +276,42 @@ function useColorsControls(defaults: ShaderControls) {
     });
   }, [defaults.uSeed]);
 
-  const [_, setData] = useControls("Colors", () => ({
-    uColor1: {
-      value: `#${color1.getHexString()}`,
-      onChange: (v: any) => {
-        setColor1(new Color(v));
+  const [_, setData] = useControls(
+    "Colors",
+    () => ({
+      uColor1: {
+        value: `#${color1.getHexString()}`,
+        onChange: (v: any) => {
+          setColor1(new Color(v));
+        },
       },
-    },
-    uColor2: {
-      value: `#${color2.getHexString()}`,
-      onChange: (v: any) => {
-        setColor2(new Color(v));
+      uColor2: {
+        value: `#${color2.getHexString()}`,
+        onChange: (v: any) => {
+          setColor2(new Color(v));
+        },
       },
-    },
-    uColor3: {
-      value: `#${color3.getHexString()}`,
-      onChange: (v: any) => {
-        setColor3(new Color(v));
+      uColor3: {
+        value: `#${color3.getHexString()}`,
+        onChange: (v: any) => {
+          setColor3(new Color(v));
+        },
       },
-    },
-    uColor4: {
-      value: `#${color4.getHexString()}`,
-      onChange: (v: any) => {
-        setColor4(new Color(v));
+      uColor4: {
+        value: `#${color4.getHexString()}`,
+        onChange: (v: any) => {
+          setColor4(new Color(v));
+        },
       },
-    },
-    uColor5: {
-      value: `#${color5.getHexString()}`,
-      onChange: (v: any) => {
-        setColor5(new Color(v));
+      uColor5: {
+        value: `#${color5.getHexString()}`,
+        onChange: (v: any) => {
+          setColor5(new Color(v));
+        },
       },
-    },
-  }), { collapsed: true });
+    }),
+    { collapsed: true }
+  );
 
   return {
     uColor1: color1,

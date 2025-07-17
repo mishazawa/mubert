@@ -1,15 +1,16 @@
 import { Canvas } from "@react-three/fiber";
 import {
-  Center,
-  OrbitControls,
   PerformanceMonitor,
+  PerspectiveCamera as CameraPer,
   StatsGl,
+  TrackballControls,
+  useContextBridge,
 } from "@react-three/drei";
 
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
 import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
-import type { CanvasProps } from "./types";
+import type { CanvasProps, ParametersCtx } from "./types";
 
 import {
   getColors,
@@ -17,41 +18,103 @@ import {
   randomGenerator,
   randomSwapRange,
 } from "./utils";
-import { useState } from "react";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import type { ShaderControls } from "./shaders/types";
-import type { Color } from "three";
+import { PerspectiveCamera, type Color } from "three";
+import {
+  Bloom,
+  Noise,
+  EffectComposer,
+  ChromaticAberration,
+} from "@react-three/postprocessing";
+
+import { BlendFunction } from "postprocessing";
 
 export default function MubertCanvas(
   props: CanvasProps & {
     debug?: any;
   }
 ) {
-  const [dpr, setDpr] = useState(2);
+  return (
+    <ParametersContextWrap {...props}>
+      <SceneWrapper />
+    </ParametersContextWrap>
+  );
+}
+
+function SceneWrapper() {
+  const [dpr, setDpr] = useState(1);
+  const ContextBridge = useContextBridge(ParamsContext);
+  const ctx = useContext(ParamsContext);
 
   return (
-    <Canvas className="vis_canvas" dpr={dpr} camera={{ position: [0, 0, 5], fov: 45 }} >
-      <color attach="background" args={[props.data.uColor1 as Color]} />
-      {/* TO BE REMOVED */}
-      <StatsGl showPanel={1} className="stats" />
-      <PerformanceMonitor
-        factor={1}
-        onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
-      />
-      <Center>
-        <EnvironmentLight intensity={10} />
-        <Model {...props} />
+    <ContextBridge>
+      <Canvas className="vis_canvas" dpr={dpr}>
+        <color attach="background" args={[ctx.data.uColor1 as Color]} />
+        {/* TO BE REMOVED */}
+        <StatsGl showPanel={1} className="stats" />
+        <PerformanceMonitor
+          factor={1}
+          onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
+        />
 
-      </Center>
+        <EnvironmentLight intensity={1} preset={ctx.debug.light} />
+        <Model />
+        <LensCamera {...ctx.debug} />
+        <TrackballControls
+          noPan
+          dynamicDampingFactor={ctx.debug.dampingFactor}
+        />
+        <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
 
-      <OrbitControls enablePan={true}/>
-      <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
-    </Canvas>
+        <EffectComposer>
+          <ChromaticAberration
+            blendFunction={BlendFunction.NORMAL} // blend mode
+            offset={[
+              ctx.debug.chromaticAberration,
+              ctx.debug.chromaticAberration,
+            ]} // color offset
+          />
+          <Noise opacity={ctx.debug.noise} />
+
+          <Bloom mipmapBlur levels={7} intensity={1} />
+        </EffectComposer>
+      </Canvas>
+    </ContextBridge>
+  );
+}
+
+function LensCamera({ distance, lens }: any) {
+  const cam = useRef<PerspectiveCamera>(null!);
+
+  useEffect(() => {
+    if (!cam.current) return;
+    cam.current.setFocalLength(lens);
+  }, [lens]);
+
+  return (
+    <CameraPer
+      ref={cam}
+      position={[0, 0, distance]}
+      makeDefault={true}
+      far={20.0}
+    />
   );
 }
 
 export function generateShaderParams(uSeed: number): ShaderControls {
   const gen = randomGenerator(uSeed);
   const palette = getColors(gen);
+
   return {
     uSeed,
     uLineWidth: gen.float(0, 1),
@@ -80,4 +143,31 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uStripesWidth: gen.float(...VALID_RANGES.uStripesWidth),
     uEmission: gen.float(0, 1),
   };
+}
+
+// TODO move somewhere
+export const ParamsContext = createContext<ParametersCtx>(null!);
+
+function ParametersContextWrap({
+  children,
+  ...props
+}: CanvasProps & {
+  debug?: any;
+} & { children: any }) {
+  const gen = useMemo(() => randomGenerator(props.data.uSeed), []);
+
+  const fft = useRef({
+    mix_min: Math.pow(gen.float(0, 1), 3.0) * 0.5,
+    mix_max: gen.float(0.9, 1),
+    max: 0,
+    val: 0,
+    time: 0,
+  });
+
+  const rot_speed = useRef(gen.float(0, 0.1));
+  return (
+    <ParamsContext value={{ ...props, fft, rot_speed }}>
+      {children}
+    </ParamsContext>
+  );
 }

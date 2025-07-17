@@ -1,28 +1,24 @@
 body {
   margin: 0;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  min-height: 100svh;
+  padding: 0;
+  height: 100%;
   position: relative;
 }
 
 #root {
-  display: grid;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-items: center;
-  min-height: 100svh;
-  width: 100%;
 }
+
 .stats {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 2;
 }
-
-
-
 .audio_ctrl {
   display: flex;
   position: absolute;

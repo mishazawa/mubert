@@ -1,22 +1,26 @@
-import { SPEED_MULTIPLIER } from "../constants";
-import type { CanvasProps } from "../types";
+import { POINT_DETAIL_DIVIDER, SPEED_MULTIPLIER } from "../constants";
+
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useContext, useEffect, useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
+  CapsuleGeometry,
+  EdgesGeometry,
   IcosahedronGeometry,
-  OctahedronGeometry,
   SphereGeometry,
+  TorusGeometry,
   TorusKnotGeometry,
-  WireframeGeometry,
+  PlaneGeometry,
   type Mesh,
   type Object3D,
+  Quaternion,
+  Box3,
+  Vector3,
 } from "three";
-
-import { HorizontalLinesGeometry } from "./HorizontalLinesGeometry";
 
 import type {
   GenerativeShaderUniforms,
+  MaterialType,
   ShaderControls,
   UniformValue,
 } from "../shaders/types";
@@ -32,85 +36,73 @@ import {
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { generateDefaults } from "../shaders/uniforms";
 
+import { ParamsContext } from "../main";
+
 const BYPASS_NORMALS = false;
+
+const _q = new Quaternion();
+const _bbox = new Box3();
+const _size = new Vector3();
+const _axis = new Vector3();
 
 type ElementType = keyof ShaderControls;
 
-export function useGeometry(resolution: number) {
-  const sphere = useMemo(
-    () => new SphereGeometry(1, resolution, resolution),
-    [resolution]
-  );
-
-  const octahedron = useMemo(
-    () => new OctahedronGeometry(1, resolution),
-    [resolution]
-  );
-
+export function useGeometry(
+  resolution: number
+): Record<MaterialType, BufferGeometry[]> {
   const icosahedron = useMemo(
     () => new IcosahedronGeometry(1, resolution),
     [resolution]
   );
+  const icosahedron2 = useMemo(
+    () => new IcosahedronGeometry(1, 15),
+    [resolution]
+  );
+  const sphere = useMemo(
+    () =>
+      new SphereGeometry(
+        1,
+        resolution / POINT_DETAIL_DIVIDER,
+        resolution / POINT_DETAIL_DIVIDER
+      ),
+    [resolution]
+  );
+  const pill = useMemo(
+    () => new CapsuleGeometry(1, 1, 16, 32, 8),
+    [resolution]
+  );
 
-  const torus = useMemo(() => new TorusKnotGeometry(1, 0.25, 300, 32), []);
-
-  const edgesTorusX = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(torus, "x")),
+  const torusknot = useMemo(
+    () => new TorusKnotGeometry(1, 0.25, resolution * 2, resolution / 2),
+    []
+  );
+  const torus = useMemo(
+    () => new TorusGeometry(1, 0.25, resolution, resolution),
+    []
+  );
+  const plane = useMemo(
+    () => new PlaneGeometry(10, 10, resolution, resolution),
+    []
+  );
+  const torusw = useMemo(
+    () => recomputeNormals(new EdgesGeometry(torus, 0.2)),
     [torus, resolution]
   );
-  const edgesTorusY = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(torus, "y")),
-    [torus, resolution]
-  );
-  const edgesSphereX = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(sphere, "x")),
-    [torus, resolution]
-  );
-  const edgesSphereY = useMemo(
-    () => mergeVertices(new HorizontalLinesGeometry(sphere, "y")),
-    [torus, resolution]
+  const torusknotw = useMemo(
+    () => recomputeNormals(new EdgesGeometry(torusknot, 10.85)),
+    [torusknot, resolution]
   );
 
-  const wireframeSphere = useMemo(
-    () => recomputeNormals(new WireframeGeometry(sphere)),
-    [sphere, resolution]
-  );
-
-  const wireframeOctahedron = useMemo(
-    () => recomputeNormals(new WireframeGeometry(octahedron)),
-    [octahedron, resolution]
-  );
-  const wireframeIcosahedron = useMemo(
-    () => recomputeNormals(new WireframeGeometry(icosahedron)),
-    [icosahedron, resolution]
-  );
-  const wireframeTorus = useMemo(
-    () => recomputeNormals(new WireframeGeometry(torus)),
-    [torus, resolution]
-  );
-
-  return [
-    // style solid or points
-    sphere,
-    octahedron,
-    icosahedron,
-    torus,
-
-    // style wireframe
-    wireframeSphere,
-    wireframeOctahedron,
-    wireframeIcosahedron,
-    wireframeTorus,
-
-    // style edges
-    edgesSphereX,
-    edgesSphereY,
-    edgesTorusX,
-    edgesTorusY,
-  ];
+  return {
+    solid: [icosahedron, torus, torusknot, pill, plane],
+    point: [icosahedron2, sphere, pill],
+    wireframe: [torusw, torusknotw],
+  };
 }
 
-export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
+export function useAudioTexture() {
+  const ctx = useParameters();
+
   const { texture, buffer, ROW } = useMemo(() => {
     const SIZE = 128;
     const ROW = SIZE * 4; // bytes per row  (RGBA)
@@ -128,19 +120,33 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
       buffer.copyWithin(ROW, 0, buffer.length - ROW);
 
       // 2. write new FFT row at the top
-      const fft = analyser.getFFT(); // 64 values 0-255
+      const fft = ctx.getFFT(); // 64 values 0-255
       // console.log("FFT", fft);
+      // const max_fft = analyser.getRMS();
+      let curr_max = Math.max(...fft);
+      let new_max = curr_max;
+
+      if (ctx.fft.current.max != undefined) {
+        let past_max = ctx.fft.current.max;
+        let fade = 0.99;
+        new_max = Math.max(curr_max, past_max * fade);
+      }
+
+      ctx.fft.current.max = new_max;
+
+      const mix_min = ctx.fft.current.mix_min ?? 0.4;
+      const mix_max = ctx.fft.current.mix_max ?? 0.99;
 
       for (let i = 0; i < fft.length; i++) {
         let v = fft[i];
+        v = (v / new_max) * 255;
         const idx = i * 4; // row 0 offset
-        const mix_min = 0.05;
-        const max_max = 0.99;
+
         let pv = buffer[idx];
         if (pv > v) {
           v = pv * (1.0 - mix_min) + v * mix_min; // smooth
         } else if (pv < v) {
-          v = pv * (1.0 - max_max) + v * max_max; // smooth
+          v = pv * (1.0 - mix_max) + v * mix_max; // smooth
         }
 
         buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
@@ -154,43 +160,47 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
   return texture; // DataTexture 64×64
 }
 
-export function useUniforms(
-  controls: ShaderControls,
-  speedControls: number,
-  analyser: Pick<CanvasProps, "getFFT" | "getRMS">
-): RefObject<GenerativeShaderUniforms> {
+export function useUniforms(): RefObject<GenerativeShaderUniforms> {
+  const ctx = useParameters();
+
+  const speedControls = ctx.debug.speed ?? 1;
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(generateDefaults());
 
   useEffect(() => {
-    Object.keys(controls).map((k) => {
+    Object.keys(ctx.data).map((k) => {
       const key = k as ElementType;
-      uniforms.current[key].value = controls[key];
+      uniforms.current[key].value = ctx.data[key];
     });
-  }, [controls]);
+  }, [ctx.data]);
 
-  const audioTex = useAudioTexture(analyser);
+  const audioTex = useAudioTexture();
   useEffect(() => {
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
   }, [audioTex]);
 
   // animate uniforms here
   useFrame(() => {
-    const [rms] = analyser.getRMS();
-    const pastRms = (uniforms.current.uRMS as UniformValue<number>).value;
-    const mixValIn = 0.8;
-    const mixValOut = 0.2;
-    let newRms = 0.0;
-    newRms =
-      newRms > pastRms
-        ? pastRms * (1.0 - mixValIn) + rms * mixValIn
-        : pastRms * (1.0 - mixValOut) + rms * mixValOut;
-    uniforms.current.uRMS.value = newRms;
+    let [rms] = ctx.getRMS();
+    rms = Math.pow(rms * 2.0, 2.0);
+    // rms = rms / ((window.fft_max ?? 255)/255);
 
-    uniforms.current.uFFT.value = analyser.getFFT();
+    const pastRms = uniforms.current.uRMS.value;
+
+    const mix_min = ctx.fft.current.mix_min ?? 0.4;
+    const mix_max = ctx.fft.current.mix_max ?? 0.99;
+
+    const newRms =
+      pastRms < 0
+        ? pastRms * (1.0 - mix_max) + rms * mix_max
+        : pastRms * (1.0 - mix_min) + rms * mix_min;
+
+    uniforms.current.uRMS.value = ctx.fft.current.val = newRms;
+    uniforms.current.uFFT.value = ctx.getFFT();
 
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * 10.0;
+    ctx.fft.current.time = uniforms.current.uTime.value;
   });
 
   return uniforms;
@@ -198,18 +208,24 @@ export function useUniforms(
 
 export function useTransforms(): RefObject<Object3D> {
   const ref = useRef<Mesh>(null!);
+  const ctx = useParameters();
 
   // animate mesh here
   useFrame(() => {
-    // console.log("useTransforms", ref);
-    // ref.current.geometry.center();
-    // ref.current.position.x = 0.0;
-    // ref.current.position.y = 0.0;
-    // ref.current.position.z = 0.0;
+    const fft_val = ctx.fft.current.val;
+    const rot_speed = ctx.rot_speed.current;
+    const t = ctx.fft.current.time;
 
-    // ref.current.rotation.x += 0.1;
-    // ref.current.rotation.y += 0.08;
-    // ref.current.rotation.y += 0.06;
+    _axis
+      .set(Math.sin(t * 2.0), Math.sin(t * 3.0), Math.sin(t * 5.0))
+      .normalize(); // Y-axis
+
+    _q.setFromAxisAngle(_axis, fft_val * rot_speed);
+    _bbox.setFromObject(ref.current).getSize(_size);
+
+    if (_size.z > 0.1) {
+      ref.current.quaternion.multiply(_q);
+    }
   });
 
   return ref;
@@ -220,4 +236,8 @@ function recomputeNormals(g: BufferGeometry) {
   const a = mergeVertices(g);
   a.computeVertexNormals();
   return a;
+}
+
+export function useParameters() {
+  return useContext(ParamsContext);
 }

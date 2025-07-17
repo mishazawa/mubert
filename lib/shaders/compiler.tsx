@@ -68,6 +68,7 @@ function generateVaryings(
     if (shaderType === "fragment") return VARYINGS_SOLID_FRAGMENT;
     return VARYINGS_SOLID_VERTEX;
   }
+
   if (shaderType === "fragment") return VARYINGS_WIRE_FRAGMENT;
   return VARYINGS_WIRE_VERTEX;
 }

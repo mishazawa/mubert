@@ -1,42 +1,27 @@
 import CustomShaderMaterial from "three-custom-shader-material";
-
 import { useEffect, useMemo } from "react";
-
-import type { CanvasProps } from "../types";
+import { Bounds } from "@react-three/drei";
+import { PointsMaterial, MeshPhysicalMaterial, LineBasicMaterial } from "three";
 
 import { MESH_DETAIL, SHADER_STYLE } from "../constants";
+import { compile } from "../shaders/compiler";
 
 import {
-  PointsMaterial,
-  MeshPhysicalMaterial,
-  BufferGeometry,
-  LineBasicMaterial,
-} from "three";
+  useGeometry,
+  useParameters,
+  useTransforms,
+  useUniforms,
+} from "./hooks";
 
-import { compile } from "../shaders/compiler";
-import type { MaterialType } from "../shaders/types";
-import { useGeometry, useTransforms, useUniforms } from "./hooks";
+import type { RendererProps } from "../types";
 
-export function Model({
-  data,
-  debug,
-  ...fns
-}: CanvasProps & {
-  debug?: Record<string, any>;
-}) {
-  const {
-    vertex,
-    fragment,
-    preset,
-    mesh,
-    polygon,
-    speed = 1,
-    style,
-  } = debug ?? {};
-
+export function Model() {
+  const ctx = useParameters();
   const ref = useTransforms();
-  const uniforms = useUniforms(data, speed, fns);
-  const items = useGeometry(polygon * MESH_DETAIL);
+  const uniforms = useUniforms();
+  const items = useGeometry(MESH_DETAIL);
+
+  const { vertex, fragment, preset, mesh, pointSize, style } = ctx.debug ?? {};
 
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
@@ -65,64 +50,86 @@ export function Model({
     console.groupEnd();
   }, [vertexShader, fragmentShader]);
 
-  // show only spheric lines for edge material
-
-  const visibleIndex = getOffsetByShaderStyle(mesh, style);
+  const visibleIndex =
+    mesh >= items[materialType].length ? items[materialType].length - 1 : mesh;
 
   return (
-    <group ref={ref}>
-      {items.map((i, idx) => (
-        <PointedGeometry
-          materialType={materialType}
-          key={idx}
-          geometry={i}
-          visible={idx === visibleIndex}
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-          uniforms={uniforms.current}
-        />
-      ))}
-    </group>
+    <Bounds observe margin={2} maxDuration={0}>
+      <group ref={ref} position={[0, 0, 0]}>
+        <group visible={materialType === "solid"}>
+          {items.solid.map((i, idx) => (
+            <RenderSolid
+              key={idx}
+              geometry={i}
+              visible={idx === visibleIndex}
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms.current}
+            />
+          ))}
+        </group>
+        <group visible={materialType === "point"}>
+          {items.point.map((i, idx) => (
+            <RenderPoints
+              key={idx}
+              geometry={i}
+              visible={idx === visibleIndex}
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms.current}
+              size={pointSize}
+            />
+          ))}
+        </group>
+        <group visible={materialType === "wireframe"}>
+          {items.wireframe.map((i, idx) => (
+            <RenderLines
+              key={idx}
+              geometry={i}
+              visible={idx === visibleIndex}
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms.current}
+            />
+          ))}
+        </group>
+      </group>
+    </Bounds>
   );
 }
 
-function PointedGeometry({
-  materialType,
+function RenderPoints({
   geometry,
   visible,
   ...props
-}: {
-  materialType: MaterialType;
-  visible: boolean;
-  geometry: BufferGeometry;
-  vertexShader: string;
-  fragmentShader: string;
-  uniforms: any;
-}) {
-  if (materialType === "point")
-    return (
-      <points geometry={geometry} visible={visible}>
-        <CustomShaderMaterial
-          baseMaterial={PointsMaterial}
-          {...props}
-          transparent
-          size={0.05}
-        />
-      </points>
-    );
+}: RendererProps & { size: number }) {
+  return (
+    <points geometry={geometry} visible={visible}>
+      <CustomShaderMaterial
+        baseMaterial={PointsMaterial}
+        {...props}
+        transparent
+        toneMapped={false}
+        sizeAttenuation={true}
+      />
+    </points>
+  );
+}
 
-  if (materialType === "wireframe") {
-    return (
-      <lineSegments geometry={geometry} visible={visible}>
-        <CustomShaderMaterial
-          baseMaterial={LineBasicMaterial}
-          {...props}
-          linewidth={1}
-        />
-      </lineSegments>
-    );
-  }
+function RenderLines({ geometry, visible, ...props }: RendererProps) {
+  return (
+    <lineSegments geometry={geometry} visible={visible}>
+      <CustomShaderMaterial
+        baseMaterial={LineBasicMaterial}
+        {...props}
+        toneMapped={false}
+        linewidth={1}
+      />
+    </lineSegments>
+  );
+}
 
+function RenderSolid({ geometry, visible, ...props }: RendererProps) {
   return (
     <mesh geometry={geometry} visible={visible}>
       <CustomShaderMaterial
@@ -130,17 +137,9 @@ function PointedGeometry({
         {...props}
         roughness={1}
         iridescence={1}
+        toneMapped={false}
         clearcoat={1}
       />
     </mesh>
   );
-}
-
-// lines -> 8, 9, 10, 11
-// wireframe -> 4, 5, 6, 7
-// solid -> 1, 2, 3, 4
-function getOffsetByShaderStyle(mesh: number, style: number): number {
-  if (style === 3) return mesh + 8;
-  if (style === 2) return mesh + 4;
-  return mesh;
 }
