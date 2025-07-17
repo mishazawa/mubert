@@ -14,6 +14,7 @@ const PRESETS: ShaderPreset[] = [
   "slai",
   "pnoise",
   "linoise",
+  "slai_flat"
 ];
 
 export function useShaderState(): [ShaderControls, any] {
@@ -62,6 +63,7 @@ export function useShaderState(): [ShaderControls, any] {
         setPreset({
           preset: presets[rng.int(0, presets.length)],
           style: rng.casino(0.7),
+          light: rng.int(0, LIGHT_PRESET.length - 1),
         });
       }),
     },
@@ -84,7 +86,7 @@ export function useShaderState(): [ShaderControls, any] {
       mesh: {
         value: 0,
         min: 0,
-        max: 3,
+        max: 4,
         step: 1,
       },
       pointSize: {
@@ -99,7 +101,7 @@ export function useShaderState(): [ShaderControls, any] {
         step: 1,
       },
       distance: {
-        value: 10,
+        value: 7,
         min: 2,
         max: 15,
         step: 0.1,
@@ -131,24 +133,24 @@ export function useShaderState(): [ShaderControls, any] {
         min: 0,
       },
       noise: {
-        value: 0.1,
+        value: 0.02,
         min: 0,
         max: 1,
       },
       bloom: {
-        value: 0.1,
+        value: 0.01,
         min: 0,
         max: 1,
       },
       chromaticAberration: {
-        value: 0.002,
+        value: 0.0003,
         min: 0,
-        max: 0.05,
+        max: 0.001,
       },
       dampingFactor: {
-        value: 0,
+        value: 0.5,
         min: 0,
-        max: 0.2,
+        max: 1.0,
       },
     }),
     { collapsed: true }

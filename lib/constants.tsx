@@ -13,7 +13,7 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   displacement_noise: [0.01, 2],
   amplitude: [0.01, 0.1],
   roughness: [0, 1],
-  clearcoat: [0, 5],
+  clearcoat: [0, 0],
   cc_roughness: [0, 1],
   iridescence: [0, 5],
   uLineCount: [0, 5],

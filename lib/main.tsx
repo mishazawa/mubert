@@ -27,10 +27,13 @@ import {
   EffectComposer,
   SSAO,
   ChromaticAberration,
+  SMAA,
+  N8AO,
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 
-const DISABLE_SSAO = true;
+
+const DISABLE_SSAO = false;
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -49,7 +52,7 @@ export default function MubertCanvas(
         onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
       />
 
-      <EnvironmentLight intensity={10} preset={props.debug.light} />
+      <EnvironmentLight intensity={1} preset={props.debug.light} />
       <Model {...props} />
       <LensCamera {...props.debug} />
       <TrackballControls
@@ -59,7 +62,7 @@ export default function MubertCanvas(
       <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
 
       <EffectComposer enableNormalPass={!DISABLE_SSAO}>
-        <SSAO
+        {/* <SSAO
           blendFunction={BlendFunction.MULTIPLY} // blend mode
           samples={30} // amount of samples per pixel (shouldn't be a multiple of the ring count)
           rings={4} // amount of rings in the occlusion sampling pattern
@@ -70,9 +73,9 @@ export default function MubertCanvas(
           luminanceInfluence={0.9} // how much the luminance of the scene influences the ambient occlusion
           radius={20} // occlusion sampling radius
           bias={0.5} // occlusion bias
-        />
+        /> */}
 
-        <Bloom
+        {/* <Bloom
           intensity={
             props.debug.bloom *
             (SHADER_STYLE[props.debug.style] !== "solid" ? 5 : 1)
@@ -82,7 +85,7 @@ export default function MubertCanvas(
             (SHADER_STYLE[props.debug.style] !== "solid" ? 0.9 : 2)
           }
           luminanceSmoothing={0.9}
-        />
+        /> */}
 
         <ChromaticAberration
           blendFunction={BlendFunction.NORMAL} // blend mode
@@ -91,12 +94,15 @@ export default function MubertCanvas(
             props.debug.chromaticAberration,
           ]} // color offset
         />
-        <DepthOfField
+        {/* <DepthOfField
           focusDistance={props.debug.focusDistance}
           focalLength={props.debug.focalLength}
           bokehScale={props.debug.bokehScale}
-        />
+        /> */}
         <Noise opacity={props.debug.noise} />
+        {/* <N8AO halfRes color="black" aoRadius={2} intensity={1} aoSamples={6} denoiseSamples={4} /> */}
+        <Bloom mipmapBlur levels={7} intensity={1} />
+        {/* <SMAA /> */}
       </EffectComposer>
     </Canvas>
   );
@@ -108,14 +114,21 @@ function LensCamera({ distance, lens }: any) {
   useEffect(() => {
     if (!cam.current) return;
     cam.current.setFocalLength(lens);
+    // cam.current.far = distance * 2;
+    // cam.current.updateProjectionMatrix();
   }, [lens]);
 
-  return <CameraPer ref={cam} position={[0, 0, distance]} makeDefault={true} />;
+  return <CameraPer ref={cam} position={[0, 0, distance]} makeDefault={true} far={20.0}/>;
 }
 
 export function generateShaderParams(uSeed: number): ShaderControls {
   const gen = randomGenerator(uSeed);
   const palette = getColors(gen);
+
+  window.fft_mix_min = Math.pow(gen.float(0, 1), 3.0)*0.5;
+  window.fft_mix_max = gen.float(0.9, 1);
+  window.rot_speed = gen.float(0, 0.1);
+
   return {
     uSeed,
     uLineWidth: gen.float(0, 1),

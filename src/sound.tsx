@@ -13,6 +13,7 @@ export function useSound() {
     var arr = window.dataArray;
     var sum = arr.reduce((acc: number, v: number) => acc + v, 0);
     var max = sum / arr.length / 255;
+    // var max = Math.max(...arr) / 255;
     return [max, max];
   }, []);
 
