@@ -1,4 +1,5 @@
 import { LIGHT_PRESET } from "@lib/components/lights";
+import { FFT_SIZE } from "@lib/constants";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
@@ -89,6 +90,7 @@ export function useShaderState(): [ShaderControls, any] {
         max: 4,
         step: 1,
       },
+      background: true,
       pointSize: {
         value: 0.05,
         min: 0.01,
@@ -119,17 +121,16 @@ export function useShaderState(): [ShaderControls, any] {
         value: false,
       },
       focusDistance: {
-        value: 1,
+        value: 0.3,
         min: 0,
-        max: 1,
+        step: 0.01,
       },
       focalLength: {
-        value: 0.01,
+        value: 0.1,
         min: 0,
-        max: 1,
       },
       bokehScale: {
-        value: 0.01,
+        value: 5,
         min: 0,
       },
       noise: {
@@ -143,14 +144,31 @@ export function useShaderState(): [ShaderControls, any] {
         max: 1,
       },
       chromaticAberration: {
-        value: 0.0003,
+        value: 0.1,
         min: 0,
-        max: 0.001,
+        max: 0.1,
+        step: 0.01,
       },
       dampingFactor: {
         value: 0.5,
         min: 0,
         max: 1.0,
+      },
+      glitch: {
+        value: 1,
+        min: 0,
+        max: 1.0,
+      },
+      glitchCol: {
+        value: 0,
+        min: 0,
+        max: FFT_SIZE,
+        step: 1,
+      },
+      glitchW: {
+        value: 0.1,
+        min: 0.01,
+        max: 1,
       },
     }),
     { collapsed: true }
