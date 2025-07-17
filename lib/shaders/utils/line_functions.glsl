@@ -71,7 +71,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
   pos = sinnoise_distort(pos, 0.9, 0.3*random(uSeed+10.2), vec3(time*0.5, 0.0, 0.0));
 
   int nc = 5;
-  int nl = 4+uLineCount*0;
+  int nl = 4+int(random(uSeed+10.2)*4.0);
 
   vec3 npos_accum = vec3(0.0);
 
@@ -104,7 +104,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
       npos.x * 0.5 + 0.5,
       npos.y * 0.5 + 0.5
     );
-    puv.y *= rnd5*speeds;
+    puv.y *= pow(0.2+rnd4*0.8, 2.0)*speeds;
 
     vec2 auv = puv;
     auv = vec2(
