@@ -10,7 +10,7 @@ import {
 import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
 import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
-import type { CanvasProps } from "./types";
+import type { CanvasProps, ParametersCtx } from "./types";
 
 import {
   getColors,
@@ -18,6 +18,7 @@ import {
   randomGenerator,
   randomSwapRange,
 } from "./utils";
+
 import {
   createContext,
   useContext,
@@ -25,8 +26,8 @@ import {
   useMemo,
   useRef,
   useState,
-  type RefObject,
 } from "react";
+
 import type { ShaderControls } from "./shaders/types";
 import { PerspectiveCamera, type Color } from "three";
 import {
@@ -35,44 +36,18 @@ import {
   EffectComposer,
   ChromaticAberration,
 } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
 
-type FFTTexture = {
-  mix_min: number;
-  mix_max: number;
-  max: number;
-  val: number;
-  time: number;
-};
-export const ParamsContext = createContext<
-  CanvasProps & {
-    debug?: any;
-    fft: RefObject<FFTTexture>;
-    rot_speed: RefObject<number>;
-  }
->(null!);
+import { BlendFunction } from "postprocessing";
 
 export default function MubertCanvas(
   props: CanvasProps & {
     debug?: any;
   }
 ) {
-  const gen = useMemo(() => randomGenerator(props.data.uSeed), []);
-
-  const fft = useRef({
-    mix_min: Math.pow(gen.float(0, 1), 3.0) * 0.5,
-    mix_max: gen.float(0.9, 1),
-    max: 0,
-    val: 0,
-    time: 0,
-  });
-
-  const rot_speed = useRef(gen.float(0, 0.1));
-
   return (
-    <ParamsContext value={{ ...props, fft, rot_speed }}>
+    <ParametersContextWrap {...props}>
       <SceneWrapper />
-    </ParamsContext>
+    </ParametersContextWrap>
   );
 }
 
@@ -93,7 +68,7 @@ function SceneWrapper() {
         />
 
         <EnvironmentLight intensity={1} preset={ctx.debug.light} />
-        <Model {...ctx} />
+        <Model />
         <LensCamera {...ctx.debug} />
         <TrackballControls
           noPan
@@ -117,6 +92,7 @@ function SceneWrapper() {
     </ContextBridge>
   );
 }
+
 function LensCamera({ distance, lens }: any) {
   const cam = useRef<PerspectiveCamera>(null!);
 
@@ -167,4 +143,31 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uStripesWidth: gen.float(...VALID_RANGES.uStripesWidth),
     uEmission: gen.float(0, 1),
   };
+}
+
+// TODO move somewhere
+export const ParamsContext = createContext<ParametersCtx>(null!);
+
+function ParametersContextWrap({
+  children,
+  ...props
+}: CanvasProps & {
+  debug?: any;
+} & { children: any }) {
+  const gen = useMemo(() => randomGenerator(props.data.uSeed), []);
+
+  const fft = useRef({
+    mix_min: Math.pow(gen.float(0, 1), 3.0) * 0.5,
+    mix_max: gen.float(0.9, 1),
+    max: 0,
+    val: 0,
+    time: 0,
+  });
+
+  const rot_speed = useRef(gen.float(0, 0.1));
+  return (
+    <ParamsContext value={{ ...props, fft, rot_speed }}>
+      {children}
+    </ParamsContext>
+  );
 }

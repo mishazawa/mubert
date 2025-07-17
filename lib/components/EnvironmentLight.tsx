@@ -1,7 +1,7 @@
 import { Environment, Float, Lightformer } from "@react-three/drei";
 import { ENV_MAP_RESOLUTION } from "../constants";
-import type { EnvironmentLightProps } from "../types";
-import { LIGHT_PRESET, type LightPresetProps } from "./lights";
+import type { EnvironmentLightProps, LightPresetProps } from "../types";
+import { LIGHT_PRESET } from "./lights";
 
 export function EnvironmentLight({
   intensity,

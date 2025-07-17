@@ -1,5 +1,5 @@
 import { POINT_DETAIL_DIVIDER, SPEED_MULTIPLIER } from "../constants";
-import type { CanvasProps } from "../types";
+
 import { useFrame } from "@react-three/fiber";
 import { useContext, useEffect, useMemo, useRef, type RefObject } from "react";
 import {
@@ -100,7 +100,9 @@ export function useGeometry(
   };
 }
 
-export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
+export function useAudioTexture() {
+  const ctx = useParameters();
+
   const { texture, buffer, ROW } = useMemo(() => {
     const SIZE = 128;
     const ROW = SIZE * 4; // bytes per row  (RGBA)
@@ -112,15 +114,13 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
     return { texture: tex, buffer: data, ROW };
   }, []);
 
-  const ctx = useContext(ParamsContext);
-
   useFrame(() => {
     try {
       // 1. scroll everything down by one line (drops last row)
       buffer.copyWithin(ROW, 0, buffer.length - ROW);
 
       // 2. write new FFT row at the top
-      const fft = analyser.getFFT(); // 64 values 0-255
+      const fft = ctx.getFFT(); // 64 values 0-255
       // console.log("FFT", fft);
       // const max_fft = analyser.getRMS();
       let curr_max = Math.max(...fft);
@@ -160,30 +160,28 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
   return texture; // DataTexture 64×64
 }
 
-export function useUniforms(
-  controls: ShaderControls,
-  speedControls: number,
-  analyser: Pick<CanvasProps, "getFFT" | "getRMS">
-): RefObject<GenerativeShaderUniforms> {
+export function useUniforms(): RefObject<GenerativeShaderUniforms> {
+  const ctx = useParameters();
+
+  const speedControls = ctx.debug.speed ?? 1;
   // initial values for uniforms
   const uniforms = useRef<GenerativeShaderUniforms>(generateDefaults());
 
   useEffect(() => {
-    Object.keys(controls).map((k) => {
+    Object.keys(ctx.data).map((k) => {
       const key = k as ElementType;
-      uniforms.current[key].value = controls[key];
+      uniforms.current[key].value = ctx.data[key];
     });
-  }, [controls]);
+  }, [ctx.data]);
 
-  const audioTex = useAudioTexture(analyser);
+  const audioTex = useAudioTexture();
   useEffect(() => {
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
   }, [audioTex]);
 
-  const ctx = useContext(ParamsContext);
   // animate uniforms here
   useFrame(() => {
-    let [rms] = analyser.getRMS();
+    let [rms] = ctx.getRMS();
     rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
 
@@ -198,7 +196,7 @@ export function useUniforms(
         : pastRms * (1.0 - mix_min) + rms * mix_min;
 
     uniforms.current.uRMS.value = ctx.fft.current.val = newRms;
-    uniforms.current.uFFT.value = analyser.getFFT();
+    uniforms.current.uFFT.value = ctx.getFFT();
 
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * 10.0;
@@ -210,7 +208,7 @@ export function useUniforms(
 
 export function useTransforms(): RefObject<Object3D> {
   const ref = useRef<Mesh>(null!);
-  const ctx = useContext(ParamsContext);
+  const ctx = useParameters();
 
   // animate mesh here
   useFrame(() => {
@@ -238,4 +236,8 @@ function recomputeNormals(g: BufferGeometry) {
   const a = mergeVertices(g);
   a.computeVertexNormals();
   return a;
+}
+
+export function useParameters() {
+  return useContext(ParamsContext);
 }

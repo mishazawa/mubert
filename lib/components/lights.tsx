@@ -1,9 +1,4 @@
-export type LightPresetProps = {
-  position?: [number, number, number];
-  scale?: [number, number, number];
-  group?: boolean;
-  float?: boolean;
-};
+import type { LightPresetProps } from "../types";
 
 export const LIGHT_PRESET: Array<
   Array<LightPresetProps & { [key: string]: any }>

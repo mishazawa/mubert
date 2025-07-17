@@ -1,43 +1,27 @@
 import CustomShaderMaterial from "three-custom-shader-material";
-
-import { useEffect, useMemo, useRef } from "react";
-
-import type { CanvasProps } from "../types";
+import { useEffect, useMemo } from "react";
+import { Bounds } from "@react-three/drei";
+import { PointsMaterial, MeshPhysicalMaterial, LineBasicMaterial } from "three";
 
 import { MESH_DETAIL, SHADER_STYLE } from "../constants";
-
-import {
-  PointsMaterial,
-  MeshPhysicalMaterial,
-  BufferGeometry,
-  LineBasicMaterial,
-} from "three";
-
 import { compile } from "../shaders/compiler";
 
-import { useGeometry, useTransforms, useUniforms } from "./hooks";
-import { Bounds, useHelper } from "@react-three/drei";
-import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
+import {
+  useGeometry,
+  useParameters,
+  useTransforms,
+  useUniforms,
+} from "./hooks";
 
-export function Model({
-  data,
-  debug,
-  ...fns
-}: CanvasProps & {
-  debug?: Record<string, any>;
-}) {
-  const {
-    vertex,
-    fragment,
-    preset,
-    mesh,
-    pointSize,
-    speed = 1,
-    style,
-  } = debug ?? {};
+import type { RendererProps } from "../types";
+
+export function Model() {
+  const ctx = useParameters();
   const ref = useTransforms();
-  const uniforms = useUniforms(data, speed, fns);
+  const uniforms = useUniforms();
   const items = useGeometry(MESH_DETAIL);
+
+  const { vertex, fragment, preset, mesh, pointSize, style } = ctx.debug ?? {};
 
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
@@ -113,13 +97,6 @@ export function Model({
     </Bounds>
   );
 }
-type RendererProps = {
-  visible: boolean;
-  geometry: BufferGeometry;
-  vertexShader: string;
-  fragmentShader: string;
-  uniforms: any;
-};
 
 function RenderPoints({
   geometry,
@@ -153,11 +130,8 @@ function RenderLines({ geometry, visible, ...props }: RendererProps) {
 }
 
 function RenderSolid({ geometry, visible, ...props }: RendererProps) {
-  const meshRef = useRef(null!);
-  useHelper(false && visible && meshRef, VertexNormalsHelper, 0.1, 0xff0000);
-
   return (
-    <mesh ref={meshRef} geometry={geometry} visible={visible}>
+    <mesh geometry={geometry} visible={visible}>
       <CustomShaderMaterial
         baseMaterial={MeshPhysicalMaterial}
         {...props}
