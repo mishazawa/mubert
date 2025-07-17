@@ -1,7 +1,7 @@
 import { POINT_DETAIL_DIVIDER, SPEED_MULTIPLIER } from "../constants";
 import type { CanvasProps } from "../types";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useContext, useEffect, useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
   CapsuleGeometry,
@@ -13,6 +13,9 @@ import {
   PlaneGeometry,
   type Mesh,
   type Object3D,
+  Quaternion,
+  Box3,
+  Vector3,
 } from "three";
 
 import type {
@@ -33,7 +36,14 @@ import {
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { generateDefaults } from "../shaders/uniforms";
 
+import { ParamsContext } from "../main";
+
 const BYPASS_NORMALS = false;
+
+const _q = new Quaternion();
+const _bbox = new Box3();
+const _size = new Vector3();
+const _axis = new Vector3();
 
 type ElementType = keyof ShaderControls;
 
@@ -102,6 +112,8 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
     return { texture: tex, buffer: data, ROW };
   }, []);
 
+  const ctx = useContext(ParamsContext);
+
   useFrame(() => {
     try {
       // 1. scroll everything down by one line (drops last row)
@@ -113,23 +125,23 @@ export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
       // const max_fft = analyser.getRMS();
       let curr_max = Math.max(...fft);
       let new_max = curr_max;
-      if (window.fft_max != undefined) {
-        let past_max = window.fft_max;
+
+      if (ctx.fft.current.max != undefined) {
+        let past_max = ctx.fft.current.max;
         let fade = 0.99;
-        new_max = Math.max(curr_max, past_max*fade);
+        new_max = Math.max(curr_max, past_max * fade);
       }
-      
-      window.fft_max = new_max;
-      
-      const mix_min = window.fft_mix_min ?? 0.4;
-      const mix_max = window.fft_mix_max ?? 0.99;
+
+      ctx.fft.current.max = new_max;
+
+      const mix_min = ctx.fft.current.mix_min ?? 0.4;
+      const mix_max = ctx.fft.current.mix_max ?? 0.99;
 
       for (let i = 0; i < fft.length; i++) {
         let v = fft[i];
-        v = v / new_max * 255;
+        v = (v / new_max) * 255;
         const idx = i * 4; // row 0 offset
 
-        
         let pv = buffer[idx];
         if (pv > v) {
           v = pv * (1.0 - mix_min) + v * mix_min; // smooth
@@ -168,66 +180,53 @@ export function useUniforms(
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
   }, [audioTex]);
 
+  const ctx = useContext(ParamsContext);
   // animate uniforms here
   useFrame(() => {
     let [rms] = analyser.getRMS();
-    rms = Math.pow(rms*2.0, 2.0);
+    rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
-    
-    const pastRms = (uniforms.current.uRMS as UniformValue<number>).value;
 
+    const pastRms = uniforms.current.uRMS.value;
 
-    const mix_min = window.fft_mix_min ?? 0.4;
-    const mix_max = window.fft_mix_max ?? 0.99;
-    const mixValIn = mix_max;
-    const mixValOut = mix_min;
-    let newRms = 0.0;
-    newRms =
-      newRms > pastRms
-        ? pastRms * (1.0 - mixValIn) + rms * mixValIn
-        : pastRms * (1.0 - mixValOut) + rms * mixValOut;
-    uniforms.current.uRMS.value = newRms;
+    const mix_min = ctx.fft.current.mix_min ?? 0.4;
+    const mix_max = ctx.fft.current.mix_max ?? 0.99;
+
+    const newRms =
+      pastRms < 0
+        ? pastRms * (1.0 - mix_max) + rms * mix_max
+        : pastRms * (1.0 - mix_min) + rms * mix_min;
+
+    uniforms.current.uRMS.value = ctx.fft.current.val = newRms;
     uniforms.current.uFFT.value = analyser.getFFT();
-    window.fft_val = newRms;
 
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * 10.0;
-    window.fft_time = (uniforms.current.uTime as UniformValue<number>).value;
+    ctx.fft.current.time = uniforms.current.uTime.value;
   });
 
   return uniforms;
 }
 
-import * as THREE from 'three';
-import { rand } from "three/tsl";
 export function useTransforms(): RefObject<Object3D> {
   const ref = useRef<Mesh>(null!);
+  const ctx = useContext(ParamsContext);
 
   // animate mesh here
   useFrame(() => {
-    let fft_val = window.fft_val ?? 0.0;
-    // console.log('fftval', fft_val);
-    let rot_speed = window.rot_speed ?? 0.0;
-    const axis = new THREE.Vector3(
-      Math.sin((window.fft_time ?? 0.0)*2.0),
-      Math.sin((window.fft_time ?? 0.0)*3.0),
-      Math.sin((window.fft_time ?? 0.0)*5.0),
-    ).normalize() // Y-axis
-    const anglePerFrame = fft_val*rot_speed; // Radians per frame
-    const q = new THREE.Quaternion().setFromAxisAngle(axis, anglePerFrame)
-    // console.log("useTransforms", ref);
-    // ref.current.geometry.center();
-    // ref.current.position.x = 0.0;
-    // ref.current.position.y = 0.0;
-    // ref.current.position.z = 0.0;
-    // ref.current.rotation.x += 0.1;
-    // ref.current.rotation.y += 0.08;
-    // ref.current.rotation.y += 0.06;
-    const bbox = new THREE.Box3().setFromObject(ref.current);
-    const size = new THREE.Vector3();
-    bbox.getSize(size);
-    if (size.z > 0.1) {
-      ref.current.quaternion.multiply(q);
+    const fft_val = ctx.fft.current.val;
+    const rot_speed = ctx.rot_speed.current;
+    const t = ctx.fft.current.time;
+
+    _axis
+      .set(Math.sin(t * 2.0), Math.sin(t * 3.0), Math.sin(t * 5.0))
+      .normalize(); // Y-axis
+
+    _q.setFromAxisAngle(_axis, fft_val * rot_speed);
+    _bbox.setFromObject(ref.current).getSize(_size);
+
+    if (_size.z > 0.1) {
+      ref.current.quaternion.multiply(_q);
     }
   });
 
