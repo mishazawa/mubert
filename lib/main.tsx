@@ -1,10 +1,10 @@
 import { Canvas } from "@react-three/fiber";
 import {
-  PerformanceMonitor,
   PerspectiveCamera as CameraPer,
   StatsGl,
   TrackballControls,
   useContextBridge,
+  Icosahedron,
 } from "@react-three/drei";
 
 import { Model } from "./components/Model";
@@ -21,23 +21,17 @@ import {
 
 import {
   createContext,
+  Suspense,
   useContext,
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 
 import type { ShaderControls } from "./shaders/types";
 import { PerspectiveCamera, type Color } from "three";
-import {
-  Bloom,
-  Noise,
-  EffectComposer,
-  ChromaticAberration,
-} from "@react-three/postprocessing";
 
-import { BlendFunction } from "postprocessing";
+import { FX } from "./effects";
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -51,43 +45,50 @@ export default function MubertCanvas(
   );
 }
 
+const initialPositions = [
+  [-4, 20, -12],
+  [-10, 12, -4],
+  [-11, -12, -23],
+  [-16, -6, -10],
+  [12, -2, -3],
+  [13, 4, -12],
+  [14, -2, -23],
+  [8, 10, -20],
+];
+
 function SceneWrapper() {
-  const [dpr, setDpr] = useState(1);
   const ContextBridge = useContextBridge(ParamsContext);
   const ctx = useContext(ParamsContext);
 
   return (
     <ContextBridge>
-      <Canvas className="vis_canvas" dpr={dpr}>
+      <Canvas className="vis_canvas" dpr={1}>
         <color attach="background" args={[ctx.data.uColor1 as Color]} />
         {/* TO BE REMOVED */}
         <StatsGl showPanel={1} className="stats" />
-        <PerformanceMonitor
-          factor={1}
-          onChange={({ factor }) => setDpr(Math.floor(0.5 + 1.5 * factor))}
-        />
 
         <EnvironmentLight intensity={1} preset={ctx.debug.light} />
-        <Model />
+        <Suspense fallback={null}>
+          <Model />
+
+          {!ctx.debug.background
+            ? null
+            : initialPositions.map((pos, i) => (
+                <Icosahedron
+                  args={[1, 8]}
+                  position={[pos[0] * 0.5, pos[1] * 0.5, pos[2] * 0.5]}
+                  key={i}
+                />
+              ))}
+        </Suspense>
+
         <LensCamera {...ctx.debug} />
         <TrackballControls
           noPan
           dynamicDampingFactor={ctx.debug.dampingFactor}
         />
         <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
-
-        <EffectComposer>
-          <ChromaticAberration
-            blendFunction={BlendFunction.NORMAL} // blend mode
-            offset={[
-              ctx.debug.chromaticAberration,
-              ctx.debug.chromaticAberration,
-            ]} // color offset
-          />
-          <Noise opacity={ctx.debug.noise} />
-
-          <Bloom mipmapBlur levels={7} intensity={1} />
-        </EffectComposer>
+        <FX />
       </Canvas>
     </ContextBridge>
   );

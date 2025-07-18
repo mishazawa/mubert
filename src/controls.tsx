@@ -1,6 +1,8 @@
 import { LIGHT_PRESET } from "@lib/components/lights";
+import { FFT_SIZE } from "@lib/constants";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
+import SHADER_PRESETS from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
 
 import { randomGenerator } from "@lib/utils";
@@ -8,14 +10,7 @@ import { button, useControls } from "leva";
 import { useEffect, useMemo, useState } from "react";
 import { Color } from "three";
 
-const PRESETS: ShaderPreset[] = [
-  "noop",
-  "stripes",
-  "slai",
-  "pnoise",
-  "linoise",
-  "slai_flat"
-];
+const PRESETS: ShaderPreset[] = Object.keys(SHADER_PRESETS) as ShaderPreset[];
 
 export function useShaderState(): [ShaderControls, any] {
   const rng = useMemo(() => randomGenerator(666), []);
@@ -89,6 +84,8 @@ export function useShaderState(): [ShaderControls, any] {
         max: 4,
         step: 1,
       },
+      background: true,
+      postfx: true,
       pointSize: {
         value: 0.05,
         min: 0.01,
@@ -119,17 +116,16 @@ export function useShaderState(): [ShaderControls, any] {
         value: false,
       },
       focusDistance: {
-        value: 1,
+        value: 0.3,
         min: 0,
-        max: 1,
+        step: 0.01,
       },
       focalLength: {
-        value: 0.01,
+        value: 0.1,
         min: 0,
-        max: 1,
       },
       bokehScale: {
-        value: 0.01,
+        value: 5,
         min: 0,
       },
       noise: {
@@ -143,15 +139,53 @@ export function useShaderState(): [ShaderControls, any] {
         max: 1,
       },
       chromaticAberration: {
-        value: 0.0003,
+        value: 0.1,
         min: 0,
-        max: 0.001,
+        max: 0.1,
+        step: 0.01,
       },
       dampingFactor: {
         value: 0.5,
         min: 0,
         max: 1.0,
       },
+      glitch: {
+        value: 1,
+        min: 0,
+        max: 1.0,
+      },
+      glitchCol: {
+        value: 0,
+        min: 0,
+        max: FFT_SIZE,
+        step: 1,
+      },
+      glitchW: {
+        value: 0.1,
+        min: 0.01,
+        max: 1,
+      },
+    }),
+    { collapsed: true }
+  );
+
+  const [ao] = useControls(
+    "AO",
+    () => ({
+      aoRadius: 5,
+      aoSamples: { value: 16, step: 1 },
+      denoiseSamples: { value: 4, step: 1 },
+      denoiseRadius: { value: 12, step: 1 },
+      distanceFalloff: 1,
+      intensity: 1,
+
+      quality: { options: ["performance", "low", "medium", "high", "ultra"] },
+
+      color: `#000`,
+      halfRes: true,
+      depthAwareUpsampling: false,
+      screenSpaceRadius: true,
+      renderMode: { step: 1, min: 0, max: 4, value: 0 },
     }),
     { collapsed: true }
   );
@@ -255,7 +289,10 @@ export function useShaderState(): [ShaderControls, any] {
       ...data,
       ...colors,
     },
-    debug,
+    {
+      ...debug,
+      ao,
+    },
   ];
 }
 
