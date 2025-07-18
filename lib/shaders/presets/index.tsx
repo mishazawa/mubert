@@ -5,6 +5,7 @@ import STRIPES from "./stripes.glsl?raw";
 import LINOISE from "./linoise.glsl?raw";
 import PNOISE from "./pnoise.glsl?raw";
 import DEBUG from "./debug.glsl?raw";
+import FRESNEL from "./fresnel.glsl?raw";
 
 export type ShaderPreset =
   | "noop"
@@ -13,7 +14,8 @@ export type ShaderPreset =
   | "linoise"
   | "pnoise"
   | "debug"
-  | "slai_flat";
+  | "slai_flat"
+  | "fresnel";
 
 const PRESETS: Record<ShaderPreset, string> = {
   noop: NOOP,
@@ -22,7 +24,8 @@ const PRESETS: Record<ShaderPreset, string> = {
   linoise: LINOISE,
   pnoise: PNOISE,
   debug: DEBUG,
-  slai_flat: SLAI_FLAT
+  slai_flat: SLAI_FLAT,
+  fresnel: FRESNEL,
 };
 
 export default PRESETS;

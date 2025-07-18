@@ -2,6 +2,7 @@ import { LIGHT_PRESET } from "@lib/components/lights";
 import { FFT_SIZE } from "@lib/constants";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
+import SHADER_PRESETS from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
 
 import { randomGenerator } from "@lib/utils";
@@ -9,14 +10,7 @@ import { button, useControls } from "leva";
 import { useEffect, useMemo, useState } from "react";
 import { Color } from "three";
 
-const PRESETS: ShaderPreset[] = [
-  "noop",
-  "stripes",
-  "slai",
-  "pnoise",
-  "linoise",
-  "slai_flat",
-];
+const PRESETS: ShaderPreset[] = Object.keys(SHADER_PRESETS) as ShaderPreset[];
 
 export function useShaderState(): [ShaderControls, any] {
   const rng = useMemo(() => randomGenerator(666), []);
