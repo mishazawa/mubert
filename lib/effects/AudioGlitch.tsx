@@ -8,7 +8,8 @@ import {
 } from "react";
 import { ReactThreeFiber, useFrame, useThree } from "@react-three/fiber";
 import { useVector2 } from "@react-three/postprocessing";
-import { useAudioTexture, useParameters } from "../components/hooks";
+import { useAudioTexture } from "../components/hooks";
+import { useParameters } from "../hooks/useParameters";
 
 export type GlitchProps = ConstructorParameters<typeof GlitchEffect>[0] &
   Partial<{

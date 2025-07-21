@@ -1,7 +1,7 @@
 import { POINT_DETAIL_DIVIDER, SPEED_MULTIPLIER } from "../constants";
 
 import { useFrame } from "@react-three/fiber";
-import { useContext, useEffect, useMemo, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
   CapsuleGeometry,
@@ -35,8 +35,7 @@ import {
 
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { generateDefaults } from "../shaders/uniforms";
-
-import { ParamsContext } from "../main";
+import { useParameters } from "../hooks/useParameters";
 
 const BYPASS_NORMALS = false;
 
@@ -177,7 +176,7 @@ export function useUniforms(): RefObject<GenerativeShaderUniforms> {
   const audioTex = useAudioTexture();
   useEffect(() => {
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
-    (uniforms.current.uRefTex.value as any) = ctx.ref_texture; // sampler2D in shader
+    // (uniforms.current.uRefTex.value as any) = ctx.ref_texture.current; // sampler2D in shader
   }, [audioTex]);
 
   // animate uniforms here
@@ -237,8 +236,4 @@ function recomputeNormals(g: BufferGeometry) {
   const a = mergeVertices(g);
   a.computeVertexNormals();
   return a;
-}
-
-export function useParameters() {
-  return useContext(ParamsContext);
 }

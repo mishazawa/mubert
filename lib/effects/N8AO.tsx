@@ -1,5 +1,5 @@
 import { SHADER_STYLE } from "../constants";
-import { useParameters } from "../components/hooks";
+import { useParameters } from "../hooks/useParameters";
 import { N8AO } from "@react-three/postprocessing";
 
 export function SolidOnlyAO() {

@@ -6,7 +6,7 @@ import {
   SMAA,
 } from "@react-three/postprocessing";
 
-import { useParameters } from "../components/hooks";
+import { useParameters } from "../hooks/useParameters";
 import { AudioChromaticAberration } from "./AudioChromaticAberration";
 import { AudioGlitch } from "./AudioGlitch";
 import { SolidOnlyAO } from "./N8AO";

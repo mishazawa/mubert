@@ -6,14 +6,10 @@ import { PointsMaterial, MeshPhysicalMaterial, LineBasicMaterial } from "three";
 import { MESH_DETAIL, SHADER_STYLE } from "../constants";
 import { compile } from "../shaders/compiler";
 
-import {
-  useGeometry,
-  useParameters,
-  useTransforms,
-  useUniforms,
-} from "./hooks";
+import { useGeometry, useTransforms, useUniforms } from "./hooks";
 
 import type { RendererProps } from "../types";
+import { useParameters } from "../hooks/useParameters";
 
 export function Model() {
   const ctx = useParameters();
