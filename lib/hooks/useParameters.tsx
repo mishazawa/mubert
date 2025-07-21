@@ -7,7 +7,8 @@ import {
   useRef,
   type RefObject,
 } from "react";
-import { DataTexture, RepeatWrapping, RGBAFormat } from "three";
+import { Color, DataTexture, RepeatWrapping, RGBAFormat } from "three";
+import { useColorGenerator } from "./useColorGenerator";
 
 export type ParametersCtx = CanvasProps & {
   debug?: any;
@@ -16,6 +17,7 @@ export type ParametersCtx = CanvasProps & {
   rot_speed: RefObject<number>;
   random: RandomGenerator;
   ref_texture: RefObject<DataTexture>;
+  palette: Array<Color>;
 };
 
 // TODO move somewhere
@@ -37,6 +39,7 @@ export function ParametersContextWrap({
     time: 0,
   });
 
+  // tbrm
   const tex = useMemo(() => {
     // Create checkerboard texture
     const size = props.debug.particlesCount;
@@ -66,6 +69,8 @@ export function ParametersContextWrap({
 
   const rot_speed = useRef(0.05);
 
+  const palette = useColorGenerator(gen, props.data.uSeed);
+
   return (
     <ParamsContext
       value={{
@@ -74,6 +79,7 @@ export function ParametersContextWrap({
         rot_speed,
         random: gen,
         ref_texture,
+        palette,
       }}
     >
       {children}

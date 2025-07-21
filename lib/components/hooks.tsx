@@ -165,6 +165,12 @@ export function useUniforms(): RefObject<GenerativeShaderUniforms> {
 
   useEffect(() => {
     assignUniforms(uniforms.current, ctx.data);
+
+    uniforms.current.uColor1.value = ctx.palette[0];
+    uniforms.current.uColor2.value = ctx.palette[1];
+    uniforms.current.uColor3.value = ctx.palette[2];
+    uniforms.current.uColor4.value = ctx.palette[3];
+    uniforms.current.uColor5.value = ctx.palette[4];
   }, [ctx.data]);
 
   const audioTex = useAudioTexture();

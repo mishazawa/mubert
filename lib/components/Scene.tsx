@@ -33,13 +33,13 @@ export function Scene() {
   return (
     <ContextBridge>
       <Canvas className="vis_canvas" dpr={1}>
-        <color attach="background" args={[ctx.data.uColor1 as Color]} />
+        <color attach="background" args={[ctx.palette[5] as Color]} />
         {/* TO BE REMOVED */}
         <StatsGl showPanel={1} className="stats" />
 
         <EnvironmentLight intensity={10} preset={ctx.debug.light} />
         <Suspense fallback={null}>
-          <Particles />
+          {!ctx.debug.enableParticles ? null : <Particles />}
           <Model />
           {!ctx.debug.background
             ? null
@@ -56,6 +56,9 @@ export function Scene() {
         <TrackballControls
           noPan
           dynamicDampingFactor={ctx.debug.dampingFactor}
+          zoomSpeed={0.01}
+          minDistance={2}
+          maxDistance={10}
         />
         <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
         <FX />

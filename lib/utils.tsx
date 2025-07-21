@@ -1,10 +1,5 @@
-import { Color, MathUtils, Vector3 } from "three";
-import { colors } from "./colors";
+import { MathUtils, Vector3 } from "three";
 
-export function getColors(rg: RandomGenerator) {
-  const palette = colors[rg.int(0, colors.length)];
-  return palette.map((c) => new Color(c));
-}
 export function getVector3(rg: RandomGenerator) {
   return new Vector3(rg.float(0, 1), rg.float(0, 1), rg.float(0, 1));
 }
