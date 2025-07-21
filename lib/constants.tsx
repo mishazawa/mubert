@@ -19,3 +19,4 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   uLineCount: [0, 5],
   uStripesWidth: [0, 1],
 };
+export const FBO_SIZE = 64;

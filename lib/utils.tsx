@@ -22,7 +22,7 @@ export function randomSwapRange(
   return value >= 0.5 ? [a, b] : [b, a];
 }
 
-type RandomGenerator = {
+export type RandomGenerator = {
   int: (min: number, max: number) => number;
   float: (min: number, max: number) => number;
   casino: (thresh: number) => 0 | 1;

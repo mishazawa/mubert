@@ -68,6 +68,10 @@ export function useShaderState(): [ShaderControls, any] {
   const [debug, setPreset] = useControls(
     "Presets",
     () => ({
+      asdasd: {
+        value: 1,
+        min: 0,
+      },
       preset: {
         value: "slai",
         options: PRESETS,

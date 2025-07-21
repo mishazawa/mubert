@@ -5,11 +5,11 @@ import {
   TrackballControls,
   useContextBridge,
   Icosahedron,
+  useFBO,
 } from "@react-three/drei";
 
-import { Model } from "./components/Model";
 import { EnvironmentLight } from "./components/EnvironmentLight";
-import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
+import { AMBIENT_LIGHT_COLOR, FBO_SIZE, VALID_RANGES } from "./constants";
 import type { CanvasProps, ParametersCtx } from "./types";
 
 import {
@@ -29,9 +29,10 @@ import {
 } from "react";
 
 import type { ShaderControls } from "./shaders/types";
-import { PerspectiveCamera, type Color } from "three";
+import { FloatType, PerspectiveCamera, type Color } from "three";
 
 import { FX } from "./effects";
+import { VelocityFieldPass } from "./components/Particles";
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -67,9 +68,10 @@ function SceneWrapper() {
         {/* TO BE REMOVED */}
         <StatsGl showPanel={1} className="stats" />
 
-        <EnvironmentLight intensity={1} preset={ctx.debug.light} />
+        <EnvironmentLight intensity={10} preset={ctx.debug.light} />
         <Suspense fallback={null}>
-          <Model />
+          <VelocityFieldPass />
+          {/* <Model /> */}
 
           {!ctx.debug.background
             ? null
@@ -166,8 +168,16 @@ function ParametersContextWrap({
   });
 
   const rot_speed = useRef(gen.float(0, 0.1));
+
   return (
-    <ParamsContext value={{ ...props, fft, rot_speed }}>
+    <ParamsContext
+      value={{
+        ...props,
+        fft,
+        rot_speed,
+        random: gen,
+      }}
+    >
       {children}
     </ParamsContext>
   );
