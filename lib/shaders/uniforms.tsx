@@ -28,8 +28,10 @@ uniform float uRoughnessPattern;
 uniform float uNoiseVariant;
 uniform float uStripesWidth;
 uniform float uEmission;
+uniform sampler2D uRefTex;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
+uniform vec2 uRes;
 ` as const;
 
 export function generateDefaults() {

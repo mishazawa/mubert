@@ -5,3 +5,5 @@ csm_Iridescence = coat.iridescence;
 csm_Emissive = coat.color * coat.emission;
 csm_Clearcoat = uClearcoat;
 csm_ClearcoatRoughness = uClearcoatRoughness;
+csm_Metalness = coat.metallic;
+// csm_Transmission = 1.0;

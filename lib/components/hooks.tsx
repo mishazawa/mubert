@@ -92,7 +92,7 @@ export function useGeometry(
 
 export function useAudioTexture(analyser: Pick<CanvasProps, "getFFT">) {
   const { texture, buffer, ROW } = useMemo(() => {
-    const SIZE = 128;
+    const SIZE = 256;
     const ROW = SIZE * 4; // bytes per row  (RGBA)
     const data = new Uint8Array(SIZE * SIZE * 4);
     const tex = new DataTexture(data, SIZE, SIZE, RGBAFormat, UnsignedByteType);
@@ -166,6 +166,7 @@ export function useUniforms(
   const audioTex = useAudioTexture(analyser);
   useEffect(() => {
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
+    (uniforms.current.uRefTex.value as any) = window.ref_texture; // sampler2D in shader
   }, [audioTex]);
 
   // animate uniforms here
@@ -173,6 +174,8 @@ export function useUniforms(
     let [rms] = analyser.getRMS();
     rms = Math.pow(rms*2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
+
+
     
     const pastRms = (uniforms.current.uRMS as UniformValue<number>).value;
 
@@ -191,8 +194,16 @@ export function useUniforms(
     window.fft_val = newRms;
 
     (uniforms.current.uTime as UniformValue<number>).value +=
-      SPEED_MULTIPLIER * speedControls * rms * 10.0;
+      SPEED_MULTIPLIER * speedControls * rms * 1.0;
     window.fft_time = (uniforms.current.uTime as UniformValue<number>).value;
+
+    (uniforms.current.uRes as any).value = new THREE.Vector2(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+
+
   });
 
   return uniforms;
