@@ -88,8 +88,8 @@ export function useShaderState(): [ShaderControls, any] {
         max: 4,
         step: 1,
       },
-      background: true,
-      postfx: true,
+      background: false,
+      postfx: false,
       pointSize: {
         value: 0.05,
         min: 0.01,

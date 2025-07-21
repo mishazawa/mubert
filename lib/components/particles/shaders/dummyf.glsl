@@ -1,0 +1,1 @@
+void main() { csm_FragColor = vec4(1.); }

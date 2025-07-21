@@ -9,8 +9,8 @@ import {
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { Color, PerspectiveCamera } from "three";
-import { AMBIENT_LIGHT_COLOR } from "@lib/constants";
-import { FX } from "@lib/effects";
+import { AMBIENT_LIGHT_COLOR } from "../constants";
+import { FX } from "../effects";
 import { EnvironmentLight } from "./EnvironmentLight";
 import { Model } from "./Model";
 import { Particles } from "./particles/Particles";
@@ -39,8 +39,10 @@ export function Scene() {
 
         <EnvironmentLight intensity={10} preset={ctx.debug.light} />
         <Suspense fallback={null}>
-          {/* <Particles resolution={128} /> */}
-          <Model />
+          <Particles resolution={128} />
+          <Invisible>
+            <Model />
+          </Invisible>
 
           {!ctx.debug.background
             ? null
@@ -81,4 +83,8 @@ function LensCamera({ distance, lens }: any) {
       far={20.0}
     />
   );
+}
+
+function Invisible({ children: _ }: any) {
+  return null;
 }

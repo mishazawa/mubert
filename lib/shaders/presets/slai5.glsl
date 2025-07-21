@@ -57,13 +57,15 @@ vec3 displace_(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
   //   )*2.0-1.0;
   newPosition = newpos_;
 
-  newPosition = P*DISPLACE_POS_SCALE + patt * 8.0 * DISPLACE_SCALE + P*float(VERTEX)*0.25;
-  newPosition = P +
-                vec3(snoise(newPosition + vec3(0.5, 2.0, fract(uSeed/1000.0)*100.0)),
-                     snoise(newPosition + vec3(10.5, 2.0, fract(uSeed/1000.0)*100.0)),
-                     snoise(newPosition + vec3(20.5, 2.0, fract(uSeed/1000.0)*100.0))) *
-                    (0.3 +
-                random(uSeed + 4.0) * 0.1)*(1.0+float(VERTEX)*1.0);
+  newPosition = P * DISPLACE_POS_SCALE + patt * 8.0 * DISPLACE_SCALE +
+                P * float(VERTEX) * 0.25;
+  newPosition =
+      P +
+      vec3(snoise(newPosition + vec3(0.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
+           snoise(newPosition + vec3(10.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
+           snoise(newPosition +
+                  vec3(20.5, 2.0, fract(uSeed / 1000.0) * 100.0))) *
+          (0.3 + random(uSeed + 4.0) * 0.1) * (1.0 + float(VERTEX) * 1.0);
 
   return newPosition;
 }
@@ -109,8 +111,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float eta = 1.0 / 1.8; // air to glass
   vec3 refracted = refract(viewDir, normalize(data.normal), eta);
 
-  vec3 newPosition = data.position * DISPLACE_POS_SCALE +
-                     data.pattern * 8.0 * DISPLACE_SCALE;
+  vec3 newPosition =
+      data.position * DISPLACE_POS_SCALE + data.pattern * 8.0 * DISPLACE_SCALE;
   newPosition = vec3(snoise(newPosition + vec3(0.5, 0.0, 0.0)),
                      snoise(newPosition + vec3(10.5, 0.0, 0.0)),
                      snoise(newPosition + vec3(20.5, 0.0, 0.0))) *
@@ -121,14 +123,15 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
                  mix(uColor3, uColor4, gain(newPosition.y, 4.0)),
                  gain(pow(newPosition.z, 2.0), 4.0));
 
-
-  refracted = normalize(refracted)*0.7;
+  refracted = normalize(refracted) * 0.7;
   vec3 rcolor = vec3(snoise(refracted + vec3(0.5, 3.0, 0.0)),
                      snoise(refracted + vec3(10.5, 3.0, 0.0)),
                      snoise(refracted + vec3(20.5, 3.0, 0.0))) *
                     0.5 +
                 0.5;
-  newColor = mix(newColor, rcolor, gain(snoise(newPosition + vec3(10.5, 0.0, 0.0))*0.5+0.5, 4.0)*0.9);
+  newColor = mix(
+      newColor, rcolor,
+      gain(snoise(newPosition + vec3(10.5, 0.0, 0.0)) * 0.5 + 0.5, 4.0) * 0.9);
 
   vec3 norm = data.normal;
   // vec3 nnp = vPosition*9.0 + newPosition*0.0;
@@ -150,5 +153,5 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // norm = newNorm;
   // newColor = newPosition;
 
-  return CoatOutput(newColor, norm, 1., uRoughness, emission, iridescence);
+  return CoatOutput(newColor, norm, 1., uRoughness, emission, iridescence, 0.);
 }

@@ -49,5 +49,5 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
   vec3 newColor = mix(background, uColor2, gen_mask(vUv, animation));
   return CoatOutput(newColor, data.normal, 1., uRoughness, uEmission,
-                    uIridescence);
+                    uIridescence, 0.);
 }
