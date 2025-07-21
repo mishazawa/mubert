@@ -39,7 +39,7 @@ export function ParametersContextWrap({
 
   const tex = useMemo(() => {
     // Create checkerboard texture
-    const size = 128;
+    const size = props.debug.particlesCount;
     const data = new Uint8Array(size * size * 4);
 
     for (let y = 0; y < size; y++) {
@@ -60,7 +60,7 @@ export function ParametersContextWrap({
     tex.wrapS = RepeatWrapping;
     tex.wrapT = RepeatWrapping;
     return tex;
-  }, []);
+  }, [props.debug.particlesCount]);
 
   const ref_texture = useRef(tex);
 

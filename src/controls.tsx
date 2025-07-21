@@ -57,7 +57,6 @@ export function useShaderState(): [ShaderControls, any] {
         setData({ uSeed: params.uSeed });
         setPreset({
           preset: presets[rng.int(0, presets.length)],
-          style: rng.casino(0.7),
           light: rng.int(0, LIGHT_PRESET.length - 1),
         });
       }),
@@ -68,32 +67,26 @@ export function useShaderState(): [ShaderControls, any] {
   const [debug, setPreset] = useControls(
     "Presets",
     () => ({
-      asdasd: {
-        value: 1,
-        min: 0,
-      },
       preset: {
-        value: "slai",
+        value: "pnoise",
         options: PRESETS,
-      },
-      style: {
-        value: 0,
-        min: 0,
-        max: 3,
-        step: 1,
-      },
-      mesh: {
-        value: 0,
-        min: 0,
-        max: 4,
-        step: 1,
       },
       background: false,
       postfx: false,
+      vertex: false,
+      fragment: false,
+      particles: false,
       pointSize: {
         value: 0.05,
         min: 0.01,
         max: 1,
+      },
+
+      particlesCount: {
+        value: 128,
+        min: 32,
+        max: 4096,
+        step: 8,
       },
       lens: {
         value: 45,
@@ -112,12 +105,6 @@ export function useShaderState(): [ShaderControls, any] {
         min: 0,
         max: LIGHT_PRESET.length - 1,
         step: 1,
-      },
-      vertex: {
-        value: false,
-      },
-      fragment: {
-        value: false,
       },
       focusDistance: {
         value: 0.3,

@@ -17,7 +17,14 @@ export function Model() {
   const uniforms = useUniforms();
   const items = useGeometry(MESH_DETAIL);
 
-  const { vertex, fragment, preset, mesh, pointSize, style } = ctx.debug ?? {};
+  const {
+    vertex,
+    fragment,
+    preset,
+    mesh = 0,
+    pointSize,
+    style = 0,
+  } = ctx.debug ?? {};
 
   const [vertexShader, fragmentShader, materialType] = useMemo(
     () => [
@@ -46,12 +53,13 @@ export function Model() {
     console.groupEnd();
   }, [vertexShader, fragmentShader]);
 
+  // tbrm
   const visibleIndex =
     mesh >= items[materialType].length ? items[materialType].length - 1 : mesh;
 
   return (
     <Bounds observe margin={2} maxDuration={0}>
-      <group ref={ref} position={[0, 0, 0]}>
+      <group ref={ref} position={[0, 0, 0]} visible={!ctx.debug.particles}>
         <group visible={materialType === "solid"}>
           {items.solid.map((i, idx) => (
             <RenderSolid

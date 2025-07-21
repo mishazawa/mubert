@@ -21,7 +21,6 @@ import {
 import type {
   GenerativeShaderUniforms,
   MaterialType,
-  ShaderControls,
   UniformValue,
 } from "../shaders/types";
 
@@ -34,7 +33,7 @@ import {
 } from "three";
 
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
-import { generateDefaults } from "../shaders/uniforms";
+import { assignUniforms, generateDefaults } from "../shaders/uniforms";
 import { useParameters } from "../hooks/useParameters";
 
 const BYPASS_NORMALS = false;
@@ -43,8 +42,6 @@ const _q = new Quaternion();
 const _bbox = new Box3();
 const _size = new Vector3();
 const _axis = new Vector3();
-
-type ElementType = keyof ShaderControls;
 
 export function useGeometry(
   resolution: number
@@ -167,16 +164,12 @@ export function useUniforms(): RefObject<GenerativeShaderUniforms> {
   const uniforms = useRef<GenerativeShaderUniforms>(generateDefaults());
 
   useEffect(() => {
-    Object.keys(ctx.data).map((k) => {
-      const key = k as ElementType;
-      uniforms.current[key].value = ctx.data[key];
-    });
+    assignUniforms(uniforms.current, ctx.data);
   }, [ctx.data]);
 
   const audioTex = useAudioTexture();
   useEffect(() => {
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
-    // (uniforms.current.uRefTex.value as any) = ctx.ref_texture.current; // sampler2D in shader
   }, [audioTex]);
 
   // animate uniforms here

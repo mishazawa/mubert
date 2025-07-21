@@ -40,14 +40,15 @@ vec3 displace(in vec3 P, in vec3 N, in float animation) {
 DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
                                        float animation) {
   vec3 newPosition = displace(data.position, data.normal, animation);
-  return DisplacePatternOutput(newPosition, data.normal, vec3(0.));
+  return DisplacePatternOutput(newPosition, data.normal, newPosition);
 }
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   vec3 key = vec3(uColorKeyValue);
   vec3 background = mix(uColor1, key, uUseColorKey);
 
-  vec3 newColor = mix(background, uColor2, gen_mask(vUv, animation));
+  vec3 newColor =
+      mix(background, uColor2, gen_mask(data.pattern.xy, animation));
   return CoatOutput(newColor, data.normal, 1., uRoughness, uEmission,
                     uIridescence, 0.);
 }

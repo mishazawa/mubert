@@ -39,11 +39,8 @@ export function Scene() {
 
         <EnvironmentLight intensity={10} preset={ctx.debug.light} />
         <Suspense fallback={null}>
-          <Particles resolution={128} />
-          <Invisible>
-            <Model />
-          </Invisible>
-
+          <Particles />
+          <Model />
           {!ctx.debug.background
             ? null
             : initialPositions.map((pos, i) => (
@@ -83,8 +80,4 @@ function LensCamera({ distance, lens }: any) {
       far={20.0}
     />
   );
-}
-
-function Invisible({ children: _ }: any) {
-  return null;
 }

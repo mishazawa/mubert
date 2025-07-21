@@ -9,6 +9,8 @@ import {
 } from "./varyings";
 import VERTEX_BODY from "./meta/vertex.glsl?raw";
 import FRAGMENT_BODY from "./meta/fragment.glsl?raw";
+import TEXTURE_BODY from "./meta/texture.glsl?raw";
+
 import SOLID_PARAMETERS from "./meta/parameters.glsl?raw";
 import type { ShaderPreset } from "./presets";
 import PRESETS from "./presets";
@@ -17,12 +19,13 @@ import { includeStdLib } from "./stdlib";
 import { FFT_SIZE } from "../constants";
 
 export type CompilerMetadata = {
-  shaderType: "vertex" | "fragment";
+  shaderType: "vertex" | "fragment" | "texture";
   preset: ShaderPreset;
   presetStyle: MaterialType;
   defines?: Record<string, string>;
 };
 
+type MetadataShaderType = CompilerMetadata["shaderType"];
 export function compile(metadata: CompilerMetadata): string {
   const varyings = generateVaryings(metadata.presetStyle, metadata.shaderType);
   const defines = generateDefines(
@@ -62,7 +65,7 @@ ${body}
 
 function generateVaryings(
   presetStyle: MaterialType,
-  shaderType: "vertex" | "fragment"
+  shaderType: MetadataShaderType
 ): string {
   if (presetStyle === "solid") {
     if (shaderType === "fragment") return VARYINGS_SOLID_FRAGMENT;
@@ -75,7 +78,7 @@ function generateVaryings(
 
 function generateDefines(
   data: Record<string, string> = {},
-  shaderType: "vertex" | "fragment",
+  shaderType: MetadataShaderType,
   presetStyle: MaterialType
 ): string {
   return Object.entries({
@@ -97,15 +100,25 @@ function generateImplementation(preset: ShaderPreset): string {
 
 function generateShaderBody(
   presetStyle: MaterialType,
-  shaderType: "vertex" | "fragment"
+  shaderType: MetadataShaderType
 ) {
-  return shaderType === "vertex"
-    ? VERTEX_BODY
-    : FRAGMENT_BODY.replace(
-        "//#include<solid_parameters>",
-        presetStyle === "solid" ? SOLID_PARAMETERS : "// solid params ignored. "
-      ).replace(
-        "//#include<vNormal>",
-        presetStyle === "solid" ? "vNormal," : "vec3(0.),"
-      );
+  if (shaderType === "vertex") {
+    return VERTEX_BODY;
+  }
+
+  if (shaderType === "fragment") {
+    return FRAGMENT_BODY.replace(
+      "//#include<solid_parameters>",
+      presetStyle === "solid" ? SOLID_PARAMETERS : "// solid params ignored. "
+    ).replace(
+      "//#include<vNormal>",
+      presetStyle === "solid" ? "vNormal," : "vec3(0.),"
+    );
+  }
+
+  if (shaderType === "texture") {
+    return TEXTURE_BODY;
+  }
+
+  return "// no body.";
 }
