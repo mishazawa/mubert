@@ -17,7 +17,17 @@ export type GenerativeShaderUniforms = {
 
 type ProgramableUniforms = Omit<
   GenerativeShaderUniforms,
-  "uTime" | "uFFT" | "uRMS" | "uAudioTex" | "uRefTex" | "uRes"
+  | "uTime"
+  | "uFFT"
+  | "uRMS"
+  | "uAudioTex"
+  | "uRefTex"
+  | "uRes"
+  | "uColor1"
+  | "uColor2"
+  | "uColor3"
+  | "uColor4"
+  | "uColor5"
 >;
 
 export type ShaderControls = {
