@@ -22,5 +22,5 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
   vec3 finalColor = mix(uColor1 * diffuse, uColor2, fresnel);
   return CoatOutput(finalColor, data.normal, 1., uRoughness, uEmission,
-                    uIridescence);
+                    uIridescence, 0.);
 }

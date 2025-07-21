@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useParameters } from "../components/hooks";
+import { useParameters } from "../hooks/useParameters";
 
 import { ChromaticAberrationEffect } from "postprocessing";
 import { useEffect, useMemo, useRef } from "react";

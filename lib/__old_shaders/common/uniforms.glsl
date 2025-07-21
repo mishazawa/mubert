@@ -23,6 +23,7 @@ uniform float uNoiseVariant;
 
 uniform float uStripesWidth;
 uniform float uEmission;
+uniform sampler2D uRefTex;
 
 
 

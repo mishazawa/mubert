@@ -1,16 +1,5 @@
-import { Canvas } from "@react-three/fiber";
-import {
-  PerspectiveCamera as CameraPer,
-  StatsGl,
-  TrackballControls,
-  useContextBridge,
-  Icosahedron,
-} from "@react-three/drei";
-
-import { Model } from "./components/Model";
-import { EnvironmentLight } from "./components/EnvironmentLight";
-import { AMBIENT_LIGHT_COLOR, VALID_RANGES } from "./constants";
-import type { CanvasProps, ParametersCtx } from "./types";
+import { VALID_RANGES } from "./constants";
+import type { CanvasProps } from "./types";
 
 import {
   getColors,
@@ -19,19 +8,10 @@ import {
   randomSwapRange,
 } from "./utils";
 
-import {
-  createContext,
-  Suspense,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
-
 import type { ShaderControls } from "./shaders/types";
-import { PerspectiveCamera, type Color } from "three";
 
-import { FX } from "./effects";
+import { ParametersContextWrap } from "./hooks/useParameters";
+import { Scene } from "./components/Scene";
 
 export default function MubertCanvas(
   props: CanvasProps & {
@@ -40,75 +20,8 @@ export default function MubertCanvas(
 ) {
   return (
     <ParametersContextWrap {...props}>
-      <SceneWrapper />
+      <Scene />
     </ParametersContextWrap>
-  );
-}
-
-const initialPositions = [
-  [-4, 20, -12],
-  [-10, 12, -4],
-  [-11, -12, -23],
-  [-16, -6, -10],
-  [12, -2, -3],
-  [13, 4, -12],
-  [14, -2, -23],
-  [8, 10, -20],
-];
-
-function SceneWrapper() {
-  const ContextBridge = useContextBridge(ParamsContext);
-  const ctx = useContext(ParamsContext);
-
-  return (
-    <ContextBridge>
-      <Canvas className="vis_canvas" dpr={1}>
-        <color attach="background" args={[ctx.data.uColor1 as Color]} />
-        {/* TO BE REMOVED */}
-        <StatsGl showPanel={1} className="stats" />
-
-        <EnvironmentLight intensity={1} preset={ctx.debug.light} />
-        <Suspense fallback={null}>
-          <Model />
-
-          {!ctx.debug.background
-            ? null
-            : initialPositions.map((pos, i) => (
-                <Icosahedron
-                  args={[1, 8]}
-                  position={[pos[0] * 0.5, pos[1] * 0.5, pos[2] * 0.5]}
-                  key={i}
-                />
-              ))}
-        </Suspense>
-
-        <LensCamera {...ctx.debug} />
-        <TrackballControls
-          noPan
-          dynamicDampingFactor={ctx.debug.dampingFactor}
-        />
-        <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
-        <FX />
-      </Canvas>
-    </ContextBridge>
-  );
-}
-
-function LensCamera({ distance, lens }: any) {
-  const cam = useRef<PerspectiveCamera>(null!);
-
-  useEffect(() => {
-    if (!cam.current) return;
-    cam.current.setFocalLength(lens);
-  }, [lens]);
-
-  return (
-    <CameraPer
-      ref={cam}
-      position={[0, 0, distance]}
-      makeDefault={true}
-      far={20.0}
-    />
   );
 }
 
@@ -144,31 +57,4 @@ export function generateShaderParams(uSeed: number): ShaderControls {
     uStripesWidth: gen.float(...VALID_RANGES.uStripesWidth),
     uEmission: gen.float(0, 1),
   };
-}
-
-// TODO move somewhere
-export const ParamsContext = createContext<ParametersCtx>(null!);
-
-function ParametersContextWrap({
-  children,
-  ...props
-}: CanvasProps & {
-  debug?: any;
-} & { children: any }) {
-  const gen = useMemo(() => randomGenerator(props.data.uSeed), []);
-
-  const fft = useRef({
-    mix_min: Math.pow(gen.float(0, 1), 3.0) * 0.5,
-    mix_max: gen.float(0.9, 1),
-    max: 0,
-    val: 0,
-    time: 0,
-  });
-
-  const rot_speed = useRef(gen.float(0, 0.1));
-  return (
-    <ParamsContext value={{ ...props, fft, rot_speed }}>
-      {children}
-    </ParamsContext>
-  );
 }

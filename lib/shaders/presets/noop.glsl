@@ -11,5 +11,5 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   return CoatOutput(uColor1, data.normal, 1., uRoughness, uEmission,
-                    uIridescence);
+                    uIridescence, 1.);
 }

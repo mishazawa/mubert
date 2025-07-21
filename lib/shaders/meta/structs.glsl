@@ -17,6 +17,7 @@ struct CoatOutput {
   float roughness;
   float emission;
   float iridescence;
+  float metallic;
 };
 
 struct Neighbours {

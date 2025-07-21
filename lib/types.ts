@@ -1,15 +1,6 @@
-import type { RefObject } from "react";
 import type { ShaderControls } from "./shaders/types";
 import type { BufferGeometry } from "three";
-
-export type ParametersCtx = CanvasProps & {
-  debug?: any;
-} & {
-  fft: RefObject<FFTTexture>;
-  rot_speed: RefObject<number>;
-};
-
-type FFTTexture = {
+export type FFTTexture = {
   mix_min: number;
   mix_max: number;
   max: number;

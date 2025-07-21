@@ -1,7 +1,7 @@
 //  ¯\_(ツ)_/¯
 // as const
 
-import type { GenerativeShaderUniforms } from "./types";
+import type { GenerativeShaderUniforms, ShaderControls } from "./types";
 
 // does not support multiple spaces between tokens
 export const UNIFORMS = `
@@ -28,8 +28,10 @@ uniform float uRoughnessPattern;
 uniform float uNoiseVariant;
 uniform float uStripesWidth;
 uniform float uEmission;
+uniform sampler2D uRefTex;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
+uniform vec2 uRes;
 ` as const;
 
 export function generateDefaults() {
@@ -43,4 +45,16 @@ export function generateDefaults() {
       }, {} as Record<string, any>),
     uFFT: { value: [1] },
   } as GenerativeShaderUniforms;
+}
+
+type ElementType = keyof ShaderControls;
+
+export function assignUniforms(
+  uniforms: Record<ElementType, any>,
+  data: Record<ElementType, any>
+) {
+  Object.keys(data).map((k) => {
+    const key = k as ElementType;
+    uniforms[key].value = data[key];
+  });
 }
