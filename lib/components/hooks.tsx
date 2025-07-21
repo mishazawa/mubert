@@ -104,7 +104,7 @@ export function useAudioTexture() {
   const ctx = useParameters();
 
   const { texture, buffer, ROW } = useMemo(() => {
-    const SIZE = 128;
+    const SIZE = 256;
     const ROW = SIZE * 4; // bytes per row  (RGBA)
     const data = new Uint8Array(SIZE * SIZE * 4);
     const tex = new DataTexture(data, SIZE, SIZE, RGBAFormat, UnsignedByteType);
@@ -177,6 +177,7 @@ export function useUniforms(): RefObject<GenerativeShaderUniforms> {
   const audioTex = useAudioTexture();
   useEffect(() => {
     (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
+    (uniforms.current.uRefTex.value as any) = ctx.ref_texture; // sampler2D in shader
   }, [audioTex]);
 
   // animate uniforms here

@@ -1,3 +1,4 @@
+out mat4 v_mmat;
 void main() {
   vPosition = position;
   vNormal = normal;
@@ -10,6 +11,7 @@ void main() {
 
   vNormalD = data_out.normal;
   vPositionD = data_out.position;
+  v_mmat = modelMatrix;
 
   // object space coordinates
   vec3 objectPosition = (modelMatrix * vec4(vPositionD, 1.0)).xyz;

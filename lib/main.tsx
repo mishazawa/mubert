@@ -29,7 +29,14 @@ import {
 } from "react";
 
 import type { ShaderControls } from "./shaders/types";
-import { FloatType, PerspectiveCamera, type Color } from "three";
+import {
+  DataTexture,
+  FloatType,
+  PerspectiveCamera,
+  RepeatWrapping,
+  RGBAFormat,
+  type Color,
+} from "three";
 
 import { FX } from "./effects";
 import { VelocityFieldPass } from "./components/Particles";
@@ -160,14 +167,39 @@ function ParametersContextWrap({
   const gen = useMemo(() => randomGenerator(props.data.uSeed), []);
 
   const fft = useRef({
-    mix_min: Math.pow(gen.float(0, 1), 3.0) * 0.5,
-    mix_max: gen.float(0.9, 1),
+    mix_min: 0.05,
+    mix_max: 0.2,
     max: 0,
     val: 0,
     time: 0,
   });
 
-  const rot_speed = useRef(gen.float(0, 0.1));
+  const ref_texture = useMemo(() => {
+    // Create checkerboard texture
+    const size = 128;
+    const data = new Uint8Array(size * size * 4);
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const i = (y * size + x) * 4;
+        const checker = ((x >> 4) + (y >> 4)) & 1;
+        const color = checker ? 255 : 0;
+
+        data[i] = color; // R
+        data[i + 1] = color; // G
+        data[i + 2] = color; // B
+        data[i + 3] = 255; // A
+      }
+    }
+
+    const tex = new DataTexture(data, size, size, RGBAFormat);
+    tex.needsUpdate = true;
+    tex.wrapS = RepeatWrapping;
+    tex.wrapT = RepeatWrapping;
+    return tex;
+  }, []);
+
+  const rot_speed = useRef(0.05);
 
   return (
     <ParamsContext
@@ -176,6 +208,7 @@ function ParametersContextWrap({
         fft,
         rot_speed,
         random: gen,
+        ref_texture,
       }}
     >
       {children}

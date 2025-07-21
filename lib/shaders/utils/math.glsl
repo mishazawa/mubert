@@ -64,3 +64,48 @@ vec3 stoc(vec2 uv) {
   return p;
 }
 
+vec2 ctob(vec3 p) {
+  float absX = abs(p.x);
+  float absY = abs(p.y);
+  float absZ = abs(p.z);
+
+  bool isXPositive = p.x > 0.0;
+  bool isYPositive = p.y > 0.0;
+  bool isZPositive = p.z > 0.0;
+
+  float maxAxis;
+  vec2 uv;
+  if (isXPositive && absX >= absY && absX >= absZ) {
+    maxAxis = absX;
+    uv.x = p.z;
+    uv.y = p.y;
+  }
+  if (!isXPositive && absX >= absY && absX >= absZ) {
+    maxAxis = absX;
+    uv.x = -p.z;
+    uv.y = p.y;
+  }
+  if (isYPositive && absY >= absX && absY >= absZ) {
+    maxAxis = absY;
+    uv.x = -p.x;
+    uv.y = -p.z;
+  }
+  if (!isYPositive && absY >= absX && absY >= absZ) {
+    maxAxis = absY;
+    uv.x = -p.x;
+    uv.y = p.z;
+  }
+  if (isZPositive && absZ >= absX && absZ >= absY) {
+    maxAxis = absZ;
+    uv.x = p.x;
+    uv.y = p.y;
+  }
+  if (!isZPositive && absZ >= absX && absZ >= absY) {
+    maxAxis = absZ;
+    uv.x = -p.x;
+    uv.y = p.y;
+  }
+  uv.x *= -1.0;
+  uv = 0.5 * (uv / maxAxis + 1.0);
+  return uv;
+}

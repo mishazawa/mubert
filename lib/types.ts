@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
 import type { ShaderControls } from "./shaders/types";
-import type { BufferGeometry, Texture, WebGLRenderTarget } from "three";
+import type { BufferGeometry, DataTexture } from "three";
 import type { RandomGenerator } from "./utils";
 
 export type ParametersCtx = CanvasProps & {
@@ -9,6 +9,7 @@ export type ParametersCtx = CanvasProps & {
   fft: RefObject<FFTTexture>;
   rot_speed: RefObject<number>;
   random: RandomGenerator;
+  ref_texture: DataTexture;
 };
 
 type FFTTexture = {
