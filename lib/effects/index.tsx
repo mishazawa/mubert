@@ -4,6 +4,7 @@ import {
   EffectComposer,
   Noise,
   SMAA,
+  SSAO,
 } from "@react-three/postprocessing";
 
 import { useParameters } from "../hooks/useParameters";
@@ -22,6 +23,7 @@ export function FX() {
         bokehScale={ctx.debug.bokehScale}
       />
       <SolidOnlyAO />
+      <SSAO />
 
       <AudioGlitch />
       <AudioChromaticAberration radialModulation />

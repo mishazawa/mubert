@@ -93,28 +93,21 @@ function useParticlesSimulation() {
 
     // fill initial velocities
     const data = vel0.image.data as Float32Array;
-
-    let v = new Vector3();
     for (let k = 0, kl = data.length; k < kl; k += 4) {
-      v.setFromCylindricalCoords(
-        Math.random(),
-        Math.PI * 2 * Math.random(),
-        Math.random() - 0.5
-      );
-      data[k + 0] = v.y * 1.0;
-      data[k + 1] = v.x * 1.0;
-      data[k + 2] = v.z * 1.0;
-      data[k + 3] = Math.random() * 0.1 + 0.9;
+      data[k + 0] = 0.0;
+      data[k + 1] = 0.0;
+      data[k + 2] = 0.0;
+      data[k + 3] = 0.0;
     }
-
     vel0.needsUpdate = true;
+
 
     const simulationShader = compile({
       shaderType: "texture",
       preset: ctx.debug.preset,
       presetStyle: "point",
       defines: {
-        PI: "3.14",
+        PI: "3.14159265358979323846",
       },
     });
 
@@ -130,6 +123,7 @@ function useParticlesSimulation() {
 
     // generate and fill uniforms for simulation
     velVar.material.uniforms = uniforms.current;
+    posVar.material.uniforms = uniforms.current;
     assignUniforms(
       velVar.material.uniforms as Record<keyof ShaderControls, any>,
       ctx.data
@@ -148,7 +142,7 @@ function useParticlesSimulation() {
       .texture as DataTexture;
     uniforms.current.uRefTex.value.needsUpdate = true;
   }, [positions]);
-
+  
   useFrame(() => {
     sim.compute();
   });
@@ -165,8 +159,10 @@ function useParticlesGeometry() {
     let pos = new Float32Array(resolution * resolution * 3);
     let uv = new Float32Array(resolution * resolution * 2);
     for (let i = 0; i < resolution * resolution; i++) {
-      const x = i % resolution; // column
-      const y = Math.floor(i / resolution); // row
+      let x = i % resolution; // column
+      let y = Math.floor(i / resolution); // row
+      x = Math.random()*10000.0;
+      y = Math.random()*10000.0;
       pos.set([x, y, 0], i * 3);
       const u = x / (resolution - 1);
       const v = y / (resolution - 1);
