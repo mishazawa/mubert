@@ -23,7 +23,6 @@ export function FX() {
         bokehScale={ctx.debug.bokehScale}
       />
       <SolidOnlyAO />
-      <SSAO />
 
       <AudioGlitch />
       <AudioChromaticAberration radialModulation />
