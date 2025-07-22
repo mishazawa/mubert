@@ -56,7 +56,7 @@ export function Scene() {
         <TrackballControls
           noPan
           dynamicDampingFactor={ctx.debug.dampingFactor}
-          zoomSpeed={0.01}
+          zoomSpeed={0.1}
           minDistance={2}
           maxDistance={10}
         />
