@@ -1,7 +1,7 @@
-import { POINT_DETAIL_DIVIDER, SPEED_MULTIPLIER } from "../constants";
+import { POINT_DETAIL_DIVIDER } from "../constants";
 
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
   CapsuleGeometry,
@@ -18,11 +18,7 @@ import {
   Vector3,
 } from "three";
 
-import type {
-  GenerativeShaderUniforms,
-  MaterialType,
-  UniformValue,
-} from "../shaders/types";
+import type { MaterialType } from "../shaders/types";
 
 import {
   DataTexture,
@@ -33,7 +29,6 @@ import {
 } from "three";
 
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
-import { assignUniforms, generateDefaults } from "../shaders/uniforms";
 import { useParameters } from "../hooks/useParameters";
 
 const BYPASS_NORMALS = false;
@@ -96,6 +91,7 @@ export function useGeometry(
   };
 }
 
+// TODO REWRITE
 export function useAudioTexture() {
   const ctx = useParameters();
 
@@ -154,55 +150,6 @@ export function useAudioTexture() {
   });
 
   return texture; // DataTexture 64×64
-}
-
-export function useUniforms(): RefObject<GenerativeShaderUniforms> {
-  const ctx = useParameters();
-
-  const speedControls = ctx.debug.speed ?? 1;
-  // initial values for uniforms
-  const uniforms = useRef<GenerativeShaderUniforms>(generateDefaults());
-
-  useEffect(() => {
-    assignUniforms(uniforms.current, ctx.data);
-
-    uniforms.current.uColor1.value = ctx.palette[0];
-    uniforms.current.uColor2.value = ctx.palette[1];
-    uniforms.current.uColor3.value = ctx.palette[2];
-    uniforms.current.uColor4.value = ctx.palette[3];
-    uniforms.current.uColor5.value = ctx.palette[4];
-  }, [ctx.data]);
-
-  const audioTex = useAudioTexture();
-  useEffect(() => {
-    (uniforms.current.uAudioTex.value as any) = audioTex; // sampler2D in shader
-  }, [audioTex]);
-
-  // animate uniforms here
-  useFrame(() => {
-    let [rms] = ctx.getRMS();
-    rms = Math.pow(rms * 2.0, 2.0);
-    // rms = rms / ((window.fft_max ?? 255)/255);
-
-    const pastRms = uniforms.current.uRMS.value;
-
-    const mix_min = ctx.fft.current.mix_min ?? 0.4;
-    const mix_max = ctx.fft.current.mix_max ?? 0.99;
-
-    const newRms =
-      pastRms < 0
-        ? pastRms * (1.0 - mix_max) + rms * mix_max
-        : pastRms * (1.0 - mix_min) + rms * mix_min;
-
-    uniforms.current.uRMS.value = ctx.fft.current.val = newRms;
-    uniforms.current.uFFT.value = ctx.getFFT();
-
-    (uniforms.current.uTime as UniformValue<number>).value +=
-      SPEED_MULTIPLIER * speedControls * rms * 10.0;
-    ctx.fft.current.time = uniforms.current.uTime.value;
-  });
-
-  return uniforms;
 }
 
 export function useTransforms(): RefObject<Object3D> {

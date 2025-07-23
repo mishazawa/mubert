@@ -1,4 +1,4 @@
-import { useThree, useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
   BufferAttribute,
@@ -6,7 +6,6 @@ import {
   DataTexture,
   MeshBasicMaterial,
   PointsMaterial,
-  Vector3,
 } from "three";
 import { useParameters } from "../../hooks/useParameters";
 import {
@@ -19,12 +18,10 @@ import CustomShaderMaterial from "three-custom-shader-material";
 import particles from "../../shaders/meta/particles.glsl?raw";
 
 import { compile } from "../../shaders/compiler";
-import { assignUniforms } from "../../shaders/uniforms";
-import type { ShaderControls } from "../../shaders/types";
-import { useUniforms } from "../hooks";
 
 import vertex from "./shaders/dummyv.glsl?raw";
 import fragment from "./shaders/dummyf.glsl?raw";
+import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 
 export function Particles() {
   const ctx = useParameters();
@@ -78,10 +75,10 @@ function useParticlesSimulation() {
   const { gl } = useThree();
 
   // create uniforms for particles CSM
-  const uniforms = useUniforms();
+  const uniforms = useSharedUniforms();
 
   // create simulator
-  const [sim, positions] = useMemo(() => {
+  const [sim, positions, velocities] = useMemo(() => {
     const gpuCompute = new GPUComputationRenderer(
       ctx.debug.particlesCount,
       ctx.debug.particlesCount,
@@ -90,17 +87,6 @@ function useParticlesSimulation() {
 
     const pos0 = gpuCompute.createTexture();
     const vel0 = gpuCompute.createTexture();
-
-    // fill initial velocities
-    const data = vel0.image.data as Float32Array;
-    for (let k = 0, kl = data.length; k < kl; k += 4) {
-      data[k + 0] = 0.0;
-      data[k + 1] = 0.0;
-      data[k + 2] = 0.0;
-      data[k + 3] = 0.0;
-    }
-    vel0.needsUpdate = true;
-
 
     const simulationShader = compile({
       shaderType: "texture",
@@ -111,23 +97,33 @@ function useParticlesSimulation() {
       },
     });
 
+    const particlesShader = compile({
+      shaderType: "texture",
+      preset: ctx.debug.preset,
+      presetStyle: "point",
+      defines: {
+        PI: "3.14159265358979323846",
+      },
+      overrideBody: particles,
+    });
+
     const velVar = gpuCompute.addVariable(
       "uTextureSimulation1",
       simulationShader,
       vel0
     );
-    const posVar = gpuCompute.addVariable("texturePosition", particles, pos0);
+
+    const posVar = gpuCompute.addVariable(
+      "texturePosition",
+      particlesShader,
+      pos0
+    );
+
+    posVar.material.uniforms = uniforms.current;
+    velVar.material.uniforms = uniforms.current;
 
     gpuCompute.setVariableDependencies(velVar, [velVar, posVar]);
     gpuCompute.setVariableDependencies(posVar, [velVar, posVar]);
-
-    // generate and fill uniforms for simulation
-    velVar.material.uniforms = uniforms.current;
-    posVar.material.uniforms = uniforms.current;
-    assignUniforms(
-      velVar.material.uniforms as Record<keyof ShaderControls, any>,
-      ctx.data
-    );
 
     const error = gpuCompute.init();
     if (error !== null) {
@@ -135,14 +131,14 @@ function useParticlesSimulation() {
     }
 
     return [gpuCompute, posVar, velVar];
-  }, [gl, ctx.data, ctx.debug.particlesCount]);
+  }, [gl, ctx.data.uSeed, ctx.debug.particlesCount]);
 
   useEffect(() => {
     uniforms.current.uRefTex.value = sim.getCurrentRenderTarget(positions)
       .texture as DataTexture;
     uniforms.current.uRefTex.value.needsUpdate = true;
-  }, [positions]);
-  
+  }, [positions, velocities]);
+
   useFrame(() => {
     sim.compute();
   });
@@ -161,8 +157,8 @@ function useParticlesGeometry() {
     for (let i = 0; i < resolution * resolution; i++) {
       let x = i % resolution; // column
       let y = Math.floor(i / resolution); // row
-      x = Math.random()*10000.0;
-      y = Math.random()*10000.0;
+      x = Math.random() * 10000.0;
+      y = Math.random() * 10000.0;
       pos.set([x, y, 0], i * 3);
       const u = x / (resolution - 1);
       const v = y / (resolution - 1);

@@ -6,15 +6,16 @@ import { PointsMaterial, MeshPhysicalMaterial, LineBasicMaterial } from "three";
 import { MESH_DETAIL, SHADER_STYLE } from "../constants";
 import { compile } from "../shaders/compiler";
 
-import { useGeometry, useTransforms, useUniforms } from "./hooks";
+import { useGeometry, useTransforms } from "./hooks";
 
 import type { RendererProps } from "../types";
 import { useParameters } from "../hooks/useParameters";
+import { useSharedUniforms } from "../hooks/useSharedUniforms";
 
 export function Model() {
   const ctx = useParameters();
   const ref = useTransforms();
-  const uniforms = useUniforms();
+  const uniforms = useSharedUniforms();
   const items = useGeometry(MESH_DETAIL);
 
   const {
@@ -59,7 +60,7 @@ export function Model() {
 
   return (
     <Bounds observe margin={2} maxDuration={0}>
-      <group ref={ref} position={[0, 0, 0]} visible={!ctx.debug.particles}>
+      <group ref={ref} position={[0, 0, 0]} visible={!ctx.debug.onlyParticles}>
         <group visible={materialType === "solid"}>
           {items.solid.map((i, idx) => (
             <RenderSolid

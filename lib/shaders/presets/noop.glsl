@@ -4,6 +4,8 @@
 #else
 #endif
 
+//#include<noise3>
+
 DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
                                        float animation) {
   return DisplacePatternOutput(data.position, data.normal, vec3(0.));

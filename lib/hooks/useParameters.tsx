@@ -7,7 +7,7 @@ import {
   useRef,
   type RefObject,
 } from "react";
-import { Color, DataTexture, RepeatWrapping, RGBAFormat } from "three";
+import { DataTexture, RepeatWrapping, RGBAFormat } from "three";
 import { useColorGenerator } from "./useColorGenerator";
 
 export type ParametersCtx = CanvasProps & {
@@ -17,7 +17,7 @@ export type ParametersCtx = CanvasProps & {
   rot_speed: RefObject<number>;
   random: RandomGenerator;
   ref_texture: RefObject<DataTexture>;
-  palette: Array<Color>;
+  palette: Array<number[]>;
 };
 
 // TODO move somewhere

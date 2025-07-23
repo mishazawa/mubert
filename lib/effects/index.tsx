@@ -4,7 +4,6 @@ import {
   EffectComposer,
   Noise,
   SMAA,
-  SSAO,
 } from "@react-three/postprocessing";
 
 import { useParameters } from "../hooks/useParameters";

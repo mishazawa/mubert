@@ -19,7 +19,7 @@ precision highp float;
 #define modelmat mat4(1.0)
 #define fragpos vec2(0.0)
 #else
-in mat4 v_mmat;
+
 #define modelmat v_mmat
 #define fragpos gl_FragCoord.xy
 #endif
@@ -177,8 +177,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // newColor = mix(newColor, rcolor, gain(snoise(newPosition + vec3(10.5, 0.0,
   // 0.0))*0.5+0.5, 4.0)*0.9); newColor = refracted;
 
-  vec3 vor = voronoi3d(vPosition * 20.0);
-  vec3 vpos = vPosition * 20.0;
+  vec3 vor = voronoi3d(data.position * 20.0);
+  vec3 vpos = data.position * 20.0;
   float voridf = vor.z * 0.001;
 
   // newNorm = vor;

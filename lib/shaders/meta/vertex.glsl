@@ -1,4 +1,3 @@
-out mat4 v_mmat;
 void main() {
   vPosition = position;
   vNormal = normal;
