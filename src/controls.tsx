@@ -48,6 +48,7 @@ export function useShaderState(): [ShaderControls, any] {
       fragment: false,
       onlyParticles: false,
       enableParticles: true,
+      showWireframe: true,
       pointSize: {
         value: 0.05,
         min: 0.01,

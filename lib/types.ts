@@ -23,11 +23,7 @@ export type EnvironmentLightProps = {
 };
 
 export type RendererProps = {
-  visible: boolean;
   geometry: BufferGeometry;
-  vertexShader: string;
-  fragmentShader: string;
-  uniforms: any;
 };
 
 export type LightPresetProps = {

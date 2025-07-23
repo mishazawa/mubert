@@ -220,6 +220,11 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   emission = 0.0;
   iridescence = 0.0;
   metallic = 0.0;
+
+#if IS_WIRES
+  newColor = vec3(1., 0., 1.);
+#else
+#endif
   return CoatOutput(newColor, norm, 1., roughness, emission, iridescence,
                     metallic);
 }
