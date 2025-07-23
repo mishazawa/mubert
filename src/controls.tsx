@@ -46,7 +46,7 @@ export function useShaderState(): [ShaderControls, any] {
       postfx: false,
       vertex: false,
       fragment: false,
-      onlyParticles: true,
+      onlyParticles: false,
       enableParticles: true,
       pointSize: {
         value: 0.05,

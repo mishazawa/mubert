@@ -139,16 +139,16 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
       pattern_(vec3(viewDir.xy * 0.0, 0.0) * 0.0, animation * 0.0) * 0.0;
   newColor = rcol * 0.0;
 
-  vec2 screen_uv = fragpos.xy / uRes;
+  vec2 screen_uv = fragpos.xy / vec2(REFRACTION_TEXTURE_SIZE);
   float chroma_step = 0.01;
   vec3 refColor =
-      vec3(texture2D(uRefTex,
+      vec3(texture2D(uRefractionTex,
                      vec2(screen_uv + reflected.xy * (1.0 + 1.0 * chroma_step)))
                .r,
-           texture2D(uRefTex,
+           texture2D(uRefractionTex,
                      vec2(screen_uv + reflected.xy * (1.0 + 2.0 * chroma_step)))
                .g,
-           texture2D(uRefTex,
+           texture2D(uRefractionTex,
                      vec2(screen_uv + reflected.xy * (1.0 + 3.0 * chroma_step)))
                .b);
   newColor = refColor;

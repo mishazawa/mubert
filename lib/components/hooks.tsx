@@ -20,14 +20,6 @@ import {
 
 import type { MaterialType } from "../shaders/types";
 
-import {
-  DataTexture,
-  RGBAFormat,
-  UnsignedByteType,
-  ClampToEdgeWrapping,
-  LinearFilter,
-} from "three";
-
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { useParameters } from "../hooks/useParameters";
 
@@ -89,67 +81,6 @@ export function useGeometry(
     point: [icosahedron2, sphere, pill],
     wireframe: [torusw, torusknotw],
   };
-}
-
-// TODO REWRITE
-export function useAudioTexture() {
-  const ctx = useParameters();
-
-  const { texture, buffer, ROW } = useMemo(() => {
-    const SIZE = 256;
-    const ROW = SIZE * 4; // bytes per row  (RGBA)
-    const data = new Uint8Array(SIZE * SIZE * 4);
-    const tex = new DataTexture(data, SIZE, SIZE, RGBAFormat, UnsignedByteType);
-    tex.wrapS = tex.wrapT = ClampToEdgeWrapping;
-    tex.magFilter = tex.minFilter = LinearFilter;
-    tex.needsUpdate = true;
-    return { texture: tex, buffer: data, ROW };
-  }, []);
-
-  useFrame(() => {
-    try {
-      // 1. scroll everything down by one line (drops last row)
-      buffer.copyWithin(ROW, 0, buffer.length - ROW);
-
-      // 2. write new FFT row at the top
-      const fft = ctx.getFFT(); // 64 values 0-255
-      // console.log("FFT", fft);
-      // const max_fft = analyser.getRMS();
-      let curr_max = Math.max(...fft);
-      let new_max = curr_max;
-
-      if (ctx.fft.current.max != undefined) {
-        let past_max = ctx.fft.current.max;
-        let fade = 0.99;
-        new_max = Math.max(curr_max, past_max * fade);
-      }
-
-      ctx.fft.current.max = new_max;
-
-      const mix_min = ctx.fft.current.mix_min ?? 0.4;
-      const mix_max = ctx.fft.current.mix_max ?? 0.99;
-
-      for (let i = 0; i < fft.length; i++) {
-        let v = fft[i];
-        v = (v / new_max) * 255;
-        const idx = i * 4; // row 0 offset
-
-        let pv = buffer[idx];
-        if (pv > v) {
-          v = pv * (1.0 - mix_min) + v * mix_min; // smooth
-        } else if (pv < v) {
-          v = pv * (1.0 - mix_max) + v * mix_max; // smooth
-        }
-
-        buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
-        buffer[idx + 3] = 255; // alpha
-      }
-
-      texture.needsUpdate = true;
-    } catch (_) {}
-  });
-
-  return texture; // DataTexture 64×64
 }
 
 export function useTransforms(): RefObject<Object3D> {

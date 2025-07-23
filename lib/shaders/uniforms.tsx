@@ -31,8 +31,7 @@ uniform float uStripesWidth;
 uniform float uEmission;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
-uniform vec2 uRes;
-uniform sampler2D uRefTex;
+uniform sampler2D uRefractionTex;
 ` as const;
 
 export function generateDefaults() {
@@ -50,7 +49,6 @@ export function generateDefaults() {
     uColor3: { value: [0, 0, 0] },
     uColor4: { value: [0, 0, 0] },
     uColor5: { value: [0, 0, 0] },
-    uRes: { value: [0, 0] },
   } as GenerativeShaderUniforms;
 }
 

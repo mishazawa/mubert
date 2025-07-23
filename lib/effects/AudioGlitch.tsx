@@ -8,8 +8,8 @@ import {
 } from "react";
 import { ReactThreeFiber, useFrame, useThree } from "@react-three/fiber";
 import { useVector2 } from "@react-three/postprocessing";
-import { useAudioTexture } from "../components/hooks";
 import { useParameters } from "../hooks/useParameters";
+import { useSharedTextures } from "../hooks/useSharedTextures";
 
 export type GlitchProps = ConstructorParameters<typeof GlitchEffect>[0] &
   Partial<{
@@ -35,7 +35,9 @@ export const AudioGlitch = /* @__PURE__ */ forwardRef<
   const strength = useVector2(props, "strength");
 
   const isGlitchActive = useGlitchThreshold();
-  const audioTex = useAudioTexture();
+
+  const { uAudioTex } = useSharedTextures();
+
   const effect = useMemo(
     () =>
       new GlitchEffect({
@@ -43,7 +45,7 @@ export const AudioGlitch = /* @__PURE__ */ forwardRef<
         delay,
         duration,
         strength,
-        perturbationMap: audioTex,
+        perturbationMap: uAudioTex.current,
         columns: ctx.debug.glitchW,
         blendFunction: BlendFunction.MULTIPLY,
       }),

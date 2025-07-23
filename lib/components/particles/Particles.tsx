@@ -21,18 +21,49 @@ import { compile } from "../../shaders/compiler";
 
 import vertex from "./shaders/dummyv.glsl?raw";
 import fragment from "./shaders/dummyf.glsl?raw";
+
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
+import { useSharedTextures } from "../../hooks/useSharedTextures";
 
 export function Particles() {
   const ctx = useParameters();
 
   const { uniforms, ...rest } = useParticlesSimulation();
   const geo = useParticlesGeometry();
+  // const _renderScene = useMemo(() => new Scene(), []);
+  // const _renderTarget = useFBO();
+
+  const particlesMesh = useRef(null!);
+
+  // useEffect(() => {
+  //   if (particlesMesh.current) {
+  //     renderScene.add(particlesMesh.current);
+  //   }
+  //   return () => {
+  //     if (particlesMesh.current) {
+  //       renderScene.remove(particlesMesh.current);
+  //     }
+  //   };
+  // }, []);
+
+  // const _gl = useThree((state) => state.gl);
+  // const _mainCamera = useThree((state) => state.camera);
+
+  // useFrame(() => {
+  //   gl.setRenderTarget(renderTarget);
+  //   gl.clear();
+  //   gl.render(renderScene, mainCamera);
+  //   gl.setRenderTarget(null);
+  // });
 
   return (
     <group>
       <DebugParticles {...rest} />
-      <points geometry={geo} visible={ctx.debug.vertex === false}>
+      <points
+        ref={particlesMesh}
+        geometry={geo}
+        visible={ctx.debug.vertex === false}
+      >
         <CustomShaderMaterial
           uniforms={uniforms.current}
           baseMaterial={PointsMaterial}
@@ -56,12 +87,13 @@ function DebugParticles({
   positions: Variable;
 }) {
   const ctx = useParameters();
-
   const mat = useRef<MeshBasicMaterial>(null!);
+
   useEffect(() => {
     mat.current.map = sim.getCurrentRenderTarget(positions).texture;
     mat.current.map.needsUpdate = true;
   }, [positions]);
+
   return (
     <mesh scale={[2, 2, 1]} position={[0, 0, 0]} visible={ctx.debug.vertex}>
       <planeGeometry args={[1, 1]} />
@@ -74,11 +106,13 @@ function useParticlesSimulation() {
   const ctx = useParameters();
   const { gl } = useThree();
 
+  const localUniforms = useRef({ uPositionsTex: { value: undefined } });
+
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();
-
+  const { uRefractionTex } = useSharedTextures();
   // create simulator
-  const [sim, positions, velocities] = useMemo(() => {
+  const [sim, positions, _velocities] = useMemo(() => {
     const gpuCompute = new GPUComputationRenderer(
       ctx.debug.particlesCount,
       ctx.debug.particlesCount,
@@ -88,22 +122,23 @@ function useParticlesSimulation() {
     const pos0 = gpuCompute.createTexture();
     const vel0 = gpuCompute.createTexture();
 
+    const COMMON_DEFINES = {
+      PI: "3.14159265358979323846",
+      REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width ?? 1}`,
+    };
+
     const simulationShader = compile({
       shaderType: "texture",
       preset: ctx.debug.preset,
       presetStyle: "point",
-      defines: {
-        PI: "3.14159265358979323846",
-      },
+      defines: COMMON_DEFINES,
     });
 
     const particlesShader = compile({
       shaderType: "texture",
       preset: ctx.debug.preset,
       presetStyle: "point",
-      defines: {
-        PI: "3.14159265358979323846",
-      },
+      defines: COMMON_DEFINES,
       overrideBody: particles,
     });
 
@@ -133,17 +168,17 @@ function useParticlesSimulation() {
     return [gpuCompute, posVar, velVar];
   }, [gl, ctx.data.uSeed, ctx.debug.particlesCount]);
 
-  useEffect(() => {
-    uniforms.current.uRefTex.value = sim.getCurrentRenderTarget(positions)
-      .texture as DataTexture;
-    uniforms.current.uRefTex.value.needsUpdate = true;
-  }, [positions, velocities]);
+  (localUniforms.current.uPositionsTex.value as unknown) =
+    sim.getCurrentRenderTarget(positions).texture;
+  (
+    localUniforms.current.uPositionsTex.value as unknown as DataTexture
+  ).needsUpdate = true;
 
   useFrame(() => {
     sim.compute();
   });
 
-  return { uniforms, sim, positions };
+  return { uniforms: localUniforms, sim, positions };
 }
 
 function useParticlesGeometry() {

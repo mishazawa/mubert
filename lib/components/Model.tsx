@@ -11,11 +11,13 @@ import { useGeometry, useTransforms } from "./hooks";
 import type { RendererProps } from "../types";
 import { useParameters } from "../hooks/useParameters";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
+import { useSharedTextures } from "../hooks/useSharedTextures";
 
 export function Model() {
   const ctx = useParameters();
   const ref = useTransforms();
   const uniforms = useSharedUniforms();
+  const { uRefractionTex } = useSharedTextures();
   const items = useGeometry(MESH_DETAIL);
 
   const {
@@ -33,11 +35,17 @@ export function Model() {
         presetStyle: SHADER_STYLE[style],
         shaderType: "vertex",
         preset: vertex ? "debug" : preset,
+        defines: {
+          REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
+        },
       }),
       compile({
         presetStyle: SHADER_STYLE[style],
         shaderType: "fragment",
         preset: fragment ? "debug" : preset,
+        defines: {
+          REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
+        },
       }),
       SHADER_STYLE[
         style >= SHADER_STYLE.length ? SHADER_STYLE.length - 1 : style
