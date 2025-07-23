@@ -4,8 +4,10 @@ import {
   BufferAttribute,
   BufferGeometry,
   DataTexture,
+  Mesh,
   MeshBasicMaterial,
   PointsMaterial,
+  Scene,
 } from "three";
 import { useParameters } from "../../hooks/useParameters";
 import {
@@ -24,43 +26,85 @@ import fragment from "./shaders/dummyf.glsl?raw";
 
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 import { useSharedTextures } from "../../hooks/useSharedTextures";
+import { useFBO } from "@react-three/drei";
 
 export function Particles() {
   const ctx = useParameters();
+  const { uRefractionTex } = useSharedTextures();
+
+  const sharedUniforms = useSharedUniforms();
 
   const { uniforms, ...rest } = useParticlesSimulation();
   const geo = useParticlesGeometry();
-  // const _renderScene = useMemo(() => new Scene(), []);
-  // const _renderTarget = useFBO();
 
-  const particlesMesh = useRef(null!);
+  const renderScene = useMemo(() => new Scene(), []);
+  const renderTarget = useFBO();
 
-  // useEffect(() => {
-  //   if (particlesMesh.current) {
-  //     renderScene.add(particlesMesh.current);
-  //   }
-  //   return () => {
-  //     if (particlesMesh.current) {
-  //       renderScene.remove(particlesMesh.current);
-  //     }
-  //   };
-  // }, []);
+  uRefractionTex.current = renderTarget.texture as DataTexture;
+  uRefractionTex.current.needsUpdate = true;
 
-  // const _gl = useThree((state) => state.gl);
-  // const _mainCamera = useThree((state) => state.camera);
+  (sharedUniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
 
-  // useFrame(() => {
-  //   gl.setRenderTarget(renderTarget);
-  //   gl.clear();
-  //   gl.render(renderScene, mainCamera);
-  //   gl.setRenderTarget(null);
-  // });
+  const originalRef = useRef<Mesh>(null!);
+  const cloneRef = useRef<Mesh>(null!);
+
+  useEffect(() => {
+    if (!originalRef.current) return;
+
+    const clone = originalRef.current.clone();
+
+    clone.material = (originalRef.current.material as PointsMaterial).clone();
+
+    if ("size" in clone.material) clone.material.size = ctx.debug.rfptSize;
+    // clone.material.depthWrite = false;
+    // clone.material.depthTest = true;
+    // clone.material.transparent = true;
+    // clone.material.depthFunc = GreaterDepth;
+    clone.material.needsUpdate = true;
+
+    renderScene.add(clone);
+    cloneRef.current = clone;
+
+    return () => {
+      renderScene.remove(clone);
+    };
+  }, [ctx.debug.rfptSize]);
+
+  const gl = useThree((state) => state.gl);
+  const mainCamera = useThree((state) => state.camera);
+
+  const renderCamera = useMemo(() => {
+    const cam = mainCamera.clone();
+    cam.zoom = ctx.debug.rfCamZoom;
+    cam.updateProjectionMatrix();
+    return cam;
+  }, [mainCamera, ctx.debug.rfCamZoom]);
+
+  useFrame(() => {
+    if (!cloneRef.current) return;
+
+    // camera
+    renderCamera.position.copy(mainCamera.position);
+    renderCamera.rotation.copy(mainCamera.rotation);
+    renderCamera.quaternion.copy(mainCamera.quaternion);
+
+    // particles
+    cloneRef.current.position.copy(originalRef.current.position);
+    cloneRef.current.rotation.copy(originalRef.current.rotation);
+    cloneRef.current.scale.copy(originalRef.current.scale);
+
+    // render to fbo and swap back
+    gl.setRenderTarget(renderTarget);
+    gl.clear();
+    gl.render(renderScene, renderCamera);
+    gl.setRenderTarget(null);
+  });
 
   return (
     <group>
       <DebugParticles {...rest} />
       <points
-        ref={particlesMesh}
+        ref={originalRef}
         geometry={geo}
         visible={ctx.debug.vertex === false}
       >
@@ -80,7 +124,6 @@ export function Particles() {
 }
 
 function DebugParticles({
-  sim,
   positions,
 }: {
   sim: GPUComputationRenderer;
@@ -88,16 +131,21 @@ function DebugParticles({
 }) {
   const ctx = useParameters();
   const mat = useRef<MeshBasicMaterial>(null!);
+  const { uRefractionTex } = useSharedTextures();
 
   useEffect(() => {
-    mat.current.map = sim.getCurrentRenderTarget(positions).texture;
+    mat.current.map = uRefractionTex.current;
     mat.current.map.needsUpdate = true;
   }, [positions]);
 
   return (
     <mesh scale={[2, 2, 1]} position={[0, 0, 0]} visible={ctx.debug.vertex}>
       <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial ref={mat} toneMapped={false} />
+      <meshBasicMaterial
+        ref={mat}
+        map={uRefractionTex.current}
+        toneMapped={false}
+      />
     </mesh>
   );
 }

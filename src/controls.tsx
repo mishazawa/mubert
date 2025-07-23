@@ -54,6 +54,15 @@ export function useShaderState(): [ShaderControls, any] {
         max: 1,
       },
 
+      rfCamZoom: {
+        value: 20,
+        min: 1,
+      },
+      rfptSize: {
+        value: 1,
+        min: 0.01,
+        max: 10,
+      },
       particlesCount: {
         value: 128,
         min: 32,
