@@ -19,7 +19,7 @@ precision highp float;
 #define modelmat mat4(1.0)
 #define fragpos vec2(0.0)
 #else
-in mat4 v_mmat;
+
 #define modelmat v_mmat
 #define fragpos gl_FragCoord.xy
 #endif
@@ -139,16 +139,16 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
       pattern_(vec3(viewDir.xy * 0.0, 0.0) * 0.0, animation * 0.0) * 0.0;
   newColor = rcol * 0.0;
 
-  vec2 screen_uv = fragpos.xy / uRes;
+  vec2 screen_uv = fragpos.xy / vec2(REFRACTION_TEXTURE_SIZE);
   float chroma_step = 0.01;
   vec3 refColor =
-      vec3(texture2D(uRefTex,
+      vec3(texture2D(uRefractionTex,
                      vec2(screen_uv + reflected.xy * (1.0 + 1.0 * chroma_step)))
                .r,
-           texture2D(uRefTex,
+           texture2D(uRefractionTex,
                      vec2(screen_uv + reflected.xy * (1.0 + 2.0 * chroma_step)))
                .g,
-           texture2D(uRefTex,
+           texture2D(uRefractionTex,
                      vec2(screen_uv + reflected.xy * (1.0 + 3.0 * chroma_step)))
                .b);
 //   newColor = refColor;
@@ -179,8 +179,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // newColor = mix(newColor, rcolor, gain(snoise(newPosition + vec3(10.5, 0.0,
   // 0.0))*0.5+0.5, 4.0)*0.9); newColor = refracted;
 
-  vec3 vor = voronoi3d(vPosition * 20.0);
-  vec3 vpos = vPosition * 20.0;
+  vec3 vor = voronoi3d(data.position * 20.0);
+  vec3 vpos = data.position * 20.0;
   float voridf = vor.z * 0.001;
 
   // newNorm = vor;
@@ -222,10 +222,16 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // norm = newNorm;
   // newColor = newPosition;
 
-//   roughness = 1.0;
-//   emission = 1.0;
-//   iridescence = 0.0;
-//   metallic = 0.0;
+  roughness = 1.0;
+  emission = 0.0;
+  iridescence = 0.0;
+  metallic = 0.0;
+
+#if IS_WIRES
+  newColor = vec3(1., 0., 1.);
+#else
+#endif
+
   return CoatOutput(newColor, norm, 1., roughness, emission, iridescence,
                     metallic);
 }

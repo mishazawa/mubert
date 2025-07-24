@@ -20,3 +20,4 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   uStripesWidth: [0, 1],
 };
 export const FBO_SIZE = 64;
+export const AUDIO_TEXTURE_SIZE = 256;

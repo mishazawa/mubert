@@ -1,6 +1,7 @@
 //  ¯\_(ツ)_/¯
 // as const
 
+import { FFT_SIZE } from "../constants";
 import type { GenerativeShaderUniforms, ShaderControls } from "./types";
 
 // does not support multiple spaces between tokens
@@ -28,10 +29,9 @@ uniform float uRoughnessPattern;
 uniform float uNoiseVariant;
 uniform float uStripesWidth;
 uniform float uEmission;
-uniform sampler2D uRefTex;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
-uniform vec2 uRes;
+uniform sampler2D uRefractionTex;
 ` as const;
 
 export function generateDefaults() {
@@ -43,7 +43,12 @@ export function generateDefaults() {
         acc[i] = { value: 0 };
         return acc;
       }, {} as Record<string, any>),
-    uFFT: { value: [1] },
+    uFFT: { value: new Array(FFT_SIZE).fill(0) },
+    uColor1: { value: [0, 0, 0] },
+    uColor2: { value: [0, 0, 0] },
+    uColor3: { value: [0, 0, 0] },
+    uColor4: { value: [0, 0, 0] },
+    uColor5: { value: [0, 0, 0] },
   } as GenerativeShaderUniforms;
 }
 

@@ -52,5 +52,5 @@ export function useColorGenerator(rand: RandomGenerator, seed: number) {
         l: c[2],
       })
     )
-    .map((c) => new Color(c));
+    .map((c) => new Color(c).toArray());
 }
