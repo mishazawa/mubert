@@ -3,12 +3,15 @@ import { useEffect, useMemo, useRef } from "react";
 import {
   BufferAttribute,
   BufferGeometry,
+  Color,
   DataTexture,
   Mesh,
   MeshBasicMaterial,
   PointsMaterial,
   Scene,
+  Vector3,
 } from "three";
+import { Bounds } from "@react-three/drei";
 import { useParameters } from "../../hooks/useParameters";
 import {
   GPUComputationRenderer,
@@ -27,6 +30,8 @@ import fragment from "./shaders/dummyf.glsl?raw";
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 import { useSharedTextures } from "../../hooks/useSharedTextures";
 import { useFBO } from "@react-three/drei";
+import { useTransforms } from "../hooks";
+
 
 export function Particles() {
   const ctx = useParameters();
@@ -44,8 +49,13 @@ export function Particles() {
   uRefractionTex.current.needsUpdate = true;
 
   (sharedUniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
+  (sharedUniforms.current.uParticlesRes.value as any) = [
+    ctx.debug.particlesCount,
+    ctx.debug.particlesCount,
+  ];
 
   const originalRef = useRef<Mesh>(null!);
+  const t_ref = useTransforms();
   const cloneRef = useRef<Mesh>(null!);
 
   useEffect(() => {
@@ -101,25 +111,29 @@ export function Particles() {
   });
 
   return (
-    <group>
-      <DebugParticles {...rest} />
-      <points
-        ref={originalRef}
-        geometry={geo}
-        visible={ctx.debug.vertex === false}
-      >
-        <CustomShaderMaterial
-          uniforms={uniforms.current}
-          baseMaterial={PointsMaterial}
-          vertexShader={vertex}
-          fragmentShader={fragment}
-          transparent
-          toneMapped={false}
-          sizeAttenuation={true}
-          size={ctx.debug.pointSize}
-        />
-      </points>
-    </group>
+    <Bounds observe margin={2} maxDuration={0}>
+      <group ref={t_ref} position={[0, 0, 0]} visible={!ctx.debug.onlyParticles}>
+        <group>
+          <DebugParticles {...rest} />
+          <points
+            ref={originalRef}
+            geometry={geo}
+            visible={ctx.debug.vertex === false}
+          >
+            <CustomShaderMaterial
+              uniforms={uniforms.current}
+              baseMaterial={PointsMaterial}
+              vertexShader={vertex}
+              fragmentShader={fragment}
+              transparent
+              toneMapped={false}
+              sizeAttenuation={true}
+              size={ctx.debug.pointSize}
+            />
+          </points>
+        </group>
+      </group>
+    </Bounds>
   );
 }
 
@@ -150,11 +164,23 @@ function DebugParticles({
   );
 }
 
+
+function ctv(arg0: number[]): Vector3 {
+  return new Vector3(...arg0);
+}
+
 function useParticlesSimulation() {
   const ctx = useParameters();
   const { gl } = useThree();
 
-  const localUniforms = useRef({ uPositionsTex: { value: undefined } });
+  let color1 = ctx.debug.color1;
+  let color2 = ctx.debug.color2;
+
+  
+  const localUniforms = useRef({ uPositionsTex: { value: undefined }, uColor1: { value: undefined }, uColor2: { value: undefined } });
+  
+  localUniforms.current.uColor1.value = ctv(ctx.palette[4]);
+  localUniforms.current.uColor2.value = ctv(ctx.palette[5]);
 
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();
@@ -221,6 +247,7 @@ function useParticlesSimulation() {
   (
     localUniforms.current.uPositionsTex.value as unknown as DataTexture
   ).needsUpdate = true;
+
 
   useFrame(() => {
     sim.compute();

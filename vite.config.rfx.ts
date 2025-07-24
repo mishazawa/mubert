@@ -4,7 +4,7 @@ import path from "path";
 
 export default defineConfig({
   root: "src",
-  base: "/dev/mubert/", // 👈 deployment base
+  base: "/dev/mubert4/", // 👈 deployment base
   plugins: [react()],
   resolve: {
     alias: {

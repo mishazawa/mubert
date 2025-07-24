@@ -43,7 +43,7 @@ export function useShaderState(): [ShaderControls, any] {
         options: PRESETS,
       },
       background: false,
-      postfx: false,
+      postfx: true,
       vertex: false,
       fragment: false,
       onlyParticles: false,
@@ -89,7 +89,7 @@ export function useShaderState(): [ShaderControls, any] {
         step: 1,
       },
       focusDistance: {
-        value: 0.3,
+        value: 0.33,
         min: 0,
         step: 0.01,
       },
@@ -98,7 +98,7 @@ export function useShaderState(): [ShaderControls, any] {
         min: 0,
       },
       bokehScale: {
-        value: 5,
+        value: 3,
         min: 0,
       },
       noise: {
@@ -123,18 +123,18 @@ export function useShaderState(): [ShaderControls, any] {
         max: 1.0,
       },
       glitch: {
-        value: 1,
+        value: 0.99,
         min: 0,
         max: 1.0,
       },
       glitchCol: {
-        value: 0,
+        value: 6,
         min: 0,
         max: FFT_SIZE,
         step: 1,
       },
       glitchW: {
-        value: 0.1,
+        value: 0.01,
         min: 0.01,
         max: 1,
       },
