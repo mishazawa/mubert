@@ -1,5 +1,5 @@
 import NOOP from "./noop.glsl?raw";
-import SLAI from "./slai5.glsl?raw";
+import SLAI from "./slai.glsl?raw";
 import SLAI_FLAT from "./slai_flat.glsl?raw";
 import STRIPES from "./stripes.glsl?raw";
 import LINOISE from "./linoise.glsl?raw";

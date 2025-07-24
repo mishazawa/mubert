@@ -5,8 +5,10 @@ void main() {
   vec4 vel = texture2D(uTextureSimulation1, uv);
   vec4 prev_frame = texture2D(texturePosition, uv);
 
-  vec4 next_frame = prev_frame + vel * .01;
-  next_frame += gravity(next_frame) * .01;
+  
+
+  vec4 next_frame = prev_frame + vel * .1;
+  next_frame += gravity(next_frame) * .1;
 
   gl_FragColor = vec4(next_frame.xyz, 1.0);
 }

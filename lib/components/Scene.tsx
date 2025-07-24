@@ -33,7 +33,7 @@ export function Scene() {
   return (
     <ContextBridge>
       <Canvas className="vis_canvas" dpr={1}>
-        <color attach="background" args={[ctx.palette[5] as Color]} />
+        <color attach="background" args={[ctx.palette[0] as Color]} />
         {/* TO BE REMOVED */}
         <StatsGl showPanel={1} className="stats" />
 
