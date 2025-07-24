@@ -4,21 +4,41 @@ import { Poline, positionFunctions } from "poline";
 import { useMemo } from "react";
 import { Color } from "three";
 
+
 const typedTuple = <T extends unknown[]>(...args: T): T => args;
 
 export function useColorGenerator(rand: RandomGenerator, seed: number) {
+
+  const pfns = [
+    positionFunctions["linearPosition"],
+    positionFunctions["exponentialPosition"],
+    positionFunctions["quadraticPosition"],
+    positionFunctions["cubicPosition"],
+    positionFunctions["quarticPosition"],
+    positionFunctions["sinusoidalPosition"],
+    positionFunctions["asinusoidalPosition"],
+    positionFunctions["arcPosition"]
+  ];
+  let pftns_use = [];
+  for (let i = 0; i < 3; i++) {
+    pftns_use.push(pfns[rand.int(0, pfns.length - 1)]);
+  }
+  let hue1 = rand.float(0, 1);
+  let hue2 = hue1 + 0.5;
+  hue1 *= 360;
+  hue2 *= 360;
+
   const palette = useMemo(
     () =>
       new Poline({
         anchorColors: [
-          typedTuple(rand.int(0, 360), rand.float(1, 1), rand.float(0.5, 1)),
-          typedTuple(rand.int(-360, 360), rand.float(1, 1), 1),
-          typedTuple(rand.int(0, 360), rand.float(1, 1), rand.float(0.5, 1)),
+          typedTuple(hue1, rand.float(0.0, 0.0), rand.float(0.0, 0.0)),
+          typedTuple(hue1, rand.float(1.0, 1.0), rand.float(1.0, 1.0)),
         ],
         numPoints: 5,
-        positionFunctionX: positionFunctions["sinusoidalPosition"],
-        positionFunctionY: positionFunctions["quadraticPosition"],
-        positionFunctionZ: positionFunctions["linearPosition"],
+        positionFunctionX: pftns_use[0],
+        positionFunctionY: pftns_use[1],
+        positionFunctionZ: pftns_use[2],
       }),
     [seed]
   );

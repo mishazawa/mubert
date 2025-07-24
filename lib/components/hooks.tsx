@@ -50,15 +50,20 @@ export function useTransforms(): RefObject<Object3D> {
   // animate mesh here
   useFrame(() => {
     const fft_val = ctx.fft.current.val;
-    const rot_speed = ctx.rot_speed.current;
+    const rot_speed = ctx.rot_speed.current*0.5;
     const t = ctx.fft.current.time;
 
-    _axis
-      .set(Math.sin(t * 2.0), Math.sin(t * 3.0), Math.sin(t * 5.0))
-      .normalize(); // Y-axis
+    // _axis
+    //   .set(Math.sin(t * 0.2), Math.sin(t * 0.4), Math.sin(t * 0.2))
+    //   // .normalize(); // Y-axis
+    // _q.setFromAxisAngle(_axis, fft_val * rot_speed);
+    // _bbox.setFromObject(ref.current).getSize(_size);
 
+    _axis.set(Math.sin(t * 0.2), Math.sin(t * 0.4), Math.sin(t * 0.2)).normalize();
     _q.setFromAxisAngle(_axis, fft_val * rot_speed);
-    _bbox.setFromObject(ref.current).getSize(_size);
+
+    _bbox.setFromObject(ref.current);
+    _bbox.getSize(_size);
 
     if (_size.z > 0.1) {
       ref.current.quaternion.multiply(_q);

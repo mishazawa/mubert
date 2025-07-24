@@ -131,7 +131,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
   }
 
 
-  float pscale = 0.2 + random(uSeed + 100.0) * 0.1;
+  float pscale = 0.1 + random(uSeed + 100.0) * 0.1;
   npos_accum *= pscale;
   vec3 new = vec3(
     snoise(npos_accum + vec3(0.5, 0.0, 0.0)),

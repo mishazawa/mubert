@@ -13,6 +13,7 @@ void main() {
   vec4 next_frame = prev_frame + vel * .2;
   next_frame += gravity(next_frame) * .01;
 
+
   float rtime = random(uv.x + uv.y * 0.381999 + uTime * 1.425342224);
 
   if (rtime < 0.0001) {

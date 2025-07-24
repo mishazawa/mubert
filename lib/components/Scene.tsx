@@ -40,7 +40,7 @@ export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
   const ctx = useContext(ParamsContext);
 
-  const bkg: [number, number, number] = (ctx.palette[5] as [
+  const bkg: [number, number, number] = (ctx.palette[0] as [
     number,
     number,
     number
@@ -97,6 +97,7 @@ export function Scene() {
   return (
     <ContextBridge>
       <Canvas className="vis_canvas" dpr={1}>
+        
         <UniformsProvider>
           <color attach="background" args={bkg} />
           {/* TO BE REMOVED */}
