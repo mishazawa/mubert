@@ -47,19 +47,14 @@ export function useTransforms(): RefObject<Object3D> {
   const ref = useRef<Mesh>(null!);
   const ctx = useParameters();
 
-  // animate mesh here
   useFrame(() => {
     const fft_val = ctx.fft.current.val;
-    const rot_speed = ctx.rot_speed.current*0.5;
+    const rot_speed = ctx.rot_speed.current * 0.5;
     const t = ctx.fft.current.time;
 
-    // _axis
-    //   .set(Math.sin(t * 0.2), Math.sin(t * 0.4), Math.sin(t * 0.2))
-    //   // .normalize(); // Y-axis
-    // _q.setFromAxisAngle(_axis, fft_val * rot_speed);
-    // _bbox.setFromObject(ref.current).getSize(_size);
-
-    _axis.set(Math.sin(t * 0.2), Math.sin(t * 0.4), Math.sin(t * 0.2)).normalize();
+    _axis
+      .set(Math.sin(t * 0.2), Math.sin(t * 0.4), Math.sin(t * 0.2))
+      .normalize();
     _q.setFromAxisAngle(_axis, fft_val * rot_speed);
 
     _bbox.setFromObject(ref.current);

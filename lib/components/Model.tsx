@@ -14,11 +14,10 @@ import { useSharedTextures } from "../hooks/useSharedTextures";
 
 export function Model() {
   const ctx = useParameters();
-  const ref = useTransforms();
 
   return (
     <Bounds observe margin={2} maxDuration={0}>
-      <group ref={ref} position={[0, 0, 0]} visible={!ctx.debug.onlyParticles}>
+      <group visible={!ctx.debug.onlyParticles}>
         <RenderSolid />
         <RenderLines />
       </group>

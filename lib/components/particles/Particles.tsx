@@ -27,6 +27,10 @@ import fragment from "./shaders/dummyf.glsl?raw";
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 import { useSharedTextures } from "../../hooks/useSharedTextures";
 import { useFBO } from "@react-three/drei";
+import {
+  PARTICLES_CAMERA_ZOOM,
+  PARTICLES_SIZE_RENDER_PASS,
+} from "../../constants";
 
 export function Particles() {
   const ctx = useParameters();
@@ -55,11 +59,8 @@ export function Particles() {
 
     clone.material = (originalRef.current.material as PointsMaterial).clone();
 
-    if ("size" in clone.material) clone.material.size = ctx.debug.rfptSize;
-    // clone.material.depthWrite = false;
-    // clone.material.depthTest = true;
-    // clone.material.transparent = true;
-    // clone.material.depthFunc = GreaterDepth;
+    if ("size" in clone.material)
+      clone.material.size = PARTICLES_SIZE_RENDER_PASS;
     clone.material.needsUpdate = true;
 
     renderScene.add(clone);
@@ -68,30 +69,36 @@ export function Particles() {
     return () => {
       renderScene.remove(clone);
     };
-  }, [ctx.debug.rfptSize]);
+  }, []);
 
   const gl = useThree((state) => state.gl);
   const mainCamera = useThree((state) => state.camera);
 
   const renderCamera = useMemo(() => {
     const cam = mainCamera.clone();
-    cam.zoom = ctx.debug.rfCamZoom;
+    cam.zoom = PARTICLES_CAMERA_ZOOM;
     cam.updateProjectionMatrix();
     return cam;
-  }, [mainCamera, ctx.debug.rfCamZoom]);
+  }, [mainCamera]);
 
   useFrame(() => {
     if (!cloneRef.current) return;
 
     // camera
-    renderCamera.position.copy(mainCamera.position);
-    renderCamera.rotation.copy(mainCamera.rotation);
-    renderCamera.quaternion.copy(mainCamera.quaternion);
+    renderCamera.matrix.copy(mainCamera.matrix);
+    renderCamera.matrix.decompose(
+      renderCamera.position,
+      renderCamera.quaternion,
+      renderCamera.scale
+    );
 
     // particles
-    cloneRef.current.position.copy(originalRef.current.position);
-    cloneRef.current.rotation.copy(originalRef.current.rotation);
-    cloneRef.current.scale.copy(originalRef.current.scale);
+    cloneRef.current.matrix.copy(originalRef.current.matrix);
+    cloneRef.current.matrix.decompose(
+      cloneRef.current.position,
+      cloneRef.current.quaternion,
+      cloneRef.current.scale
+    );
 
     // render to fbo and swap back
     gl.setRenderTarget(renderTarget);

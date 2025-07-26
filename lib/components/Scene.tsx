@@ -1,7 +1,6 @@
-import { Suspense, useContext, useEffect, useRef } from "react";
+import { Suspense, useContext, useEffect, useRef, type ReactNode } from "react";
 import { ParamsContext } from "../hooks/useParameters";
 import {
-  Icosahedron,
   StatsGl,
   TrackballControls,
   useContextBridge,
@@ -24,23 +23,13 @@ import { Model } from "./Model";
 import { Particles } from "./particles/Particles";
 import { UniformsProvider } from "../hooks/useSharedUniforms";
 import { useCreateSharedTexture } from "../hooks/useSharedTextures";
-
-const initialPositions = [
-  [-4, 20, -12],
-  [-10, 12, -4],
-  [-11, -12, -23],
-  [-16, -6, -10],
-  [12, -2, -3],
-  [13, 4, -12],
-  [14, -2, -23],
-  [8, 10, -20],
-];
+import { useTransforms } from "./hooks";
 
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
   const ctx = useContext(ParamsContext);
 
-  const bkg: [number, number, number] = (ctx.palette[0] as [
+  const bkg: [number, number, number] = (ctx.palette[4] as [
     number,
     number,
     number
@@ -97,7 +86,6 @@ export function Scene() {
   return (
     <ContextBridge>
       <Canvas className="vis_canvas" dpr={1}>
-        
         <UniformsProvider>
           <color attach="background" args={bkg} />
           {/* TO BE REMOVED */}
@@ -105,17 +93,10 @@ export function Scene() {
 
           <EnvironmentLight intensity={10} preset={ctx.debug.light} />
           <Suspense fallback={null}>
-            {!ctx.debug.enableParticles ? null : <Particles />}
-            <Model />
-            {!ctx.debug.background
-              ? null
-              : initialPositions.map((pos, i) => (
-                  <Icosahedron
-                    args={[1, 8]}
-                    position={[pos[0] * 0.5, pos[1] * 0.5, pos[2] * 0.5]}
-                    key={i}
-                  />
-                ))}
+            <TransformGroup>
+              {!ctx.debug.enableParticles ? null : <Particles />}
+              <Model />
+            </TransformGroup>
           </Suspense>
 
           <LensCamera {...ctx.debug} />
@@ -149,5 +130,14 @@ function LensCamera({ distance, lens }: any) {
       makeDefault={true}
       far={20.0}
     />
+  );
+}
+
+function TransformGroup({ children }: { children: ReactNode }) {
+  const ref = useTransforms();
+  return (
+    <group ref={ref} position={[0, 0, 0]}>
+      {children}
+    </group>
   );
 }
