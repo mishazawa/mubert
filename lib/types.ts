@@ -1,3 +1,4 @@
+import type { ReactThreeFiber } from "@react-three/fiber";
 import type { ShaderControls } from "./shaders/types";
 import type { BufferGeometry } from "three";
 export type FFTTexture = {
@@ -31,4 +32,5 @@ export type LightPresetProps = {
   scale?: [number, number, number];
   group?: boolean;
   float?: boolean;
+  isAccent?: boolean;
 };

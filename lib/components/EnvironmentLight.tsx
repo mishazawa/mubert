@@ -2,6 +2,8 @@ import { Environment, Float, Lightformer } from "@react-three/drei";
 import { ENV_MAP_RESOLUTION } from "../constants";
 import type { EnvironmentLightProps, LightPresetProps } from "../types";
 import { LIGHT_PRESET } from "./lights";
+import { useParameters } from "@lib/hooks/useParameters";
+import type { ReactThreeFiber } from "@react-three/fiber";
 
 export function EnvironmentLight({
   intensity,
@@ -17,6 +19,7 @@ export function EnvironmentLight({
 }
 
 function RenderLight(props: LightPresetProps & { [key: string]: any }) {
+  const color = usePaletteAccentColor(!!props.isAccent);
   if (props.group)
     return (
       <group {...props}>
@@ -27,6 +30,7 @@ function RenderLight(props: LightPresetProps & { [key: string]: any }) {
                 {...elem}
                 key={idx}
                 intensity={elem.intensity * props.globalIntensity}
+                color={color}
               />
             )
           )}
@@ -40,6 +44,7 @@ function RenderLight(props: LightPresetProps & { [key: string]: any }) {
         <Lightformer
           {...props}
           intensity={props.intensity * props.globalIntensity}
+          color={color}
         />
       </Float>
     );
@@ -48,6 +53,13 @@ function RenderLight(props: LightPresetProps & { [key: string]: any }) {
     <Lightformer
       {...props}
       intensity={props.intensity * props.globalIntensity}
+      color={color}
     />
   );
+}
+
+function usePaletteAccentColor(isAccent: boolean) {
+  const ctx = useParameters();
+  if (!isAccent) return 0xffffff;
+  return ctx.palette[ctx.debug.lightAccent] as ReactThreeFiber.Color;
 }

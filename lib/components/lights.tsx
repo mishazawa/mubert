@@ -10,6 +10,7 @@ export const LIGHT_PRESET: Array<
       position: [-15, -5, 5],
       scale: [10, 10, 1],
       form: "circle",
+      isAccent: true,
     },
   ],
   [

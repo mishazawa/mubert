@@ -42,13 +42,12 @@ export function useShaderState(): [ShaderControls, any] {
         value: "slai",
         options: PRESETS,
       },
-      background: false,
-      postfx: false,
+      postfx: true,
       vertex: false,
       fragment: false,
       onlyParticles: false,
       enableParticles: true,
-      showWireframe: true,
+      showWireframe: false,
       pointSize: {
         value: 0.05,
         min: 0.01,
@@ -86,6 +85,12 @@ export function useShaderState(): [ShaderControls, any] {
         value: 0,
         min: 0,
         max: LIGHT_PRESET.length - 1,
+        step: 1,
+      },
+      lightAccent: {
+        value: 0,
+        min: 0,
+        max: 4,
         step: 1,
       },
       focusDistance: {
