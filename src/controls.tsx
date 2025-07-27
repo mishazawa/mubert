@@ -47,39 +47,16 @@ export function useShaderState(): [ShaderControls, any] {
       fragment: false,
       onlyParticles: false,
       enableParticles: true,
-      showWireframe: false,
       pointSize: {
         value: 0.05,
         min: 0.01,
         max: 1,
-      },
-
-      rfCamZoom: {
-        value: 20,
-        min: 1,
-      },
-      rfptSize: {
-        value: 1,
-        min: 0.01,
-        max: 10,
       },
       particlesCount: {
         value: 128,
         min: 32,
         max: 4096,
         step: 8,
-      },
-      lens: {
-        value: 45,
-        min: 1,
-        max: 90,
-        step: 1,
-      },
-      distance: {
-        value: 7,
-        min: 2,
-        max: 15,
-        step: 0.1,
       },
       light: {
         value: 0,
@@ -93,55 +70,10 @@ export function useShaderState(): [ShaderControls, any] {
         max: 4,
         step: 1,
       },
-      focusDistance: {
-        value: 0.33,
-        min: 0,
-        step: 0.01,
-      },
-      focalLength: {
-        value: 0.1,
-        min: 0,
-      },
-      bokehScale: {
-        value: 3,
-        min: 0,
-      },
-      noise: {
-        value: 0.02,
-        min: 0,
-        max: 1,
-      },
-      bloom: {
-        value: 0.01,
-        min: 0,
-        max: 1,
-      },
-      chromaticAberration: {
-        value: 0.1,
-        min: 0,
-        max: 0.1,
-        step: 0.01,
-      },
       dampingFactor: {
         value: 0.02,
         min: 0,
         max: 1.0,
-      },
-      glitch: {
-        value: 0.99,
-        min: 0,
-        max: 1.0,
-      },
-      glitchCol: {
-        value: 6,
-        min: 0,
-        max: FFT_SIZE,
-        step: 1,
-      },
-      glitchW: {
-        value: 0.01,
-        min: 0.01,
-        max: 1,
       },
     }),
     { collapsed: true }

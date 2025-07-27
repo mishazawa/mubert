@@ -7,9 +7,12 @@ import {
 } from "@react-three/postprocessing";
 
 import { useParameters } from "../hooks/useParameters";
-import { AudioChromaticAberration } from "./AudioChromaticAberration";
-import { AudioGlitch } from "./AudioGlitch";
-import { SolidOnlyAO } from "./N8AO";
+import { AO } from "./N8AO";
+import {
+  DOF_BOKEH_SCALE,
+  DOF_FOCUS_LENGTH,
+  FX_NOISE_SCALE,
+} from "../constants";
 
 export function FX() {
   const ctx = useParameters();
@@ -17,15 +20,13 @@ export function FX() {
   return !ctx.debug.postfx ? null : (
     <EffectComposer multisampling={0}>
       <DepthOfField
-        focusDistance={ctx.debug.focusDistance}
-        focalLength={ctx.debug.focalLength}
-        bokehScale={ctx.debug.bokehScale}
+        target={[0, 0, 0]}
+        focalLength={DOF_FOCUS_LENGTH}
+        bokehScale={DOF_BOKEH_SCALE}
       />
-      <SolidOnlyAO />
+      <AO />
 
-      <AudioGlitch />
-      <AudioChromaticAberration radialModulation />
-      <Noise opacity={ctx.debug.noise} />
+      <Noise opacity={FX_NOISE_SCALE} />
       <Bloom mipmapBlur levels={7} intensity={1} />
       <SMAA />
     </EffectComposer>

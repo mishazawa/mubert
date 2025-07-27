@@ -16,7 +16,12 @@ import {
   UnsignedByteType,
   type PerspectiveCamera,
 } from "three";
-import { AMBIENT_LIGHT_COLOR, AUDIO_TEXTURE_SIZE } from "../constants";
+import {
+  AMBIENT_LIGHT_COLOR,
+  AUDIO_TEXTURE_SIZE,
+  CAMERA_DISTANCE,
+  CAMERA_FOV,
+} from "../constants";
 import { FX } from "../effects";
 import { EnvironmentLight } from "./EnvironmentLight";
 import { Model } from "./Model";
@@ -94,12 +99,12 @@ export function Scene() {
           <EnvironmentLight intensity={10} preset={ctx.debug.light} />
           <Suspense fallback={null}>
             <TransformGroup>
-              {!ctx.debug.enableParticles ? null : <Particles />}
+              <Particles />
               <Model />
             </TransformGroup>
           </Suspense>
 
-          <LensCamera {...ctx.debug} />
+          <LensCamera />
           <TrackballControls
             noPan
             dynamicDampingFactor={ctx.debug.dampingFactor}
@@ -115,20 +120,22 @@ export function Scene() {
   );
 }
 
-function LensCamera({ distance, lens }: any) {
+function LensCamera() {
   const cam = useRef<PerspectiveCamera>(null!);
 
   useEffect(() => {
     if (!cam.current) return;
-    cam.current.setFocalLength(lens);
-  }, [lens]);
+    cam.current.setFocalLength(CAMERA_FOV);
+    cam.current.updateProjectionMatrix();
+  });
 
   return (
     <CameraPer
       ref={cam}
-      position={[0, 0, distance]}
+      fov={CAMERA_FOV}
+      position={[0, 0, CAMERA_DISTANCE]}
       makeDefault={true}
-      far={20.0}
+      far={50.0}
     />
   );
 }

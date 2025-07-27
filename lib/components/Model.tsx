@@ -1,8 +1,8 @@
+import CustomShaderMaterialVanilla from "three-custom-shader-material/vanilla";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { useMemo } from "react";
 import { Bounds } from "@react-three/drei";
-import { MeshPhysicalMaterial, LineBasicMaterial } from "three";
-import { randomGenerator } from "../utils";
+import { DoubleSide, LineBasicMaterial, MeshPhysicalMaterial } from "three";
 
 import { MESH_DETAIL } from "../constants";
 import { compile } from "../shaders/compiler";
@@ -30,15 +30,15 @@ function RenderLines() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
 
-  const seed = ctx.debug.seed ?? 0;
-  const rand = useMemo(() => randomGenerator(seed), [seed]);
+  const rand = ctx.random;
 
-  ctx.debug.showWireframe = rand.float(0, 1) < 0.2;
+  const [showWireframe, scale, detail] = useMemo(
+    () => [rand.casino(0.8), rand.float(1.05, 1.2), rand.int(1, 3)],
+    [ctx.data.uSeed]
+  );
 
-  let scale = rand.float(1.05, 1.2);
-  let detail = rand.int(1, 3);
   const itemsw = useGeometryWireframe(detail, scale);
-  let itemw = itemsw[rand.int(0, itemsw.length - 1)];
+  const itemw = itemsw[rand.int(0, itemsw.length - 1)];
 
   const { vertex, fragment, preset } = ctx.debug ?? {};
   const { uRefractionTex } = useSharedTextures();
@@ -64,8 +64,9 @@ function RenderLines() {
     ],
     [preset, vertex, fragment]
   );
+
   return (
-    <lineSegments geometry={itemw} visible={ctx.debug.showWireframe}>
+    <lineSegments geometry={itemw} visible={!!showWireframe}>
       <CustomShaderMaterial
         baseMaterial={LineBasicMaterial}
         uniforms={uniforms.current}
