@@ -76,7 +76,7 @@ vec3 displace_(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
            snoise(newPosition + vec3(10.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
            snoise(newPosition +
                   vec3(20.5, 2.0, fract(uSeed / 1000.0) * 100.0))) *
-          (0.3 + random(uSeed + 4.0) * 0.1) * (1.0 + float(VERTEX) * 0.0) * 0.5;
+          (0.2 + random(uSeed + 4.0) * 0.2);
 
   return newPosition;
 }
@@ -154,7 +154,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 //   newColor = refColor;
 
   vec3 newPosition = data.position * DISPLACE_POS_SCALE  +
-                     data.pattern * 8.0 * DISPLACE_SCALE;
+                     data.pattern * 8.0*2.0 * DISPLACE_SCALE;
   newPosition = vec3(snoise(newPosition + vec3(0.5, 0.0, 0.0)),
                      snoise(newPosition + vec3(10.5, 0.0, 0.0)),
                      snoise(newPosition + vec3(20.5, 0.0, 0.0))) *
@@ -162,12 +162,16 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
                 0.5;
 
   newColor = newColor * 0.5 + 0.5;
-  newColor = newPosition;
+  // newColor = newPosition;
+  vec3 npos_c = newColor;
   float contrast = 4.0;
   newColor = mix(mix(uColor2, uColor3, gain(newColor.x, contrast)),
                  mix(uColor4, uColor5, gain(newColor.y, contrast)),
                  gain(pow(newColor.z, 1.0), contrast));
 
+
+  // newColor = mix(newColor, refColor, 1.0);
+  newColor += refColor;
   // newColor = vec3(1.0, 0.0, 0.0);
 
   // refracted = (vec3(fresnel));
@@ -185,8 +189,18 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
   // newNorm = vor;
 
+
+  float bump_scale = 0.5+random(uSeed + 6.0) * 0.5;
+  if (random(uSeed + 5.0) < 0.5) {
+    bump_scale *= 40.0;
+  }
+  float bump_clip = random(uSeed + 7.0) < 0.2 ? 0.0 : 1.0;
+  float bump_strength = random(uSeed + 8.0)*0.5;
+  bump_strength = gain(bump_strength, 3.0);
+
   vec3 norm = data.normal;
-  vec3 nnp = data.position * 0.5;
+  vec3 nnp = data.position * bump_scale;
+
   // vec3 nnp = vec3(voridf*10.0, 0.0, 0.0);
   vec3 newNorm1 = vec3(snoise(nnp + vec3(0.5, 0.0, 0.0)),
                       snoise(nnp + vec3(10.5, 0.0, 0.0)),
@@ -200,13 +214,15 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // newNorm = normalize(newNorm)*pow(length(newNorm), 2.0);
 
   float alignment = dot(normalize(newNorm), normalize(norm));
-//   newNorm *= float(alignment < 0.0);
+  if (bump_clip > 0.0) {
+    newNorm *= float(alignment < 0.0);
+  }
 //   newNorm *= float(alignment > 0.0 ? 1.0:-1.0);
 //   if (alignment < 0.0) {
 //     newNorm = -newNorm;
 //   }
 
-  norm = normalize(norm - newNorm*0.5);
+  norm = normalize(norm - newNorm*bump_strength);
 
   // newColor = vec3(0.01, 0.01, 0.01);
   // float ng = 4.0;
@@ -222,16 +238,21 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // norm = newNorm;
   // newColor = newPosition;
 
-  roughness = 1.0;
-  emission = 0.0;
-  iridescence = 0.0;
-  metallic = 0.0;
+  // roughness = 1.0;
+  // emission = 0.0;
+  // iridescence = 0.0;
+  // metallic = 0.0;
 
+vec4 color = vec4(newColor, 1.0);
 #if IS_WIRES
-  newColor = vec3(1., 0., 1.);
+  float wa = snoise(data.position*0.5+vec3(uSeed, 0.0, animation*10.0)) * 0.5 + 0.5;
+  // wa = gain(wa, 1.0);
+  color = vec4(uColor5, wa*0.0);
+  // csm_FragColor = color;
+  // csm_Transmission = color.a;
 #else
 #endif
 
-  return CoatOutput(newColor, norm, 1., roughness, emission, iridescence,
+  return CoatOutput(color, norm, 1., roughness, emission, iridescence,
                     metallic);
 }

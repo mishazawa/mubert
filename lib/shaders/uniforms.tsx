@@ -32,6 +32,7 @@ uniform float uEmission;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
 uniform sampler2D uRefractionTex;
+uniform vec2 uParticlesRes;
 ` as const;
 
 export function generateDefaults() {

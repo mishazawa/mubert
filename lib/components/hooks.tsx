@@ -2,8 +2,9 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef, type RefObject } from "react";
 import {
   BufferGeometry,
-  EdgesGeometry,
   IcosahedronGeometry,
+  OctahedronGeometry,
+  TetrahedronGeometry,
   SphereGeometry,
   type Mesh,
   type Object3D,
@@ -29,18 +30,36 @@ export function useGeometry(
     [resolution]
   );
   const icosahedronw = useMemo(
-    () =>
-      new EdgesGeometry(
-        new SphereGeometry(1, resolution * 2, resolution * 2),
-        0.1
-      ),
-    [icosahedron]
+    // () => new IcosahedronGeometry(1.005, Math.floor(resolution / 4)),
+    // () => new IcosahedronGeometry(1.105, 1),
+    () => new TetrahedronGeometry(1.5, 1),
+    [resolution]
   );
   return {
     solid: icosahedron,
     point: icosahedron,
     wireframe: icosahedronw,
   };
+}
+
+export function useGeometryWireframe(
+  resolution: number,
+  scale: number
+): BufferGeometry[] {
+  // const o1 = useMemo(() => new TetrahedronGeometry(scale, resolution), [scale, resolution]);
+  const o2 = useMemo(
+    () => new SphereGeometry(scale, resolution + 8, resolution * 2 + 8),
+    [scale, resolution]
+  );
+  const o3 = useMemo(
+    () => new OctahedronGeometry(scale, resolution),
+    [scale, resolution]
+  );
+  const o4 = useMemo(
+    () => new IcosahedronGeometry(scale, resolution),
+    [scale, resolution]
+  );
+  return [o2, o3, o4];
 }
 
 export function useTransforms(): RefObject<Object3D> {

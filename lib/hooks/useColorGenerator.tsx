@@ -19,8 +19,9 @@ export function useColorGenerator(rand: RandomGenerator, seed: number) {
     () =>
       new Poline({
         anchorColors: [
-          typedTuple(hue1, rand.float(0.0, 0.0), rand.float(0.0, 0.0)),
+          typedTuple(hue1, rand.float(0.0, 1.0), rand.float(0.0, 1.0)),
           typedTuple(hue2, rand.float(1.0, 1.0), rand.float(1.0, 1.0)),
+          typedTuple(hue1, rand.float(1.0, 1.0), rand.float(1.0, 1.0)),
         ],
         numPoints: 5,
         ...posFunctions,

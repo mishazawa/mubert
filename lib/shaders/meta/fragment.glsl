@@ -26,5 +26,5 @@ void main() {
     discard;
 #else
 #endif
-  csm_DiffuseColor.rgba = vec4(coat.color, 1.0);
+  csm_DiffuseColor.rgba = coat.color;
 }
