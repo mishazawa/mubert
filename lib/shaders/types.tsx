@@ -27,6 +27,8 @@ type ProgramableUniforms = Omit<
   | "uColor3"
   | "uColor4"
   | "uColor5"
+  | "uParticlesRes"
+  | "uSimulationRes"
 >;
 
 export type ShaderControls = {

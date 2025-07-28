@@ -1,15 +1,10 @@
-import { LIGHT_PRESET } from "@lib/components/lights";
-import { FFT_SIZE } from "@lib/constants";
+import { LIGHT_PRESET } from "@lib/components/light/presets";
 import { generateShaderParams } from "@lib/main";
-import type { ShaderPreset } from "@lib/shaders/presets";
-import SHADER_PRESETS from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
 
 import { randomGenerator } from "@lib/utils";
 import { button, useControls } from "leva";
 import { useMemo, useState } from "react";
-
-const PRESETS: ShaderPreset[] = Object.keys(SHADER_PRESETS) as ShaderPreset[];
 
 export function useShaderState(): [ShaderControls, any] {
   const rng = useMemo(() => randomGenerator(666), []);
@@ -36,51 +31,17 @@ export function useShaderState(): [ShaderControls, any] {
   });
 
   const [debug] = useControls(
-    "Presets",
+    "Debug",
     () => ({
-      preset: {
-        value: "slai",
-        options: PRESETS,
-      },
-      background: false,
-      postfx: false,
+      postfx: true,
       vertex: false,
       fragment: false,
-      onlyParticles: false,
-      enableParticles: true,
-      showWireframe: true,
+      stopCamera: false,
+      stopObject: false,
       pointSize: {
         value: 0.05,
         min: 0.01,
         max: 1,
-      },
-
-      rfCamZoom: {
-        value: 20,
-        min: 1,
-      },
-      rfptSize: {
-        value: 1,
-        min: 0.01,
-        max: 10,
-      },
-      particlesCount: {
-        value: 128,
-        min: 32,
-        max: 4096,
-        step: 8,
-      },
-      lens: {
-        value: 45,
-        min: 1,
-        max: 90,
-        step: 1,
-      },
-      distance: {
-        value: 7,
-        min: 2,
-        max: 15,
-        step: 0.1,
       },
       light: {
         value: 0,
@@ -88,54 +49,15 @@ export function useShaderState(): [ShaderControls, any] {
         max: LIGHT_PRESET.length - 1,
         step: 1,
       },
-      focusDistance: {
-        value: 0.3,
-        min: 0,
-        step: 0.01,
-      },
-      focalLength: {
-        value: 0.1,
-        min: 0,
-      },
-      bokehScale: {
-        value: 5,
-        min: 0,
-      },
-      noise: {
-        value: 0.02,
-        min: 0,
-        max: 1,
-      },
-      bloom: {
-        value: 0.01,
-        min: 0,
-        max: 1,
-      },
-      chromaticAberration: {
-        value: 0.1,
-        min: 0,
-        max: 0.1,
-        step: 0.01,
-      },
-      dampingFactor: {
-        value: 0.02,
-        min: 0,
-        max: 1.0,
-      },
-      glitch: {
-        value: 1,
-        min: 0,
-        max: 1.0,
-      },
-      glitchCol: {
+      lightAccent: {
         value: 0,
         min: 0,
-        max: FFT_SIZE,
+        max: 4,
         step: 1,
       },
-      glitchW: {
-        value: 0.1,
-        min: 0.01,
+      dofOffset: {
+        value: 0,
+        min: -1,
         max: 1,
       },
     }),

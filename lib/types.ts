@@ -31,4 +31,5 @@ export type LightPresetProps = {
   scale?: [number, number, number];
   group?: boolean;
   float?: boolean;
+  isAccent?: boolean;
 };

@@ -1,24 +1,20 @@
 import CustomShaderMaterial from "three-custom-shader-material";
 import { useMemo } from "react";
 import { Bounds } from "@react-three/drei";
-import { MeshPhysicalMaterial, LineBasicMaterial } from "three";
+import { LineBasicMaterial, MeshPhysicalMaterial } from "three";
 
 import { MESH_DETAIL } from "../constants";
 import { compile } from "../shaders/compiler";
 
-import { useGeometry, useTransforms } from "./hooks";
-
 import { useParameters } from "../hooks/useParameters";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
 import { useSharedTextures } from "../hooks/useSharedTextures";
+import { useSolidGeo, useWireframeGeo } from "../hooks/useGeometryGenerator";
 
 export function Model() {
-  const ctx = useParameters();
-  const ref = useTransforms();
-
   return (
     <Bounds observe margin={2} maxDuration={0}>
-      <group ref={ref} position={[0, 0, 0]} visible={!ctx.debug.onlyParticles}>
+      <group>
         <RenderSolid />
         <RenderLines />
       </group>
@@ -29,9 +25,18 @@ export function Model() {
 function RenderLines() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
-  const items = useGeometry(MESH_DETAIL);
 
-  const { vertex, fragment, preset } = ctx.debug ?? {};
+  const rand = ctx.random;
+
+  const [showWireframe, scale, detail] = useMemo(
+    () => [rand.casino(0.8), rand.float(1.05, 1.2), rand.int(1, 3)],
+    [ctx.data.uSeed]
+  );
+
+  const itemsw = useWireframeGeo(detail, scale);
+  const itemw = itemsw[rand.int(0, itemsw.length - 1)];
+
+  const { vertex, fragment } = ctx.debug ?? {};
   const { uRefractionTex } = useSharedTextures();
 
   const [vertexShaderWire, fragmentShaderWire] = useMemo(
@@ -39,7 +44,7 @@ function RenderLines() {
       compile({
         presetStyle: "wireframe",
         shaderType: "vertex",
-        preset: vertex ? "debug" : preset,
+        preset: vertex ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
@@ -47,23 +52,24 @@ function RenderLines() {
       compile({
         presetStyle: "wireframe",
         shaderType: "fragment",
-        preset: fragment ? "debug" : preset,
+        preset: fragment ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
       }),
     ],
-    [preset, vertex, fragment]
+    [vertex, fragment]
   );
+
   return (
-    <lineSegments geometry={items.wireframe} visible={ctx.debug.showWireframe}>
+    <lineSegments geometry={itemw} visible={!!showWireframe}>
       <CustomShaderMaterial
         baseMaterial={LineBasicMaterial}
         uniforms={uniforms.current}
         vertexShader={vertexShaderWire}
         fragmentShader={fragmentShaderWire}
         toneMapped={false}
-        linewidth={1}
+        linewidth={2}
       />
     </lineSegments>
   );
@@ -72,9 +78,9 @@ function RenderLines() {
 function RenderSolid() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
-  const items = useGeometry(MESH_DETAIL);
+  const items = useSolidGeo(MESH_DETAIL);
 
-  const { vertex, fragment, preset } = ctx.debug ?? {};
+  const { vertex, fragment } = ctx.debug ?? {};
   const { uRefractionTex } = useSharedTextures();
 
   const [vertexShader, fragmentShader] = useMemo(
@@ -82,7 +88,7 @@ function RenderSolid() {
       compile({
         presetStyle: "solid",
         shaderType: "vertex",
-        preset: vertex ? "debug" : preset,
+        preset: vertex ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
@@ -90,13 +96,13 @@ function RenderSolid() {
       compile({
         presetStyle: "solid",
         shaderType: "fragment",
-        preset: fragment ? "debug" : preset,
+        preset: fragment ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
       }),
     ],
-    [preset, vertex, fragment]
+    [vertex, fragment]
   );
 
   return (
