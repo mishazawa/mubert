@@ -69,11 +69,6 @@ export function useShaderState(): [ShaderControls, any] {
         max: 4,
         step: 1,
       },
-      dampingFactor: {
-        value: 0.02,
-        min: 0,
-        max: 1.0,
-      },
       dofOffset: {
         value: 0,
         min: -1,

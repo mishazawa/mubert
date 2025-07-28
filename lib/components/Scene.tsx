@@ -1,11 +1,6 @@
-import { Suspense, useContext, useEffect, useRef, type ReactNode } from "react";
+import { Suspense, useContext, type ReactNode } from "react";
 import { ParamsContext } from "../hooks/useParameters";
-import {
-  StatsGl,
-  TrackballControls,
-  useContextBridge,
-  PerspectiveCamera as CameraPer,
-} from "@react-three/drei";
+import { StatsGl, useContextBridge } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import {
   ClampToEdgeWrapping,
@@ -14,14 +9,8 @@ import {
   RepeatWrapping,
   RGBAFormat,
   UnsignedByteType,
-  type PerspectiveCamera,
 } from "three";
-import {
-  AMBIENT_LIGHT_COLOR,
-  AUDIO_TEXTURE_SIZE,
-  CAMERA_DISTANCE,
-  CAMERA_FOV,
-} from "../constants";
+import { AMBIENT_LIGHT_COLOR, AUDIO_TEXTURE_SIZE } from "../constants";
 import { FX } from "../effects";
 import { EnvironmentLight } from "./EnvironmentLight";
 import { Model } from "./Model";
@@ -29,6 +18,7 @@ import { Particles } from "./particles/Particles";
 import { UniformsProvider } from "../hooks/useSharedUniforms";
 import { useCreateSharedTexture } from "../hooks/useSharedTextures";
 import { useTransforms } from "./hooks";
+import { AnimatedCamera } from "./Camera";
 
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
@@ -104,39 +94,13 @@ export function Scene() {
             </TransformGroup>
           </Suspense>
 
-          <LensCamera />
-          <TrackballControls
-            noPan
-            dynamicDampingFactor={ctx.debug.dampingFactor}
-            zoomSpeed={0.1}
-            minDistance={2}
-            maxDistance={10}
-          />
+          <AnimatedCamera />
+
           <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
           <FX />
         </UniformsProvider>
       </Canvas>
     </ContextBridge>
-  );
-}
-
-function LensCamera() {
-  const cam = useRef<PerspectiveCamera>(null!);
-
-  useEffect(() => {
-    if (!cam.current) return;
-    cam.current.setFocalLength(CAMERA_FOV);
-    cam.current.updateProjectionMatrix();
-  });
-
-  return (
-    <CameraPer
-      ref={cam}
-      fov={CAMERA_FOV}
-      position={[0, 0, CAMERA_DISTANCE]}
-      makeDefault={true}
-      far={50.0}
-    />
   );
 }
 

@@ -6,7 +6,6 @@ import {
   OctahedronGeometry,
   TetrahedronGeometry,
   SphereGeometry,
-  type Mesh,
   type Object3D,
   Quaternion,
   Box3,
@@ -62,8 +61,8 @@ export function useGeometryWireframe(
   return [o2, o3, o4];
 }
 
-export function useTransforms(): RefObject<Object3D> {
-  const ref = useRef<Mesh>(null!);
+export function useTransforms<T extends Object3D>(): RefObject<Object3D> {
+  const ref = useRef<T>(null!);
   const ctx = useParameters();
 
   useFrame(() => {
