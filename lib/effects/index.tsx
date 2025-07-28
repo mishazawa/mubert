@@ -13,6 +13,7 @@ import {
   DOF_FOCUS_LENGTH,
   FX_NOISE_SCALE,
 } from "../constants";
+import { AudioReactiveGlitch } from "./AudioReactiveGlitch";
 
 export function FX() {
   const ctx = useParameters();
@@ -25,6 +26,7 @@ export function FX() {
         bokehScale={DOF_BOKEH_SCALE}
       />
       <AO />
+      <AudioReactiveGlitch />
 
       <Noise opacity={FX_NOISE_SCALE} />
       <Bloom mipmapBlur levels={7} intensity={1} />

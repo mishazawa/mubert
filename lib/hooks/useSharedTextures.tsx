@@ -12,7 +12,7 @@ const SHARED_TEXTURES = ["uAudioTex", "uRefractionTex"] as const;
 
 type SharedTextureKeys = (typeof SHARED_TEXTURES)[number];
 
-type SharedTextures = {
+export type SharedTextures = {
   [key in SharedTextureKeys]: RefObject<DataTexture>;
 };
 

@@ -1,8 +1,7 @@
-import CustomShaderMaterialVanilla from "three-custom-shader-material/vanilla";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { useMemo } from "react";
 import { Bounds } from "@react-three/drei";
-import { DoubleSide, LineBasicMaterial, MeshPhysicalMaterial } from "three";
+import { LineBasicMaterial, MeshPhysicalMaterial } from "three";
 
 import { MESH_DETAIL } from "../constants";
 import { compile } from "../shaders/compiler";

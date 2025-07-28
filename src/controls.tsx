@@ -1,5 +1,4 @@
 import { LIGHT_PRESET } from "@lib/components/lights";
-import { FFT_SIZE } from "@lib/constants";
 import { generateShaderParams } from "@lib/main";
 import type { ShaderPreset } from "@lib/shaders/presets";
 import SHADER_PRESETS from "@lib/shaders/presets";
