@@ -1,8 +1,8 @@
 import { Environment, Float, Lightformer } from "@react-three/drei";
-import { ENV_MAP_RESOLUTION } from "../constants";
-import type { EnvironmentLightProps, LightPresetProps } from "../types";
-import { LIGHT_PRESET } from "./lights";
-import { useParameters } from "../hooks/useParameters";
+import { ENV_MAP_RESOLUTION } from "../../constants";
+import type { EnvironmentLightProps, LightPresetProps } from "../../types";
+import { LIGHT_PRESET } from "./presets";
+import { useParameters } from "../../hooks/useParameters";
 import type { ReactThreeFiber } from "@react-three/fiber";
 
 export function EnvironmentLight({

@@ -1,14 +1,10 @@
-import { LIGHT_PRESET } from "@lib/components/lights";
+import { LIGHT_PRESET } from "@lib/components/light/presets";
 import { generateShaderParams } from "@lib/main";
-import type { ShaderPreset } from "@lib/shaders/presets";
-import SHADER_PRESETS from "@lib/shaders/presets";
 import type { ShaderControls } from "@lib/shaders/types";
 
 import { randomGenerator } from "@lib/utils";
 import { button, useControls } from "leva";
 import { useMemo, useState } from "react";
-
-const PRESETS: ShaderPreset[] = Object.keys(SHADER_PRESETS) as ShaderPreset[];
 
 export function useShaderState(): [ShaderControls, any] {
   const rng = useMemo(() => randomGenerator(666), []);
@@ -35,17 +31,11 @@ export function useShaderState(): [ShaderControls, any] {
   });
 
   const [debug] = useControls(
-    "Presets",
+    "Debug",
     () => ({
-      preset: {
-        value: "slai",
-        options: PRESETS,
-      },
       postfx: true,
       vertex: false,
       fragment: false,
-      onlyParticles: false,
-      enableParticles: true,
       pointSize: {
         value: 0.05,
         min: 0.01,

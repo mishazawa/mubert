@@ -6,18 +6,15 @@ import { LineBasicMaterial, MeshPhysicalMaterial } from "three";
 import { MESH_DETAIL } from "../constants";
 import { compile } from "../shaders/compiler";
 
-import { useGeometry, useGeometryWireframe } from "./hooks";
-
 import { useParameters } from "../hooks/useParameters";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
 import { useSharedTextures } from "../hooks/useSharedTextures";
+import { useSolidGeo, useWireframeGeo } from "../hooks/useGeometryGenerator";
 
 export function Model() {
-  const ctx = useParameters();
-
   return (
     <Bounds observe margin={2} maxDuration={0}>
-      <group visible={!ctx.debug.onlyParticles}>
+      <group>
         <RenderSolid />
         <RenderLines />
       </group>
@@ -36,10 +33,10 @@ function RenderLines() {
     [ctx.data.uSeed]
   );
 
-  const itemsw = useGeometryWireframe(detail, scale);
+  const itemsw = useWireframeGeo(detail, scale);
   const itemw = itemsw[rand.int(0, itemsw.length - 1)];
 
-  const { vertex, fragment, preset } = ctx.debug ?? {};
+  const { vertex, fragment } = ctx.debug ?? {};
   const { uRefractionTex } = useSharedTextures();
 
   const [vertexShaderWire, fragmentShaderWire] = useMemo(
@@ -47,7 +44,7 @@ function RenderLines() {
       compile({
         presetStyle: "wireframe",
         shaderType: "vertex",
-        preset: vertex ? "debug" : preset,
+        preset: vertex ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
@@ -55,13 +52,13 @@ function RenderLines() {
       compile({
         presetStyle: "wireframe",
         shaderType: "fragment",
-        preset: fragment ? "debug" : preset,
+        preset: fragment ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
       }),
     ],
-    [preset, vertex, fragment]
+    [vertex, fragment]
   );
 
   return (
@@ -81,9 +78,9 @@ function RenderLines() {
 function RenderSolid() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
-  const items = useGeometry(MESH_DETAIL);
+  const items = useSolidGeo(MESH_DETAIL);
 
-  const { vertex, fragment, preset } = ctx.debug ?? {};
+  const { vertex, fragment } = ctx.debug ?? {};
   const { uRefractionTex } = useSharedTextures();
 
   const [vertexShader, fragmentShader] = useMemo(
@@ -91,7 +88,7 @@ function RenderSolid() {
       compile({
         presetStyle: "solid",
         shaderType: "vertex",
-        preset: vertex ? "debug" : preset,
+        preset: vertex ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
@@ -99,13 +96,13 @@ function RenderSolid() {
       compile({
         presetStyle: "solid",
         shaderType: "fragment",
-        preset: fragment ? "debug" : preset,
+        preset: fragment ? "debug" : "slai",
         defines: {
           REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
         },
       }),
     ],
-    [preset, vertex, fragment]
+    [vertex, fragment]
   );
 
   return (

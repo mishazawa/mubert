@@ -10,16 +10,20 @@ import {
   RGBAFormat,
   UnsignedByteType,
 } from "three";
-import { AMBIENT_LIGHT_COLOR, AUDIO_TEXTURE_SIZE } from "../constants";
+import {
+  AMBIENT_LIGHT_COLOR,
+  AUDIO_TEXTURE_SIZE,
+  PARTICLES_TEXTURE_SIZE,
+} from "../constants";
 import { FX } from "../effects";
-import { EnvironmentLight } from "./EnvironmentLight";
+import { EnvironmentLight } from "./light/Light";
 import { Model } from "./Model";
 import { Particles } from "./particles/Particles";
 import { UniformsProvider } from "../hooks/useSharedUniforms";
 import { useCreateSharedTexture } from "../hooks/useSharedTextures";
-import { useTransforms } from "./hooks";
 import { AnimatedCamera } from "./Camera";
 import { Background } from "./background/Background";
+import { useTransformsReactive } from "../hooks/useTransformsReactive";
 
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
@@ -29,7 +33,7 @@ export function Scene() {
     "uRefractionTex",
     () => {
       // Create checkerboard texture
-      const size = ctx.debug.particlesCount;
+      const size = PARTICLES_TEXTURE_SIZE;
       const data = new Uint8Array(size * size * 4);
 
       for (let y = 0; y < size; y++) {
@@ -51,7 +55,7 @@ export function Scene() {
       tex.needsUpdate = true;
       return tex;
     },
-    [ctx.debug.particlesCount]
+    []
   );
 
   useCreateSharedTexture(
@@ -73,6 +77,7 @@ export function Scene() {
     []
   );
 
+  console.log("seed: " + ctx.data.uSeed);
   return (
     <ContextBridge>
       <Canvas className="vis_canvas" dpr={1}>
@@ -102,7 +107,7 @@ export function Scene() {
 }
 
 function TransformGroup({ children }: { children: ReactNode }) {
-  const ref = useTransforms();
+  const ref = useTransformsReactive();
   return (
     <group ref={ref} position={[0, 0, 0]}>
       {children}

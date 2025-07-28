@@ -5,17 +5,13 @@ import {
   BufferGeometry,
   DataTexture,
   Mesh,
-  MeshBasicMaterial,
+  PerspectiveCamera,
   PointsMaterial,
   Scene,
   Vector3,
 } from "three";
-import { Bounds } from "@react-three/drei";
 import { useParameters } from "../../hooks/useParameters";
-import {
-  GPUComputationRenderer,
-  type Variable,
-} from "three/examples/jsm/Addons.js";
+import { GPUComputationRenderer } from "three/examples/jsm/Addons.js";
 
 import CustomShaderMaterial from "three-custom-shader-material";
 
@@ -32,7 +28,9 @@ import { useFBO } from "@react-three/drei";
 
 import {
   PARTICLES_CAMERA_ZOOM,
+  PARTICLES_COUNT,
   PARTICLES_SIZE_RENDER_PASS,
+  PARTICLES_TEXTURE_SIZE,
 } from "../../constants";
 
 export function Particles() {
@@ -41,21 +39,20 @@ export function Particles() {
 
   const sharedUniforms = useSharedUniforms();
 
-  const { uniforms, ...rest } = useParticlesSimulation();
+  const { uniforms } = useParticlesSimulation();
   const geo = useParticlesGeometry();
 
   const renderScene = useMemo(() => new Scene(), []);
-  const renderTarget = useFBO();
+  const renderTarget = useFBO(PARTICLES_TEXTURE_SIZE, PARTICLES_TEXTURE_SIZE);
 
   uRefractionTex.current = renderTarget.texture as DataTexture;
   uRefractionTex.current.needsUpdate = true;
 
   (sharedUniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
   (sharedUniforms.current.uParticlesRes.value as any) = [
-    ctx.debug.particlesCount,
-    ctx.debug.particlesCount,
+    PARTICLES_TEXTURE_SIZE,
+    PARTICLES_TEXTURE_SIZE,
   ];
-
   const originalRef = useRef<Mesh>(null!);
 
   const cloneRef = useRef<Mesh>(null!);
@@ -83,8 +80,9 @@ export function Particles() {
   const mainCamera = useThree((state) => state.camera);
 
   const renderCamera = useMemo(() => {
-    const cam = mainCamera.clone();
+    const cam: PerspectiveCamera = mainCamera.clone() as PerspectiveCamera;
     cam.zoom = PARTICLES_CAMERA_ZOOM;
+    cam.aspect = 1;
     cam.updateProjectionMatrix();
     return cam;
   }, [mainCamera]);
@@ -116,58 +114,50 @@ export function Particles() {
   });
 
   return (
-    <Bounds observe margin={2} maxDuration={0}>
-      <group position={[0, 0, 0]} visible={!ctx.debug.onlyParticles}>
-        <group>
-          <DebugParticles {...rest} />
-          <points
-            ref={originalRef}
-            geometry={geo}
-            visible={ctx.debug.vertex === false}
-          >
-            <CustomShaderMaterial
-              uniforms={uniforms.current}
-              baseMaterial={PointsMaterial}
-              vertexShader={vertex}
-              fragmentShader={fragment}
-              transparent
-              toneMapped={false}
-              sizeAttenuation={true}
-              size={ctx.debug.pointSize}
-            />
-          </points>
-        </group>
+    <group position={[0, 0, 0]}>
+      <group>
+        <points ref={originalRef} geometry={geo}>
+          <CustomShaderMaterial
+            uniforms={uniforms.current}
+            baseMaterial={PointsMaterial}
+            vertexShader={vertex}
+            fragmentShader={fragment}
+            transparent
+            toneMapped={false}
+            sizeAttenuation={true}
+            size={ctx.debug.pointSize}
+          />
+        </points>
       </group>
-    </Bounds>
+      {/* <mesh scale={[2, 2, 1]} position={[0, -2, 0]}>
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial map={uRefractionTex.current} toneMapped={false} />
+      </mesh> */}
+    </group>
   );
 }
 
-function DebugParticles({
-  positions,
-}: {
-  sim: GPUComputationRenderer;
-  positions: Variable;
-}) {
-  const ctx = useParameters();
-  const mat = useRef<MeshBasicMaterial>(null!);
-  const { uRefractionTex } = useSharedTextures();
+// function DebugParticles({
+//   positions,
+//   sim,
+// }: {
+//   sim: GPUComputationRenderer;
+//   positions: Variable;
+// }) {
+//   const mat = useRef<MeshBasicMaterial>(null!);
 
-  useEffect(() => {
-    mat.current.map = uRefractionTex.current;
-    mat.current.map.needsUpdate = true;
-  }, [positions]);
+//   useEffect(() => {
+//     mat.current.map = sim.getCurrentRenderTarget(positions).texture;
+//     mat.current.map.needsUpdate = true;
+//   }, [positions]);
 
-  return (
-    <mesh scale={[2, 2, 1]} position={[0, 0, 0]} visible={ctx.debug.vertex}>
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial
-        ref={mat}
-        map={uRefractionTex.current}
-        toneMapped={false}
-      />
-    </mesh>
-  );
-}
+//   return (
+//     <mesh scale={[2, 2, 1]} position={[0, 0, 0]}>
+//       <planeGeometry args={[1, 1]} />
+//       <meshBasicMaterial ref={mat} toneMapped={false} />
+//     </mesh>
+//   );
+// }
 
 function ctv(arg0: number[]): Vector3 {
   return new Vector3(...arg0);
@@ -191,12 +181,16 @@ function useParticlesSimulation() {
 
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();
-  const { uRefractionTex } = useSharedTextures();
+
+  (uniforms.current.uSimulationRes.value as any) = [
+    PARTICLES_COUNT,
+    PARTICLES_COUNT,
+  ];
   // create simulator
   const [sim, positions, _velocities] = useMemo(() => {
     const gpuCompute = new GPUComputationRenderer(
-      ctx.debug.particlesCount,
-      ctx.debug.particlesCount,
+      PARTICLES_COUNT,
+      PARTICLES_COUNT,
       gl
     );
 
@@ -205,19 +199,18 @@ function useParticlesSimulation() {
 
     const COMMON_DEFINES = {
       PI: "3.14159265358979323846",
-      REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width ?? 1}`,
     };
 
     const simulationShader = compile({
       shaderType: "texture",
-      preset: ctx.debug.preset,
+      preset: "slai",
       presetStyle: "point",
       defines: COMMON_DEFINES,
     });
 
     const particlesShader = compile({
       shaderType: "texture",
-      preset: ctx.debug.preset,
+      preset: "slai",
       presetStyle: "point",
       defines: COMMON_DEFINES,
       overrideBody: particles,
@@ -263,10 +256,8 @@ function useParticlesSimulation() {
 }
 
 function useParticlesGeometry() {
-  const ctx = useParameters();
-
   return useMemo(() => {
-    const resolution = ctx.debug.particlesCount;
+    const resolution = PARTICLES_COUNT;
     let pg = new BufferGeometry();
     let pos = new Float32Array(resolution * resolution * 3);
     let uv = new Float32Array(resolution * resolution * 2);
@@ -284,5 +275,5 @@ function useParticlesGeometry() {
     pg.setAttribute("uv", new BufferAttribute(uv, 2));
 
     return pg;
-  }, [ctx.debug.particlesCount]);
+  }, []);
 }

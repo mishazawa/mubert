@@ -1,4 +1,4 @@
-import type { LightPresetProps } from "../types";
+import type { LightPresetProps } from "../../types";
 
 export const LIGHT_PRESET: Array<
   Array<LightPresetProps & { [key: string]: any }>
