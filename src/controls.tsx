@@ -74,6 +74,11 @@ export function useShaderState(): [ShaderControls, any] {
         min: 0,
         max: 1.0,
       },
+      dofOffset: {
+        value: 0,
+        min: -1,
+        max: 1,
+      },
     }),
     { collapsed: true }
   );

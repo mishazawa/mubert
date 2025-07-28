@@ -21,7 +21,7 @@ export function FX() {
   return !ctx.debug.postfx ? null : (
     <EffectComposer multisampling={0}>
       <DepthOfField
-        target={[0, 0, 0]}
+        target={[0, 0, ctx.debug.dofOffset]}
         focalLength={DOF_FOCUS_LENGTH}
         bokehScale={DOF_BOKEH_SCALE}
       />
