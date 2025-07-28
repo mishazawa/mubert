@@ -19,16 +19,11 @@ import { UniformsProvider } from "../hooks/useSharedUniforms";
 import { useCreateSharedTexture } from "../hooks/useSharedTextures";
 import { useTransforms } from "./hooks";
 import { AnimatedCamera } from "./Camera";
+import { Background } from "./background/Background";
 
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
   const ctx = useContext(ParamsContext);
-
-  const bkg: [number, number, number] = (ctx.palette[4] as [
-    number,
-    number,
-    number
-  ]) ?? [0xff, 0x00, 0xff];
 
   useCreateSharedTexture(
     "uRefractionTex",
@@ -82,7 +77,9 @@ export function Scene() {
     <ContextBridge>
       <Canvas className="vis_canvas" dpr={1}>
         <UniformsProvider>
-          <color attach="background" args={bkg} />
+          <Background />
+
+          {/* <color attach="background" args={bkg} /> */}
           {/* TO BE REMOVED */}
           <StatsGl showPanel={1} className="stats" />
 

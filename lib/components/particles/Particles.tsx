@@ -23,8 +23,8 @@ import particles from "../../shaders/meta/particles.glsl?raw";
 
 import { compile } from "../../shaders/compiler";
 
-import vertex from "./shaders/dummyv.glsl?raw";
-import fragment from "./shaders/dummyf.glsl?raw";
+import vertex from "./_vert.glsl?raw";
+import fragment from "./_frag.glsl?raw";
 
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 import { useSharedTextures } from "../../hooks/useSharedTextures";
