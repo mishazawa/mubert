@@ -10,6 +10,6 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
 }
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
-  return CoatOutput(uColor1, data.normal, 1., uRoughness, uEmission,
+  return CoatOutput(vec4(uColor1, 1.0), data.normal, 1., uRoughness, uEmission,
                     uIridescence, 0.);
 }

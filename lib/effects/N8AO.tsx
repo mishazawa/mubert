@@ -1,9 +1,7 @@
-import { SHADER_STYLE } from "../constants";
 import { useParameters } from "../hooks/useParameters";
 import { N8AO } from "@react-three/postprocessing";
 
-export function SolidOnlyAO() {
+export function AO() {
   const ctx = useParameters();
-  if (SHADER_STYLE[ctx.debug.presetStyle] !== "solid") return null;
   return <N8AO {...ctx.debug.ao} />;
 }

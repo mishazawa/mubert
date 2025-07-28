@@ -11,7 +11,7 @@ struct DisplacePatternOutput {
 };
 
 struct CoatOutput {
-  vec3 color;
+  vec4 color;
   vec3 bump;
   float scale;
   float roughness;

@@ -1,24 +1,30 @@
 import type { RandomGenerator } from "../utils";
 import { formatHex } from "culori";
-import { Poline, positionFunctions } from "poline";
+import { Poline, positionFunctions, type PositionFunction } from "poline";
 import { useMemo } from "react";
 import { Color } from "three";
+
+const POSITION_FUNCTIONS = Object.values(positionFunctions);
 
 const typedTuple = <T extends unknown[]>(...args: T): T => args;
 
 export function useColorGenerator(rand: RandomGenerator, seed: number) {
+  const posFunctions = pickRandomFns(rand);
+
+  const rv = rand.float(0, 1);
+  const hue1 = rv * 360;
+  const hue2 = (rv + 0.5) * 360;
+
   const palette = useMemo(
     () =>
       new Poline({
         anchorColors: [
-          typedTuple(rand.int(0, 360), rand.float(1, 1), rand.float(0.5, 1)),
-          typedTuple(rand.int(-360, 360), rand.float(1, 1), 1),
-          typedTuple(rand.int(0, 360), rand.float(1, 1), rand.float(0.5, 1)),
+          typedTuple(hue1, rand.float(0.0, 1.0), rand.float(0.0, 1.0)),
+          typedTuple(hue2, rand.float(1.0, 1.0), rand.float(1.0, 1.0)),
+          typedTuple(hue1, rand.float(1.0, 1.0), rand.float(1.0, 1.0)),
         ],
         numPoints: 5,
-        positionFunctionX: positionFunctions["sinusoidalPosition"],
-        positionFunctionY: positionFunctions["quadraticPosition"],
-        positionFunctionZ: positionFunctions["linearPosition"],
+        ...posFunctions,
       }),
     [seed]
   );
@@ -32,5 +38,19 @@ export function useColorGenerator(rand: RandomGenerator, seed: number) {
         l: c[2],
       })
     )
-    .map((c) => new Color(c));
+    .map((c) => new Color(c).toArray());
+}
+
+function pickRandomFns(rand: RandomGenerator) {
+  const pftns_use: PositionFunction[] = [];
+  for (let i = 0; i < 3; i++) {
+    pftns_use.push(
+      POSITION_FUNCTIONS[rand.int(0, POSITION_FUNCTIONS.length - 1)]
+    );
+  }
+  return {
+    positionFunctionX: pftns_use[0],
+    positionFunctionY: pftns_use[1],
+    positionFunctionZ: pftns_use[2],
+  };
 }

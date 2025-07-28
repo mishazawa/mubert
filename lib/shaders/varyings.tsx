@@ -5,7 +5,7 @@ varying vec3 vPositionD;
 varying vec3 vNormalD;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
-
+varying mat4 v_mmat;
 `;
 export const VARYINGS_SOLID_FRAGMENT = `
 varying vec2 vUv;
@@ -14,6 +14,7 @@ varying vec3 vPositionD;
 varying vec3 vNormalD;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
+varying mat4 v_mmat;
 `;
 
 export const VARYINGS_WIRE_VERTEX = `
@@ -24,6 +25,7 @@ varying vec3 vNormal;
 varying vec3 vNormalD;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
+varying mat4 v_mmat;
 `;
 
 export const VARYINGS_WIRE_FRAGMENT = `
@@ -33,4 +35,5 @@ varying vec3 vPositionD;
 varying vec3 vNormalD;
 varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
+varying mat4 v_mmat;
 `;

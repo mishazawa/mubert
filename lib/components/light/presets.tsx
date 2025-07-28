@@ -1,4 +1,4 @@
-import type { LightPresetProps } from "../types";
+import type { LightPresetProps } from "../../types";
 
 export const LIGHT_PRESET: Array<
   Array<LightPresetProps & { [key: string]: any }>
@@ -10,6 +10,7 @@ export const LIGHT_PRESET: Array<
       position: [-15, -5, 5],
       scale: [10, 10, 1],
       form: "circle",
+      isAccent: true,
     },
   ],
   [

@@ -1,4 +1,4 @@
-import type { Color, DataTexture, Vector2, Vector3, Vector4 } from "three";
+import type { DataTexture, Vector2, Vector3, Vector4 } from "three";
 
 import type { SHADER_STYLE } from "../constants";
 import type { UNIFORMS } from "./uniforms";
@@ -21,13 +21,14 @@ type ProgramableUniforms = Omit<
   | "uFFT"
   | "uRMS"
   | "uAudioTex"
-  | "uRefTex"
-  | "uRes"
+  | "uRefractionTex"
   | "uColor1"
   | "uColor2"
   | "uColor3"
   | "uColor4"
   | "uColor5"
+  | "uParticlesRes"
+  | "uSimulationRes"
 >;
 
 export type ShaderControls = {
@@ -44,9 +45,9 @@ type GlslToTsMap = {
   float: number;
   int: number;
   bool: boolean;
-  vec2: Vector2;
-  vec3: Vector3 | Color;
-  vec4: Vector4;
+  vec2: Vector2 | [number, number];
+  vec3: Vector3 | [number, number, number];
+  vec4: Vector4 | [number, number, number, number];
   sampler2D: DataTexture;
 };
 

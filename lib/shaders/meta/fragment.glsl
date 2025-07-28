@@ -1,12 +1,10 @@
-
-
 void main() {
   float animation = uTime * SPEED;
 
   vec3 pos1 = vPosition;
-  #ifdef FLAT
-    pos1 = vec3(gl_FragCoord.x, gl_FragCoord.y, 0.0)/300.0-1.5;
-  #endif
+#ifdef FLAT
+  pos1 = vec3(gl_FragCoord.x, gl_FragCoord.y, 0.0) / 300.0 - 1.5;
+#endif
 
   DisplacePatternInput data_in = DisplacePatternInput(
       // just for formatting sake
@@ -28,5 +26,5 @@ void main() {
     discard;
 #else
 #endif
-  csm_DiffuseColor.rgba = vec4(coat.color, 1.0);
+  csm_DiffuseColor.rgba = coat.color;
 }

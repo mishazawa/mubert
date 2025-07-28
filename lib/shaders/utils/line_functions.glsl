@@ -113,7 +113,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
     );
     float audio = texture(uAudioTex, auv).r;
     // audio = gain(pow(audio, 1.0), 8.0);
-    audio = gain(pow(audio, 1.0), VERTEX==1?5.0:8.0);
+    audio = gain(pow(audio, 1.0), VERTEX==1?2.0:2.0);
 
 
 
@@ -131,7 +131,7 @@ vec3 drawAudioLines(in vec3 background, in vec3 pos, float time) {
   }
 
 
-  float pscale = 0.2 + random(uSeed + 100.0) * 0.1;
+  float pscale = 0.05 + random(uSeed + 100.0) * 0.1;
   npos_accum *= pscale;
   vec3 new = vec3(
     snoise(npos_accum + vec3(0.5, 0.0, 0.0)),
