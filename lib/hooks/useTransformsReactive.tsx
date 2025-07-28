@@ -15,6 +15,8 @@ export function useTransformsReactive<
   const ctx = useParameters();
 
   useFrame(() => {
+    if (ctx.debug.stopObject) return;
+
     const fft_val = ctx.fft.current.val;
     const rot_speed = ctx.rot_speed.current * 0.5;
     const t = ctx.fft.current.time;
@@ -28,7 +30,7 @@ export function useTransformsReactive<
     _bbox.getSize(_size);
 
     if (_size.z > 0.1) {
-      // ref.current.quaternion.multiply(_q);
+      ref.current.quaternion.multiply(_q);
     }
   });
 

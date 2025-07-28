@@ -56,9 +56,12 @@ export function AnimatedCamera() {
 }
 
 function useCameraAnimation(movement: (prev: Spherical) => void) {
+  const ctx = useParameters();
   const controls = useRef<any>(null!);
   const _spherical = useRef(new Spherical());
   useFrame(({ camera }) => {
+    if (ctx.debug.stopCamera) return;
+
     // vibe coding
     if (controls.current) {
       if (!controls.current) return;

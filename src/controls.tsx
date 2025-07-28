@@ -36,16 +36,12 @@ export function useShaderState(): [ShaderControls, any] {
       postfx: true,
       vertex: false,
       fragment: false,
+      stopCamera: false,
+      stopObject: false,
       pointSize: {
         value: 0.05,
         min: 0.01,
         max: 1,
-      },
-      particlesCount: {
-        value: 128,
-        min: 32,
-        max: 4096,
-        step: 8,
       },
       light: {
         value: 0,
