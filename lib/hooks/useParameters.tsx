@@ -49,12 +49,15 @@ export function ParametersContextWrap({
 
   const palette = useColorGenerator(gen, props.data.uSeed);
 
-  const randomizedProperties = {
-    geoShowWireframe: !!gen.casino(0.8),
-    geoWireframeScale: gen.float(1.05, 1.2),
-    geoWireframeDetail: gen.int(1, 4),
-    geoWireframeType: gen.int(0, 3),
-  };
+  const randomizedProperties = useMemo(
+    () => ({
+      geoShowWireframe: !!gen.casino(0.8),
+      geoWireframeScale: gen.float(1.05, 1.2),
+      geoWireframeDetail: gen.int(1, 4),
+      geoWireframeType: gen.int(0, 3),
+    }),
+    [props.data.uSeed]
+  );
 
   return (
     <ParamsContext

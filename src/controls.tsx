@@ -60,37 +60,31 @@ export function useShaderState(): [ShaderControls, any] {
         min: -1,
         max: 1,
       },
-      aaa: {
-        value: 0,
-        min: 0,
-        step: 1,
-        max: 2,
-      },
     }),
     { collapsed: true }
   );
 
-  // const [ao] = useControls(
-  //   "AO",
-  //   () => ({
-  //     aoRadius: 5,
-  //     aoSamples: { value: 16, step: 1 },
-  //     denoiseSamples: { value: 4, step: 1 },
-  //     denoiseRadius: { value: 12, step: 1 },
-  //     distanceFalloff: 1,
-  //     intensity: 1,
+  const [ao] = useControls(
+    "AO",
+    () => ({
+      aoRadius: 5,
+      aoSamples: { value: 16, step: 1 },
+      denoiseSamples: { value: 4, step: 1 },
+      denoiseRadius: { value: 12, step: 1 },
+      distanceFalloff: 1,
+      intensity: 1,
 
-  //     quality: { options: ["performance", "low", "medium", "high", "ultra"] },
+      quality: { options: ["performance", "low", "medium", "high", "ultra"] },
 
-  //     color: `#000`,
-  //     halfRes: true,
-  //     depthAwareUpsampling: false,
-  //     screenSpaceRadius: true,
-  //     renderMode: { step: 1, min: 0, max: 4, value: 0 },
-  //   }),
-  //   { collapsed: true }
-  // );
-  const ao = {};
+      color: `#000`,
+      halfRes: true,
+      depthAwareUpsampling: false,
+      screenSpaceRadius: true,
+      renderMode: { step: 1, min: 0, max: 4, value: 0 },
+    }),
+    { collapsed: true }
+  );
+
   return [
     {
       ...defaults,
