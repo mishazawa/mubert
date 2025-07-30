@@ -5,9 +5,11 @@ import {
   OctahedronGeometry,
   TetrahedronGeometry,
   SphereGeometry,
+  EdgesGeometry,
 } from "three";
 
 import type { MaterialType } from "../shaders/types";
+import { useParameters } from "./useParameters";
 
 export function useSolidGeo(
   resolution: number
@@ -27,20 +29,24 @@ export function useSolidGeo(
   };
 }
 
-export function useWireframeGeo(
-  resolution: number,
-  scale: number
-): BufferGeometry[] {
+export function useWireframeGeo(): BufferGeometry[] {
+  const { geoWireframeScale: scale, geoWireframeDetail: resolution } =
+    useParameters();
+
   const o2 = useMemo(
-    () => new SphereGeometry(scale, resolution + 8, resolution * 2 + 8),
+    () =>
+      new EdgesGeometry(
+        new SphereGeometry(scale, resolution * 8, resolution * 8),
+        0.1
+      ),
     [scale, resolution]
   );
   const o3 = useMemo(
-    () => new OctahedronGeometry(scale, resolution),
+    () => new EdgesGeometry(new OctahedronGeometry(scale, resolution), 0.1),
     [scale, resolution]
   );
   const o4 = useMemo(
-    () => new IcosahedronGeometry(scale, resolution),
+    () => new EdgesGeometry(new IcosahedronGeometry(scale, resolution), 0.1),
     [scale, resolution]
   );
   return [o2, o3, o4];

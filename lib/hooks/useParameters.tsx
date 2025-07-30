@@ -16,6 +16,11 @@ export type ParametersCtx = CanvasProps & {
   rot_speed: RefObject<number>;
   random: RandomGenerator;
   palette: Array<number[]>;
+} & {
+  geoShowWireframe: boolean;
+  geoWireframeScale: number;
+  geoWireframeDetail: number;
+  geoWireframeType: number;
 };
 
 // TODO move somewhere
@@ -27,7 +32,10 @@ export function ParametersContextWrap({
 }: CanvasProps & {
   debug?: any;
 } & { children: any }) {
-  const gen = useMemo(() => randomGenerator(props.data.uSeed), []);
+  const gen = useMemo(
+    () => randomGenerator(props.data.uSeed),
+    [props.data.uSeed]
+  );
 
   const fft = useRef({
     mix_min: 0.05,
@@ -41,6 +49,13 @@ export function ParametersContextWrap({
 
   const palette = useColorGenerator(gen, props.data.uSeed);
 
+  const randomizedProperties = {
+    geoShowWireframe: !!gen.casino(0.8),
+    geoWireframeScale: gen.float(1.05, 1.2),
+    geoWireframeDetail: gen.int(1, 4),
+    geoWireframeType: gen.int(0, 3),
+  };
+
   return (
     <ParamsContext
       value={{
@@ -49,6 +64,7 @@ export function ParametersContextWrap({
         rot_speed,
         random: gen,
         palette,
+        ...randomizedProperties,
       }}
     >
       {children}

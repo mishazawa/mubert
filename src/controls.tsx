@@ -60,6 +60,12 @@ export function useShaderState(): [ShaderControls, any] {
         min: -1,
         max: 1,
       },
+      aaa: {
+        value: 0,
+        min: 0,
+        step: 1,
+        max: 2,
+      },
     }),
     { collapsed: true }
   );

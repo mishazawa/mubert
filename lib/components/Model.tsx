@@ -26,15 +26,8 @@ function RenderLines() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
 
-  const rand = ctx.random;
-
-  const [showWireframe, scale, detail] = useMemo(
-    () => [rand.casino(0.8), rand.float(1.05, 1.2), rand.int(1, 3)],
-    [ctx.data.uSeed]
-  );
-
-  const itemsw = useWireframeGeo(detail, scale);
-  const itemw = itemsw[rand.int(0, itemsw.length - 1)];
+  const itemsw = useWireframeGeo();
+  const itemw = itemsw[ctx.geoWireframeType];
 
   const { vertex, fragment } = ctx.debug ?? {};
   const { uRefractionTex } = useSharedTextures();
@@ -62,7 +55,7 @@ function RenderLines() {
   );
 
   return (
-    <lineSegments geometry={itemw} visible={!!showWireframe}>
+    <lineSegments geometry={itemw} visible={ctx.geoShowWireframe}>
       <CustomShaderMaterial
         baseMaterial={LineBasicMaterial}
         uniforms={uniforms.current}
