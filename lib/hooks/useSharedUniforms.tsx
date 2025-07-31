@@ -13,6 +13,7 @@ import { useFrame } from "@react-three/fiber";
 import { SPEED_MULTIPLIER } from "../constants";
 import { Vector3 } from "three";
 import { useSharedTextures } from "./useSharedTextures";
+import { useDebug } from "./useDebug";
 
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
@@ -23,7 +24,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   (uniforms.current.uAudioTex.value as any) = uAudioTex.current;
   (uniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
 
-  const speedControls = ctx.debug.speed ?? 1;
+  const speedControls = useDebug("speed", 1);
 
   // animate uniforms here
   useFrame(() => {

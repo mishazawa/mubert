@@ -32,9 +32,9 @@ import {
   PARTICLES_SIZE_RENDER_PASS,
   PARTICLES_TEXTURE_SIZE,
 } from "../../constants";
+import { useDebug } from "../../hooks/useDebug";
 
 export function Particles() {
-  const ctx = useParameters();
   const { uRefractionTex } = useSharedTextures();
 
   const sharedUniforms = useSharedUniforms();
@@ -112,6 +112,7 @@ export function Particles() {
     gl.render(renderScene, renderCamera);
     gl.setRenderTarget(null);
   });
+  const pointSize = useDebug("pointSize", PARTICLES_SIZE_RENDER_PASS);
 
   return (
     <group position={[0, 0, 0]}>
@@ -125,7 +126,7 @@ export function Particles() {
             transparent
             toneMapped={false}
             sizeAttenuation={true}
-            size={ctx.debug.pointSize}
+            size={pointSize}
           />
         </points>
       </group>
@@ -167,17 +168,11 @@ function useParticlesSimulation() {
   const ctx = useParameters();
   const { gl } = useThree();
 
-  let color1 = ctx.debug.color1;
-  let color2 = ctx.debug.color2;
-
   const localUniforms = useRef({
     uPositionsTex: { value: undefined },
-    uColor1: { value: color1 },
-    uColor2: { value: color2 },
+    uColor1: { value: ctv(ctx.palette[4]) },
+    uColor2: { value: ctv(ctx.palette[5]) },
   });
-
-  localUniforms.current.uColor1.value = ctv(ctx.palette[4]);
-  localUniforms.current.uColor2.value = ctv(ctx.palette[5]);
 
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();
@@ -240,7 +235,7 @@ function useParticlesSimulation() {
     }
 
     return [gpuCompute, posVar, velVar];
-  }, [gl, ctx.data.uSeed, ctx.debug.particlesCount]);
+  }, [gl, ctx.data.uSeed]);
 
   (localUniforms.current.uPositionsTex.value as unknown) =
     sim.getCurrentRenderTarget(positions).texture;

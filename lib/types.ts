@@ -1,4 +1,3 @@
-import type { ShaderControls } from "./shaders/types";
 import type { BufferGeometry } from "three";
 export type FFTTexture = {
   mix_min: number;
@@ -14,7 +13,7 @@ type AudioAnalysisFns = {
 };
 
 export type CanvasProps = AudioAnalysisFns & {
-  data: ShaderControls;
+  seed: number;
 };
 
 export type EnvironmentLightProps = {

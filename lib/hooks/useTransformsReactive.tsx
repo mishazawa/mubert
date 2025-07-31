@@ -2,6 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { type RefObject, useRef } from "react";
 import { Box3, Quaternion, Vector3, type Object3D } from "three";
 import { useParameters } from "./useParameters";
+import { useDebug } from "./useDebug";
 
 const _q = new Quaternion();
 const _bbox = new Box3();
@@ -13,9 +14,10 @@ export function useTransformsReactive<
 >(): RefObject<Object3D> {
   const ref = useRef<T>(null!);
   const ctx = useParameters();
+  const stopObject = useDebug("stopObject", false);
 
   useFrame(() => {
-    if (ctx.debug.stopObject) return;
+    if (stopObject) return;
 
     const fft_val = ctx.fft.current.val;
     const rot_speed = ctx.rot_speed.current * 0.5;

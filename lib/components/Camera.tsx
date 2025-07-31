@@ -14,6 +14,7 @@ import { useFrame } from "@react-three/fiber";
 
 import { TrackballControls } from "@react-three/drei";
 import { useParameters } from "../hooks/useParameters";
+import { useDebug } from "../hooks/useDebug";
 const GIMBAL_THRESH = 0.001;
 
 export function AnimatedCamera() {
@@ -56,11 +57,13 @@ export function AnimatedCamera() {
 }
 
 function useCameraAnimation(movement: (prev: Spherical) => void) {
-  const ctx = useParameters();
   const controls = useRef<any>(null!);
   const _spherical = useRef(new Spherical());
+
+  const stopCamera = useDebug("stopCamera", false);
+
   useFrame(({ camera }) => {
-    if (ctx.debug.stopCamera) return;
+    if (stopCamera) return;
 
     // vibe coding
     if (controls.current) {
