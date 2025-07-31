@@ -1,4 +1,4 @@
-import Canvas from "@lib/main";
+import Canvas, { FFT_DATA_SIZE } from "@lib/main";
 
 import { useSeed, useDebugParams } from "./controls";
 
@@ -6,6 +6,8 @@ import { useSound } from "./sound";
 import { randomGenerator } from "@lib/utils";
 import { DebugProvider } from "@lib/hooks/useDebug";
 import { useEffect, useMemo } from "react";
+
+window.FFT_DATA_SIZE = FFT_DATA_SIZE;
 
 function App() {
   const seed = useSeed();

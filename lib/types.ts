@@ -9,7 +9,7 @@ export type FFTTexture = {
 
 type AudioAnalysisFns = {
   getFFT: () => number[];
-  getRMS: () => [number, number];
+  getRMS: () => number;
 };
 
 export type CanvasProps = AudioAnalysisFns & {
