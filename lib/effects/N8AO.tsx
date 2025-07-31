@@ -1,7 +1,8 @@
-import { useParameters } from "../hooks/useParameters";
+import { useDebug } from "../hooks/useDebug";
 import { N8AO } from "@react-three/postprocessing";
 
 export function AO() {
-  const ctx = useParameters();
-  return <N8AO {...ctx.debug.ao} />;
+  const ao = useDebug("ao", {});
+
+  return <N8AO {...ao} />;
 }

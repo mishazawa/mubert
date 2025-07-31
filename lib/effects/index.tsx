@@ -6,22 +6,24 @@ import {
   SMAA,
 } from "@react-three/postprocessing";
 
-import { useParameters } from "../hooks/useParameters";
 import { AO } from "./N8AO";
 import {
   DOF_BOKEH_SCALE,
   DOF_FOCUS_LENGTH,
+  DOF_OFFSET,
   FX_NOISE_SCALE,
 } from "../constants";
 import { AudioReactiveGlitch } from "./AudioReactiveGlitch";
+import { useDebug } from "../hooks/useDebug";
 
 export function FX() {
-  const ctx = useParameters();
+  const postfx = useDebug("postfx", true);
+  const dofOffset = useDebug("dofOffset", DOF_OFFSET);
 
-  return !ctx.debug.postfx ? null : (
+  return !postfx ? null : (
     <EffectComposer multisampling={0}>
       <DepthOfField
-        target={[0, 0, ctx.debug.dofOffset]}
+        target={[0, 0, dofOffset]}
         focalLength={DOF_FOCUS_LENGTH}
         bokehScale={DOF_BOKEH_SCALE}
       />

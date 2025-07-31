@@ -48,10 +48,12 @@
     "@react-three/fiber": "^9.1.2",
     "@react-three/postprocessing": "^3.0.4",
     "culori": "^4.0.2",
-    "nice-color-palettes": "^4.0.0",
     "poline": "^0.10.0",
     "postprocessing": "^6.37.3",
     "three": "^0.176.0",
     "three-custom-shader-material": "^6.3.7"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "^4.46.2"
   }
 }

@@ -1,4 +1,9 @@
-import { randomGenerator, type RandomGenerator } from "../utils";
+import {
+  getVector3,
+  randomGenerator,
+  randomSwapRange,
+  type RandomGenerator,
+} from "../utils";
 import type { CanvasProps, FFTTexture } from "../types";
 import {
   createContext,
@@ -8,10 +13,23 @@ import {
   type RefObject,
 } from "react";
 import { useColorGenerator } from "./useColorGenerator";
+import {
+  AUDIO_TEXTURE_SIZE,
+  PARTICLES_TEXTURE_SIZE,
+  VALID_RANGES,
+} from "../constants";
+import type { ShaderControls } from "../shaders/types";
+import { useCreateSharedTexture } from "./useSharedTextures";
+import {
+  DataTexture,
+  RGBAFormat,
+  RepeatWrapping,
+  UnsignedByteType,
+  ClampToEdgeWrapping,
+  LinearFilter,
+} from "three";
 
-export type ParametersCtx = CanvasProps & {
-  debug?: any;
-} & {
+export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   fft: RefObject<FFTTexture>;
   rot_speed: RefObject<number>;
   random: RandomGenerator;
@@ -21,21 +39,20 @@ export type ParametersCtx = CanvasProps & {
   geoWireframeScale: number;
   geoWireframeDetail: number;
   geoWireframeType: number;
+} & {
+  data: ShaderControls;
 };
 
-// TODO move somewhere
 export const ParamsContext = createContext<ParametersCtx>(null!);
 
 export function ParametersContextWrap({
   children,
   ...props
-}: CanvasProps & {
-  debug?: any;
-} & { children: any }) {
-  const gen = useMemo(
-    () => randomGenerator(props.data.uSeed),
-    [props.data.uSeed]
-  );
+}: CanvasProps & { children: any }) {
+  const gen = useMemo(() => {
+    console.log("seed: " + props.seed);
+    return randomGenerator(props.seed);
+  }, [props.seed]);
 
   const fft = useRef({
     mix_min: 0.05,
@@ -47,7 +64,7 @@ export function ParametersContextWrap({
 
   const rot_speed = useRef(0.05);
 
-  const palette = useColorGenerator(gen, props.data.uSeed);
+  const palette = useColorGenerator(gen, props.seed);
 
   const randomizedProperties = useMemo(
     () => ({
@@ -56,7 +73,82 @@ export function ParametersContextWrap({
       geoWireframeDetail: gen.int(1, 4),
       geoWireframeType: gen.int(0, 3),
     }),
-    [props.data.uSeed]
+    [props.seed]
+  );
+
+  const uniformData = useMemo(
+    () => ({
+      uSeed: props.seed,
+      uLineWidth: gen.float(0, 1),
+      uUseColorKey: gen.int(...VALID_RANGES.use_key),
+      uColorKeyValue: gen.int(...VALID_RANGES.key_value),
+      uColorNoiseScale: gen.float(
+        ...randomSwapRange(VALID_RANGES.color_noise, gen.float(0, 1))
+      ),
+      uDisplacementNoiseScale: gen.float(
+        ...randomSwapRange(VALID_RANGES.displacement_noise, gen.float(0, 1))
+      ),
+      uDisplacementAmplitude: gen.float(...VALID_RANGES.amplitude),
+      uRoughness: gen.float(...VALID_RANGES.roughness),
+      uClearcoat: gen.float(...VALID_RANGES.clearcoat),
+      uClearcoatRoughness: gen.float(...VALID_RANGES.cc_roughness),
+      uIridescence: gen.float(...VALID_RANGES.iridescence),
+      uLineCount: gen.int(...VALID_RANGES.uLineCount),
+      uNoiseOffset: getVector3(gen),
+      uRoughnessPattern: gen.float(0, 1),
+      uNoiseVariant: gen.float(0, 1),
+      uStripesWidth: gen.float(...VALID_RANGES.uStripesWidth),
+      uEmission: gen.float(0, 1),
+    }),
+    [props.seed]
+  );
+
+  useCreateSharedTexture(
+    "uRefractionTex",
+    () => {
+      // Create checkerboard texture
+      const size = PARTICLES_TEXTURE_SIZE;
+      const data = new Uint8Array(size * size * 4);
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const i = (y * size + x) * 4;
+          const checker = ((x >> 4) + (y >> 4)) & 1;
+          const color = checker ? 255 : 0;
+
+          data[i] = color; // R
+          data[i + 1] = color; // G
+          data[i + 2] = color; // B
+          data[i + 3] = 255; // A
+        }
+      }
+
+      const tex = new DataTexture(data, size, size, RGBAFormat);
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+      tex.needsUpdate = true;
+      return tex;
+    },
+    []
+  );
+
+  useCreateSharedTexture(
+    "uAudioTex",
+    () => {
+      const data = new Uint8Array(AUDIO_TEXTURE_SIZE * AUDIO_TEXTURE_SIZE * 4);
+      const tex = new DataTexture(
+        data,
+        AUDIO_TEXTURE_SIZE,
+        AUDIO_TEXTURE_SIZE,
+        RGBAFormat,
+        UnsignedByteType
+      );
+      tex.wrapS = tex.wrapT = ClampToEdgeWrapping;
+      tex.magFilter = tex.minFilter = LinearFilter;
+      tex.needsUpdate = true;
+      return tex;
+    },
+    []
   );
 
   return (
@@ -68,6 +160,7 @@ export function ParametersContextWrap({
         random: gen,
         palette,
         ...randomizedProperties,
+        data: uniformData,
       }}
     >
       {children}

@@ -1,9 +1,10 @@
 import { Environment, Float, Lightformer } from "@react-three/drei";
+import type { ReactThreeFiber } from "@react-three/fiber";
 import { ENV_MAP_RESOLUTION } from "../../constants";
 import type { EnvironmentLightProps, LightPresetProps } from "../../types";
 import { LIGHT_PRESET } from "./presets";
 import { useParameters } from "../../hooks/useParameters";
-import type { ReactThreeFiber } from "@react-three/fiber";
+import { useDebug } from "../../hooks/useDebug";
 
 export function EnvironmentLight({
   intensity,
@@ -60,6 +61,9 @@ function RenderLight(props: LightPresetProps & { [key: string]: any }) {
 
 function usePaletteAccentColor(isAccent: boolean) {
   const ctx = useParameters();
+  const lightAccent = useDebug("lightAccent", 0);
+
   if (!isAccent) return 0xffffff;
-  return ctx.palette[ctx.debug.lightAccent] as ReactThreeFiber.Color;
+
+  return ctx.palette[lightAccent] as ReactThreeFiber.Color;
 }

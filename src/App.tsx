@@ -1,20 +1,24 @@
 import Canvas from "@lib/main";
 
-import { useShaderState } from "./controls";
+import { useSeed, useDebugParams } from "./controls";
 
 import { useSound } from "./sound";
 import { randomGenerator } from "@lib/utils";
+import { DebugProvider } from "@lib/hooks/useDebug";
 import { useEffect, useMemo } from "react";
 
 function App() {
-  const [data, debug] = useShaderState();
+  const seed = useSeed();
+  const debug = useDebugParams();
   const fftfns = useSound();
 
-  useAudioTrack(data.uSeed);
+  useAudioTrack(seed);
 
   return (
     <>
-      <Canvas data={data} debug={debug} {...fftfns} />
+      <DebugProvider value={debug}>
+        <Canvas seed={seed} {...fftfns} />
+      </DebugProvider>
     </>
   );
 }

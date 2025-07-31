@@ -27,6 +27,7 @@ export const PARTICLES_TEXTURE_SIZE = 512;
 export const PARTICLES_COUNT = 128;
 export const DOF_FOCUS_LENGTH = 0.03;
 export const DOF_BOKEH_SCALE = 3;
+export const DOF_OFFSET = 0;
 export const FX_NOISE_SCALE = 0.02;
 export const CAMERA_FOV = 45;
 export const CAMERA_DISTANCE = 7;

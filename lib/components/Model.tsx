@@ -10,6 +10,7 @@ import { useParameters } from "../hooks/useParameters";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
 import { useSharedTextures } from "../hooks/useSharedTextures";
 import { useSolidGeo, useWireframeGeo } from "../hooks/useGeometryGenerator";
+import { useDebug } from "../hooks/useDebug";
 
 export function Model() {
   return (
@@ -29,7 +30,9 @@ function RenderLines() {
   const itemsw = useWireframeGeo();
   const itemw = itemsw[ctx.geoWireframeType];
 
-  const { vertex, fragment } = ctx.debug ?? {};
+  const vertex = useDebug("vertex", false);
+  const fragment = useDebug("fragment", false);
+
   const { uRefractionTex } = useSharedTextures();
 
   const [vertexShaderWire, fragmentShaderWire] = useMemo(
@@ -69,11 +72,12 @@ function RenderLines() {
 }
 
 function RenderSolid() {
-  const ctx = useParameters();
   const uniforms = useSharedUniforms();
   const items = useSolidGeo(MESH_DETAIL);
 
-  const { vertex, fragment } = ctx.debug ?? {};
+  const vertex = useDebug("vertex", false);
+  const fragment = useDebug("fragment", false);
+
   const { uRefractionTex } = useSharedTextures();
 
   const [vertexShader, fragmentShader] = useMemo(

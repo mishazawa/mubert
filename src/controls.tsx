@@ -1,35 +1,28 @@
 import { LIGHT_PRESET } from "@lib/components/light/presets";
-import { generateShaderParams } from "@lib/main";
-import type { ShaderControls } from "@lib/shaders/types";
 
 import { randomGenerator } from "@lib/utils";
 import { button, useControls } from "leva";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-export function useShaderState(): [ShaderControls, any] {
+export function useSeed() {
   const rng = useMemo(() => randomGenerator(666), []);
 
-  const [defaults, set] = useState(generateShaderParams(rng.int(0, 1024)));
-
-  useControls(
-    {
-      Generate: button(() => {
-        const params = generateShaderParams(rng.int(0, 9999));
-        set(params);
-      }),
-    },
-    [defaults.uSeed]
-  );
   useControls({
+    Generate: button(() => {
+      set({ seed: rng.int(0, 9999) });
+    }),
+  });
+  const [{ seed }, set] = useControls(() => ({
     seed: {
       step: 1,
-      value: defaults.uSeed,
-      onChange: (v) => {
-        set({ ...defaults, uSeed: v });
-      },
+      value: rng.int(0, 9999),
     },
-  });
+  }));
 
+  return seed;
+}
+
+export function useDebugParams(): any {
   const [debug] = useControls(
     "Debug",
     () => ({
@@ -85,13 +78,8 @@ export function useShaderState(): [ShaderControls, any] {
     { collapsed: true }
   );
 
-  return [
-    {
-      ...defaults,
-    },
-    {
-      ...debug,
-      ao,
-    },
-  ];
+  return {
+    ...debug,
+    ao,
+  };
 }
