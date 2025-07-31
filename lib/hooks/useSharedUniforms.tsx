@@ -28,7 +28,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
   // animate uniforms here
   useFrame(() => {
-    let [rms] = ctx.getRMS();
+    let rms = ctx.getRMS();
     rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
 

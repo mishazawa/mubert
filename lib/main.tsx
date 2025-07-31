@@ -3,6 +3,7 @@ import type { CanvasProps } from "./types";
 import { ParametersContextWrap } from "./hooks/useParameters";
 import { Scene } from "./components/Scene";
 import { TexturesProvider } from "./hooks/useSharedTextures";
+import { FFT_SIZE } from "./constants";
 
 export default function MubertCanvas(props: CanvasProps) {
   return (
@@ -13,3 +14,5 @@ export default function MubertCanvas(props: CanvasProps) {
     </TexturesProvider>
   );
 }
+
+export const FFT_DATA_SIZE = FFT_SIZE * 2;
