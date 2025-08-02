@@ -61,7 +61,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
       // 2. write new FFT row at the top
       const fft = ctx.getFFT(); // 64 values 0-255
-      // console.log("FFT", fft);
       // const max_fft = analyser.getRMS();
       let curr_max = Math.max(...fft);
       let new_max = curr_max;

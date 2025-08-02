@@ -31,7 +31,7 @@ export function FX() {
       <AudioReactiveGlitch />
 
       <Noise opacity={FX_NOISE_SCALE} />
-      <Bloom mipmapBlur levels={7} intensity={1} />
+      <Bloom mipmapBlur levels={7} intensity={0.5} />
       <SMAA />
     </EffectComposer>
   );

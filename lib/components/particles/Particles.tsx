@@ -87,6 +87,10 @@ export function Particles() {
     return cam;
   }, [mainCamera]);
 
+  const ctx = useParameters();
+  uniforms.current.uColor1a.value = ctv(ctx.palette[4]);
+  uniforms.current.uColor2a.value = ctv(ctx.palette[2]);
+
   useFrame(() => {
     if (!cloneRef.current) return;
 
@@ -170,9 +174,10 @@ function useParticlesSimulation() {
 
   const localUniforms = useRef({
     uPositionsTex: { value: undefined },
-    uColor1: { value: ctv(ctx.palette[4]) },
-    uColor2: { value: ctv(ctx.palette[5]) },
+    uColor1a: { value: ctv(ctx.palette[0]) },
+    uColor2a: { value: ctv(ctx.palette[4]) },
   });
+  console.log(ctx.palette[0]);
 
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();

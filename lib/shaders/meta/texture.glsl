@@ -19,8 +19,8 @@ void main() {
   DisplacePatternOutput data_out = displace_pattern(data_in, animation);
 
 
-  vec3 vector = noise3(prev_frame_pos.xyz * 0.5 + data_out.pattern, animation);
-
+  vec3 vector = noise3(prev_frame_pos.xyz * 0.25 + data_out.pattern*0.0, animation);
+  vector = prev_frame.xyz * 0.8 + vector;
   // vector *= uRMS;
   // vector = vec3(prev_frame_pos.xyz*0.5);
   // vector = data_out.position-prev_frame_pos.xyz;

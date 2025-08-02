@@ -27,7 +27,7 @@ export function Scene() {
           <Background />
 
           {DebugTools && <DebugTools />}
-          <EnvironmentLight intensity={10} preset={light} />
+          <EnvironmentLight intensity={3.5} preset={light} />
           <TransformGroup>
             <Particles />
             <Model />
