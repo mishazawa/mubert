@@ -15,7 +15,7 @@ export function useSeed() {
   const [{ seed }, set] = useControls(() => ({
     seed: {
       step: 1,
-      value: rng.int(0, 9999),
+      value: 817,
     },
   }));
 
@@ -26,10 +26,10 @@ export function useDebugParams(): any {
   const [debug] = useControls(
     "Debug",
     () => ({
-      postfx: true,
+      postfx: false,
       vertex: false,
       fragment: false,
-      stopCamera: false,
+      stopCamera: true,
       stopObject: false,
       pointSize: {
         value: 0.05,
@@ -48,7 +48,7 @@ export function useDebugParams(): any {
         max: 4,
         step: 1,
       },
-      disableRefraction: true,
+      disableRefraction: false,
     }),
     { collapsed: true }
   );

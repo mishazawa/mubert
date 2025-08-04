@@ -7,7 +7,7 @@ export function useDebug(key: string, fallback: any) {
   if (!context) {
     return fallback;
   }
-  return context[key] ? context[key] : fallback;
+  return context[key] !== undefined ? context[key] : fallback;
 }
 
 export function DebugProvider({

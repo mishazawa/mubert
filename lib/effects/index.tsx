@@ -15,12 +15,11 @@ import {
 } from "../constants";
 import { AudioReactiveGlitch } from "./AudioReactiveGlitch";
 import { useDebug } from "../hooks/useDebug";
-import { useParameters } from "@lib/hooks/useParameters";
+import { useParameters } from "../hooks/useParameters";
 
 export function FX() {
   const ctx = useParameters();
   const postfx = useDebug("postfx", true);
-  const dofOffset = useDebug("dofOffset", DOF_OFFSET);
 
   if (!postfx) return null;
 
@@ -37,7 +36,7 @@ export function FX() {
   return (
     <EffectComposer multisampling={0}>
       <DepthOfField
-        target={[0, 0, dofOffset]}
+        target={[0, 0, DOF_OFFSET]}
         focalLength={DOF_FOCUS_LENGTH}
         bokehScale={DOF_BOKEH_SCALE}
       />

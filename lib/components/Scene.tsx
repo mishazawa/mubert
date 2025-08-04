@@ -36,8 +36,8 @@ export function Scene() {
             preset={light}
           />
           <TransformGroup>
-            <Particles />
             <Model />
+            <Particles />
           </TransformGroup>
 
           <AnimatedCamera />

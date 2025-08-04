@@ -1,6 +1,4 @@
 uniform sampler2D uPositionsTex;
-// uniform vec3 uColor1a;
-// uniform vec3 uColor2a;
 uniform vec3 uColor1a;
 uniform vec3 uColor2a;
 
@@ -13,7 +11,7 @@ void main() {
   vec2 vres = vec2(128.0, 128.0);
   float vy = floor(vid / vres.x);
   float vx = mod(vid, vres.x);
-  vec2 vuv = vec2(vx+0.5, vy+0.5) / vres;
+  vec2 vuv = vec2(vx + 0.5, vy + 0.5) / vres;
 
   v_color = vec4(vuv.y);
 
