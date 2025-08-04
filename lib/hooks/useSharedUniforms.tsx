@@ -11,9 +11,10 @@ import type { GenerativeShaderUniforms, UniformValue } from "../shaders/types";
 import { assignUniforms, generateDefaults } from "../shaders/uniforms";
 import { useFrame } from "@react-three/fiber";
 import { SPEED_MULTIPLIER } from "../constants";
-import { Vector3 } from "three";
+
 import { useSharedTextures } from "./useSharedTextures";
 import { useDebug } from "./useDebug";
+import { ctv } from "../utils";
 
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
@@ -128,7 +129,4 @@ export function useSharedUniforms() {
   if (!context)
     throw new Error("useSharedUniforms must be used within UniformsProvider");
   return context;
-}
-function ctv(arg0: number[]): Vector3 {
-  return new Vector3(...arg0);
 }

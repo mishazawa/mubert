@@ -36,3 +36,5 @@ export const CAMERA_DAMPING = 0.02;
 export const CAMERA_ZOOM_SPEED = 0.1;
 export const CAMERA_ZOOM_NEAR = 2;
 export const CAMERA_ZOOM_FAR = 10;
+export const ENVIRONMENT_LIGHT_INTENSITY = 3.5;
+export const AMBIENT_LIGHT_INTENSITY = 10;

@@ -15,12 +15,26 @@ import {
 } from "../constants";
 import { AudioReactiveGlitch } from "./AudioReactiveGlitch";
 import { useDebug } from "../hooks/useDebug";
+import { useParameters } from "@lib/hooks/useParameters";
 
 export function FX() {
+  const ctx = useParameters();
   const postfx = useDebug("postfx", true);
   const dofOffset = useDebug("dofOffset", DOF_OFFSET);
 
-  return !postfx ? null : (
+  if (!postfx) return null;
+
+  // show simplified fx for mobile device
+  if (ctx.isMobile)
+    return (
+      <EffectComposer multisampling={0}>
+        <AudioReactiveGlitch />
+        <Bloom mipmapBlur levels={7} intensity={0.5} />
+        <SMAA />
+      </EffectComposer>
+    );
+
+  return (
     <EffectComposer multisampling={0}>
       <DepthOfField
         target={[0, 0, dofOffset]}

@@ -48,11 +48,7 @@ export function useDebugParams(): any {
         max: 4,
         step: 1,
       },
-      dofOffset: {
-        value: 0,
-        min: -1,
-        max: 1,
-      },
+      disableRefraction: true,
     }),
     { collapsed: true }
   );

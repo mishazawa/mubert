@@ -2,7 +2,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ParamsContext } from "../hooks/useParameters";
 import { useContextBridge } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { AMBIENT_LIGHT_COLOR } from "../constants";
+import {
+  AMBIENT_LIGHT_COLOR,
+  AMBIENT_LIGHT_INTENSITY,
+  ENVIRONMENT_LIGHT_INTENSITY,
+} from "../constants";
 import { FX } from "../effects";
 import { EnvironmentLight } from "./light/Light";
 import { Model } from "./Model";
@@ -27,7 +31,10 @@ export function Scene() {
           <Background />
 
           {DebugTools && <DebugTools />}
-          <EnvironmentLight intensity={3.5} preset={light} />
+          <EnvironmentLight
+            intensity={ENVIRONMENT_LIGHT_INTENSITY}
+            preset={light}
+          />
           <TransformGroup>
             <Particles />
             <Model />
@@ -35,7 +42,10 @@ export function Scene() {
 
           <AnimatedCamera />
 
-          <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
+          <ambientLight
+            color={AMBIENT_LIGHT_COLOR}
+            intensity={AMBIENT_LIGHT_INTENSITY}
+          />
           <FX />
         </UniformsProvider>
       </Canvas>

@@ -1,5 +1,6 @@
 import {
   getVector3,
+  isMobileUA,
   randomGenerator,
   randomSwapRange,
   type RandomGenerator,
@@ -41,6 +42,7 @@ export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   geoWireframeType: number;
 } & {
   data: ShaderControls;
+  isMobile: boolean;
 };
 
 export const ParamsContext = createContext<ParametersCtx>(null!);
@@ -49,6 +51,11 @@ export function ParametersContextWrap({
   children,
   ...props
 }: CanvasProps & { children: any }) {
+  const isMobile = useMemo(() => {
+    console.log("is mobile: " + isMobileUA());
+    return isMobileUA();
+  }, []);
+
   const gen = useMemo(() => {
     console.log("seed: " + props.seed);
     return randomGenerator(props.seed);
@@ -161,6 +168,7 @@ export function ParametersContextWrap({
         palette,
         ...randomizedProperties,
         data: uniformData,
+        isMobile,
       }}
     >
       {children}

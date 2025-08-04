@@ -40,3 +40,11 @@ export function randomGenerator(seed: number): RandomGenerator {
     },
   };
 }
+
+export function isMobileUA() {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
+export function ctv(arg0: number[]): Vector3 {
+  return new Vector3(...arg0);
+}

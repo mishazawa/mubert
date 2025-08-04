@@ -8,7 +8,6 @@ import {
   PerspectiveCamera,
   PointsMaterial,
   Scene,
-  Vector3,
 } from "three";
 import { useParameters } from "../../hooks/useParameters";
 import { GPUComputationRenderer } from "three/examples/jsm/Addons.js";
@@ -33,6 +32,7 @@ import {
   PARTICLES_TEXTURE_SIZE,
 } from "../../constants";
 import { useDebug } from "../../hooks/useDebug";
+import { ctv } from "../../utils";
 
 export function Particles() {
   const { uRefractionTex } = useSharedTextures();
@@ -91,7 +91,10 @@ export function Particles() {
   uniforms.current.uColor1a.value = ctv(ctx.palette[4]);
   uniforms.current.uColor2a.value = ctv(ctx.palette[2]);
 
+  const disableRefraction = useDebug("disableRefraction", true);
+
   useFrame(() => {
+    if (disableRefraction) return;
     if (!cloneRef.current) return;
 
     // camera
@@ -164,10 +167,6 @@ export function Particles() {
 //   );
 // }
 
-function ctv(arg0: number[]): Vector3 {
-  return new Vector3(...arg0);
-}
-
 function useParticlesSimulation() {
   const ctx = useParameters();
   const { gl } = useThree();
@@ -177,7 +176,6 @@ function useParticlesSimulation() {
     uColor1a: { value: ctv(ctx.palette[0]) },
     uColor2a: { value: ctv(ctx.palette[4]) },
   });
-  console.log(ctx.palette[0]);
 
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();
