@@ -1,4 +1,5 @@
 import {
+  debugCheckerData,
   getVector3,
   isMobileUA,
   randomGenerator,
@@ -104,24 +105,32 @@ export function ParametersContextWrap({
   useCreateSharedTexture(
     "uRefractionTex",
     () => {
-      // Create checkerboard texture
       const size = PARTICLES_TEXTURE_SIZE;
-      const data = new Uint8Array(size * size * 4);
+      const tex = new DataTexture(
+        debugCheckerData(size),
+        size,
+        size,
+        RGBAFormat
+      );
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+      tex.needsUpdate = true;
+      return tex;
+    },
+    []
+  );
 
-      for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-          const i = (y * size + x) * 4;
-          const checker = ((x >> 4) + (y >> 4)) & 1;
-          const color = checker ? 255 : 0;
+  useCreateSharedTexture(
+    "uSimulationTex",
+    () => {
+      const size = PARTICLES_TEXTURE_SIZE;
+      const tex = new DataTexture(
+        debugCheckerData(size),
+        size,
+        size,
+        RGBAFormat
+      );
 
-          data[i] = color; // R
-          data[i + 1] = color; // G
-          data[i + 2] = color; // B
-          data[i + 3] = 255; // A
-        }
-      }
-
-      const tex = new DataTexture(data, size, size, RGBAFormat);
       tex.wrapS = RepeatWrapping;
       tex.wrapT = RepeatWrapping;
       tex.needsUpdate = true;

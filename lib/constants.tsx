@@ -21,8 +21,9 @@ export const VALID_RANGES: Record<string, [number, number]> = {
 };
 export const FBO_SIZE = 64;
 export const AUDIO_TEXTURE_SIZE = 256;
-export const PARTICLES_CAMERA_ZOOM = 1;
-export const PARTICLES_SIZE_RENDER_PASS = 1;
+export const PARTICLES_SIZE = 0.05;
+export const PARTICLES_SIZE_RENDER_PASS = 0.5;
+export const PARTICLES_CAMERA_ZOOM = 5;
 export const PARTICLES_TEXTURE_SIZE = 512;
 export const PARTICLES_COUNT = 128;
 export const DOF_FOCUS_LENGTH = 0.03;
