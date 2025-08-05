@@ -5,7 +5,7 @@ import { compile } from "../../../shaders/compiler";
 import { ctv } from "../../../utils";
 import { useThree, useFrame } from "@react-three/fiber";
 import { useRef, useMemo } from "react";
-import type { DataTexture } from "three";
+import { type DataTexture } from "three";
 import { GPUComputationRenderer } from "three/examples/jsm/Addons.js";
 import particles from "../../../shaders/meta/particles.glsl?raw";
 
@@ -17,6 +17,9 @@ export function useParticlesSimulation() {
     uPositionsTex: { value: undefined },
     uColor1a: { value: ctv(ctx.palette[0]) },
     uColor2a: { value: ctv(ctx.palette[4]) },
+    uTime: { value: 0 },
+    uRMS: { value: 0 },
+    uRotationAxis: { value: undefined },
   });
 
   // create uniforms for particles CSM
@@ -92,6 +95,10 @@ export function useParticlesSimulation() {
   localUniforms.current.uColor2a.value = ctv(ctx.palette[2]);
 
   useFrame(() => {
+    localUniforms.current.uTime.value = uniforms.current.uTime.value;
+    localUniforms.current.uRMS.value = uniforms.current.uRMS.value;
+    (localUniforms.current.uRotationAxis.value as any) =
+      uniforms.current.uRotationAxis.value;
     sim.compute();
   });
 

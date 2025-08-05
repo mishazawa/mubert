@@ -37,8 +37,9 @@ export function Scene() {
           />
           <TransformGroup>
             <Model />
-            <Particles />
           </TransformGroup>
+
+          <Particles />
 
           <AnimatedCamera />
 
@@ -53,6 +54,7 @@ export function Scene() {
   );
 }
 
+// do not place particles here.
 function TransformGroup({ children }: { children: ReactNode }) {
   const ref = useTransformsReactive();
   return (

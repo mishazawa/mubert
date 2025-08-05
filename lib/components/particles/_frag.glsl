@@ -2,6 +2,9 @@
 in vec4 v_color;
 uniform vec3 uColor1a;
 uniform vec3 uColor2a;
+uniform float uTime;
+uniform float uRMS;
+uniform vec3 uRotationAxis;
 
 vec4 DEBUG = vec4(1., 0., 0., 1.);
 
@@ -22,5 +25,4 @@ void main() {
   new_color.a *= length(new_color.rgb);
   new_color.rgb = pow(new_color.rgb, vec3(1.0 / 2.2)); // gamma correction
   csm_FragColor = vec4(new_color);
-  // csm_FragColor = vec4(DEBUG);
 }

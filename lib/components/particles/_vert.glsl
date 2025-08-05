@@ -1,6 +1,9 @@
 uniform sampler2D uPositionsTex;
 uniform vec3 uColor1a;
 uniform vec3 uColor2a;
+uniform float uTime;
+uniform float uRMS;
+uniform vec3 uRotationAxis;
 
 out vec4 v_color;
 

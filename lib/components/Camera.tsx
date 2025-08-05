@@ -15,16 +15,17 @@ import { useFrame } from "@react-three/fiber";
 import { TrackballControls } from "@react-three/drei";
 import { useParameters } from "../hooks/useParameters";
 import { useDebug } from "../hooks/useDebug";
+import { useSharedUniforms } from "../hooks/useSharedUniforms";
 const GIMBAL_THRESH = 0.001;
 
 export function AnimatedCamera() {
   const cam = useRef<PerspectiveCamera>(null!);
   const ctx = useParameters();
-
+  const uni = useSharedUniforms();
   // example
   const ctrl = useCameraAnimation((s: Spherical) => {
     const rot_speed = ctx.rot_speed.current * 0.5;
-    const t = ctx.fft.current.time;
+    const t = uni.current.uTime.value;
     s.theta += 0.01 * rot_speed;
     s.phi += 0.005 * Math.sin(t);
   });

@@ -5,7 +5,7 @@ import {
   randomSwapRange,
   type RandomGenerator,
 } from "../utils";
-import type { CanvasProps, FFTTexture } from "../types";
+import type { CanvasProps } from "../types";
 import {
   createContext,
   useContext,
@@ -31,7 +31,6 @@ import {
 } from "three";
 
 export type ParametersCtx = Omit<CanvasProps, "seed"> & {
-  fft: RefObject<FFTTexture>;
   rot_speed: RefObject<number>;
   random: RandomGenerator;
   palette: Array<number[]>;
@@ -60,14 +59,6 @@ export function ParametersContextWrap({
     console.log("seed: " + props.seed);
     return randomGenerator(props.seed);
   }, [props.seed]);
-
-  const fft = useRef({
-    mix_min: 0.05,
-    mix_max: 0.2,
-    max: 0,
-    val: 0,
-    time: 0,
-  });
 
   const rot_speed = useRef(0.05);
 
@@ -162,7 +153,6 @@ export function ParametersContextWrap({
     <ParamsContext
       value={{
         ...props,
-        fft,
         rot_speed,
         random: gen,
         palette,

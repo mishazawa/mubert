@@ -1,11 +1,4 @@
 import type { BufferGeometry } from "three";
-export type FFTTexture = {
-  mix_min: number;
-  mix_max: number;
-  max: number;
-  val: number;
-  time: number;
-};
 
 type AudioAnalysisFns = {
   getFFT: () => number[];

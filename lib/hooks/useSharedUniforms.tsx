@@ -15,9 +15,18 @@ import { SPEED_MULTIPLIER } from "../constants";
 import { useSharedTextures } from "./useSharedTextures";
 import { useDebug } from "./useDebug";
 import { ctv } from "../utils";
+import { Vector3 } from "three";
+
+const _axis = new Vector3();
 
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
+
+  const smoothFFT = useRef({
+    mix_min: 0.05,
+    mix_max: 0.2,
+    max: 0,
+  });
 
   const { uAudioTex, uRefractionTex } = useSharedTextures();
 
@@ -35,20 +44,29 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
     const pastRms = uniforms.current.uRMS.value;
 
-    const mix_min = ctx.fft.current.mix_min ?? 0.4;
-    const mix_max = ctx.fft.current.mix_max ?? 0.99;
+    const mix_min = smoothFFT.current.mix_min ?? 0.4;
+    const mix_max = smoothFFT.current.mix_max ?? 0.99;
 
     const newRms =
       pastRms < 0
         ? pastRms * (1.0 - mix_max) + rms * mix_max
         : pastRms * (1.0 - mix_min) + rms * mix_min;
 
-    uniforms.current.uRMS.value = ctx.fft.current.val = newRms;
+    uniforms.current.uRMS.value = newRms;
     uniforms.current.uFFT.value = ctx.getFFT();
 
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * 10.0;
-    ctx.fft.current.time = uniforms.current.uTime.value;
+
+    _axis
+      .set(
+        Math.sin(uniforms.current.uTime.value * 0.2),
+        Math.sin(uniforms.current.uTime.value * 0.4),
+        Math.sin(uniforms.current.uTime.value * 0.2)
+      )
+      .normalize();
+
+    uniforms.current.uRotationAxis.value = _axis;
   });
 
   // animate fft texture
@@ -66,16 +84,16 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
       let curr_max = Math.max(...fft);
       let new_max = curr_max;
 
-      if (ctx.fft.current.max != undefined) {
-        let past_max = ctx.fft.current.max;
+      if (smoothFFT.current.max != undefined) {
+        let past_max = smoothFFT.current.max;
         let fade = 0.99;
         new_max = Math.max(curr_max, past_max * fade);
       }
 
-      ctx.fft.current.max = new_max;
+      smoothFFT.current.max = new_max;
 
-      const mix_min = ctx.fft.current.mix_min ?? 0.4;
-      const mix_max = ctx.fft.current.mix_max ?? 0.99;
+      const mix_min = smoothFFT.current.mix_min ?? 0.4;
+      const mix_max = smoothFFT.current.mix_max ?? 0.99;
 
       for (let i = 0; i < fft.length; i++) {
         let v = fft[i];
