@@ -12,9 +12,8 @@ import {
 
 class AudioReactiveGlitchImpl extends Effect {
   sharedUniforms: RefObject<GenerativeShaderUniforms> = null!;
-  sharedTextures: SharedTextures = {
+  sharedTextures: Pick<SharedTextures, "uAudioTex"> = {
     uAudioTex: null!,
-    uRefractionTex: null!,
   };
   constructor(
     sharedUniforms: RefObject<GenerativeShaderUniforms>,
