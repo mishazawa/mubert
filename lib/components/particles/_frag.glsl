@@ -5,8 +5,6 @@ uniform vec3 uColor1a;
 uniform vec3 uColor2a;
 uniform float uTime;
 uniform float uRMS;
-uniform vec3 uRotationAxis;
-
 
 vec4 DEBUG = vec4(1., 0., 0., 1.);
 
@@ -19,17 +17,16 @@ void main() {
     discard;
 
   // float pt = length(v_pos)*0.5;
-  float pt = length(v_pos)*0.5;
+  float pt = length(v_pos) * 0.5;
   // float pt = 0.0;
   vec3 nc = mix(uColor1a, uColor2a, pt);
   float na = 1.0;
   // na = smoothstep(0.0, 1.0, na) * 0.5;
 
   vec4 new_color = vec4(nc, na);
-  new_color.a *= pow(length(new_color.rgb*1.5), 2.0);
+  new_color.a *= pow(length(new_color.rgb * 1.5), 2.0);
   // new_color.rgb = pow(new_color.rgb, vec3(1.0 / 2.2)); // gamma correction
-  
+
   // new_color = vec4(1.0);
   csm_FragColor = vec4(new_color);
-  
 }

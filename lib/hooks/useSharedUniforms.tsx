@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -15,9 +16,7 @@ import { SPEED_MULTIPLIER } from "../constants";
 import { useSharedTextures } from "./useSharedTextures";
 import { useDebug } from "./useDebug";
 import { ctv } from "../utils";
-import { Vector3 } from "three";
-
-const _axis = new Vector3();
+import { Matrix4 } from "three";
 
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
@@ -57,16 +56,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * 10.0;
-
-    _axis
-      .set(
-        Math.sin(uniforms.current.uTime.value * 0.2),
-        Math.sin(uniforms.current.uTime.value * 0.4),
-        Math.sin(uniforms.current.uTime.value * 0.2)
-      )
-      .normalize();
-
-    uniforms.current.uRotationAxis.value = _axis;
   });
 
   // animate fft texture
@@ -147,4 +136,14 @@ export function useSharedUniforms() {
   if (!context)
     throw new Error("useSharedUniforms must be used within UniformsProvider");
   return context;
+}
+
+const _sharedMatrix = new Matrix4().identity();
+
+// crutch but ok for now
+export function useSharedMatrix(): [Matrix4, (data: Matrix4) => void] {
+  const setValue = useCallback((data: Matrix4) => {
+    _sharedMatrix.copy(data);
+  }, []);
+  return [_sharedMatrix, setValue];
 }

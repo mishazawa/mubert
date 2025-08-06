@@ -3,7 +3,7 @@ uniform vec3 uColor1a;
 uniform vec3 uColor2a;
 uniform float uTime;
 uniform float uRMS;
-uniform vec3 uRotationAxis;
+uniform mat4 uObjectMatrix;
 
 out vec4 v_color;
 out vec3 v_pos;
@@ -21,10 +21,8 @@ void main() {
   v_color = vec4(vuv.y);
 
   vec4 pos = texture2D(uPositionsTex, vuv) * 2.0 - 1.0;
-  pos.xyz = (modelMatrix * vec4(pos.xyz, 1.0)).xyz;
+  pos.xyz = (modelMatrix * uObjectMatrix * vec4(pos.xyz, 1.0)).xyz;
   csm_Position = pos.xyz;
   v_pos = pos.xyz;
   // csm_Position = vec3(0.0);
-
-
 }
