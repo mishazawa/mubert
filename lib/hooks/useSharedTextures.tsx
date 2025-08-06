@@ -8,7 +8,11 @@ import {
 } from "react";
 import { DataTexture } from "three";
 
-const SHARED_TEXTURES = ["uAudioTex", "uRefractionTex"] as const;
+const SHARED_TEXTURES = [
+  "uAudioTex",
+  "uRefractionTex",
+  "uSimulationTex",
+] as const;
 
 type SharedTextureKeys = (typeof SHARED_TEXTURES)[number];
 
@@ -21,13 +25,14 @@ const Context = createContext<SharedTextures>(null!);
 export const TexturesProvider = ({ children }: { children: ReactNode }) => {
   const uAudioTex = useRef<DataTexture>(null!);
   const uRefractionTex = useRef<DataTexture>(null!);
+  const uSimulationTex = useRef<DataTexture>(null!);
 
-  const tex = { uAudioTex, uRefractionTex };
+  const tex = { uAudioTex, uRefractionTex, uSimulationTex };
 
   return <Context.Provider value={tex}>{children}</Context.Provider>;
 };
 
-export function useSharedTextures() {
+export function useSharedTextures(): SharedTextures {
   const context = useContext(Context);
   if (!context)
     throw new Error("useSharedTextures must be used within TexturesProvider");

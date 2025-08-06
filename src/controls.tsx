@@ -15,7 +15,7 @@ export function useSeed() {
   const [{ seed }, set] = useControls(() => ({
     seed: {
       step: 1,
-      value: rng.int(0, 9999),
+      value: 817,
     },
   }));
 
@@ -48,11 +48,7 @@ export function useDebugParams(): any {
         max: 4,
         step: 1,
       },
-      dofOffset: {
-        value: 0,
-        min: -1,
-        max: 1,
-      },
+      disableRefraction: false,
     }),
     { collapsed: true }
   );

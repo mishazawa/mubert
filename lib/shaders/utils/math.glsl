@@ -109,3 +109,20 @@ vec2 ctob(vec3 p) {
   uv = 0.5 * (uv / maxAxis + 1.0);
   return uv;
 }
+
+
+
+vec4 blur13(sampler2D image, vec2 uv_, vec2 res, vec2 dir) {
+  vec4 color = vec4(0.0);
+  vec2 off1 = vec2(1.411764705882353) * dir;
+  vec2 off2 = vec2(3.2941176470588234) * dir;
+  vec2 off3 = vec2(5.176470588235294) * dir;
+  color += texture2D(image, uv_) * 0.1964825501511404;
+  color += texture2D(image, uv_ + (off1 / res)) * 0.2969069646728344;
+  color += texture2D(image, uv_ - (off1 / res)) * 0.2969069646728344;
+  color += texture2D(image, uv_ + (off2 / res)) * 0.09447039785044732;
+  color += texture2D(image, uv_ - (off2 / res)) * 0.09447039785044732;
+  color += texture2D(image, uv_ + (off3 / res)) * 0.010381362401148057;
+  color += texture2D(image, uv_ - (off3 / res)) * 0.010381362401148057;
+  return color;
+}

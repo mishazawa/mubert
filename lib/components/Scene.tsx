@@ -2,7 +2,13 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ParamsContext } from "../hooks/useParameters";
 import { useContextBridge } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { AMBIENT_LIGHT_COLOR } from "../constants";
+import {
+  AMBIENT_LIGHT_COLOR,
+  AMBIENT_LIGHT_INTENSITY,
+  ENVIRONMENT_LIGHT_INTENSITY,
+  PARTICLES_SIZE,
+  PARTICLES_SIZE_RENDER_PASS,
+} from "../constants";
 import { FX } from "../effects";
 import { EnvironmentLight } from "./light/Light";
 import { Model } from "./Model";
@@ -12,6 +18,8 @@ import { AnimatedCamera } from "./Camera";
 import { Background } from "./background/Background";
 import { useTransformsReactive } from "../hooks/useTransformsReactive";
 import { useDebug } from "../hooks/useDebug";
+import { OffscreenTexture } from "./utils/OffscreenTexture";
+import { SimulationProvider } from "./particles/Simulation";
 
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
@@ -27,15 +35,27 @@ export function Scene() {
           <Background />
 
           {DebugTools && <DebugTools />}
-          <EnvironmentLight intensity={10} preset={light} />
+          <EnvironmentLight
+            intensity={ENVIRONMENT_LIGHT_INTENSITY}
+            preset={light}
+          />
           <TransformGroup>
-            <Particles />
             <Model />
           </TransformGroup>
+          <SimulationProvider>
+            <Particles pointSize={PARTICLES_SIZE} />
+
+            <OffscreenTexture>
+              <Particles pointSize={PARTICLES_SIZE_RENDER_PASS} />
+            </OffscreenTexture>
+          </SimulationProvider>
 
           <AnimatedCamera />
 
-          <ambientLight color={AMBIENT_LIGHT_COLOR} intensity={10} />
+          <ambientLight
+            color={AMBIENT_LIGHT_COLOR}
+            intensity={AMBIENT_LIGHT_INTENSITY}
+          />
           <FX />
         </UniformsProvider>
       </Canvas>
@@ -43,6 +63,7 @@ export function Scene() {
   );
 }
 
+// do not place particles here.
 function TransformGroup({ children }: { children: ReactNode }) {
   const ref = useTransformsReactive();
   return (

@@ -1,10 +1,12 @@
 import {
+  debugCheckerData,
   getVector3,
+  isMobileUA,
   randomGenerator,
   randomSwapRange,
   type RandomGenerator,
 } from "../utils";
-import type { CanvasProps, FFTTexture } from "../types";
+import type { CanvasProps } from "../types";
 import {
   createContext,
   useContext,
@@ -30,7 +32,6 @@ import {
 } from "three";
 
 export type ParametersCtx = Omit<CanvasProps, "seed"> & {
-  fft: RefObject<FFTTexture>;
   rot_speed: RefObject<number>;
   random: RandomGenerator;
   palette: Array<number[]>;
@@ -41,6 +42,7 @@ export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   geoWireframeType: number;
 } & {
   data: ShaderControls;
+  isMobile: boolean;
 };
 
 export const ParamsContext = createContext<ParametersCtx>(null!);
@@ -49,18 +51,15 @@ export function ParametersContextWrap({
   children,
   ...props
 }: CanvasProps & { children: any }) {
+  const isMobile = useMemo(() => {
+    console.log("is mobile: " + isMobileUA());
+    return isMobileUA();
+  }, []);
+
   const gen = useMemo(() => {
     console.log("seed: " + props.seed);
     return randomGenerator(props.seed);
   }, [props.seed]);
-
-  const fft = useRef({
-    mix_min: 0.05,
-    mix_max: 0.2,
-    max: 0,
-    val: 0,
-    time: 0,
-  });
 
   const rot_speed = useRef(0.05);
 
@@ -106,24 +105,32 @@ export function ParametersContextWrap({
   useCreateSharedTexture(
     "uRefractionTex",
     () => {
-      // Create checkerboard texture
       const size = PARTICLES_TEXTURE_SIZE;
-      const data = new Uint8Array(size * size * 4);
+      const tex = new DataTexture(
+        debugCheckerData(size),
+        size,
+        size,
+        RGBAFormat
+      );
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+      tex.needsUpdate = true;
+      return tex;
+    },
+    []
+  );
 
-      for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-          const i = (y * size + x) * 4;
-          const checker = ((x >> 4) + (y >> 4)) & 1;
-          const color = checker ? 255 : 0;
+  useCreateSharedTexture(
+    "uSimulationTex",
+    () => {
+      const size = PARTICLES_TEXTURE_SIZE;
+      const tex = new DataTexture(
+        debugCheckerData(size),
+        size,
+        size,
+        RGBAFormat
+      );
 
-          data[i] = color; // R
-          data[i + 1] = color; // G
-          data[i + 2] = color; // B
-          data[i + 3] = 255; // A
-        }
-      }
-
-      const tex = new DataTexture(data, size, size, RGBAFormat);
       tex.wrapS = RepeatWrapping;
       tex.wrapT = RepeatWrapping;
       tex.needsUpdate = true;
@@ -155,12 +162,12 @@ export function ParametersContextWrap({
     <ParamsContext
       value={{
         ...props,
-        fft,
         rot_speed,
         random: gen,
         palette,
         ...randomizedProperties,
         data: uniformData,
+        isMobile,
       }}
     >
       {children}

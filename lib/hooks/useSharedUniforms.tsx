@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -11,12 +12,20 @@ import type { GenerativeShaderUniforms, UniformValue } from "../shaders/types";
 import { assignUniforms, generateDefaults } from "../shaders/uniforms";
 import { useFrame } from "@react-three/fiber";
 import { SPEED_MULTIPLIER } from "../constants";
-import { Vector3 } from "three";
+
 import { useSharedTextures } from "./useSharedTextures";
 import { useDebug } from "./useDebug";
+import { ctv } from "../utils";
+import { Matrix4 } from "three";
 
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
+
+  const smoothFFT = useRef({
+    mix_min: 0.05,
+    mix_max: 0.2,
+    max: 0,
+  });
 
   const { uAudioTex, uRefractionTex } = useSharedTextures();
 
@@ -34,20 +43,19 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
     const pastRms = uniforms.current.uRMS.value;
 
-    const mix_min = ctx.fft.current.mix_min ?? 0.4;
-    const mix_max = ctx.fft.current.mix_max ?? 0.99;
+    const mix_min = smoothFFT.current.mix_min ?? 0.4;
+    const mix_max = smoothFFT.current.mix_max ?? 0.99;
 
     const newRms =
       pastRms < 0
         ? pastRms * (1.0 - mix_max) + rms * mix_max
         : pastRms * (1.0 - mix_min) + rms * mix_min;
 
-    uniforms.current.uRMS.value = ctx.fft.current.val = newRms;
+    uniforms.current.uRMS.value = newRms;
     uniforms.current.uFFT.value = ctx.getFFT();
 
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * 10.0;
-    ctx.fft.current.time = uniforms.current.uTime.value;
   });
 
   // animate fft texture
@@ -61,21 +69,20 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
       // 2. write new FFT row at the top
       const fft = ctx.getFFT(); // 64 values 0-255
-      // console.log("FFT", fft);
       // const max_fft = analyser.getRMS();
       let curr_max = Math.max(...fft);
       let new_max = curr_max;
 
-      if (ctx.fft.current.max != undefined) {
-        let past_max = ctx.fft.current.max;
+      if (smoothFFT.current.max != undefined) {
+        let past_max = smoothFFT.current.max;
         let fade = 0.99;
         new_max = Math.max(curr_max, past_max * fade);
       }
 
-      ctx.fft.current.max = new_max;
+      smoothFFT.current.max = new_max;
 
-      const mix_min = ctx.fft.current.mix_min ?? 0.4;
-      const mix_max = ctx.fft.current.mix_max ?? 0.99;
+      const mix_min = smoothFFT.current.mix_min ?? 0.4;
+      const mix_max = smoothFFT.current.mix_max ?? 0.99;
 
       for (let i = 0; i < fft.length; i++) {
         let v = fft[i];
@@ -130,6 +137,13 @@ export function useSharedUniforms() {
     throw new Error("useSharedUniforms must be used within UniformsProvider");
   return context;
 }
-function ctv(arg0: number[]): Vector3 {
-  return new Vector3(...arg0);
+
+const _sharedMatrix = new Matrix4().identity();
+
+// crutch but ok for now
+export function useSharedMatrix(): [Matrix4, (data: Matrix4) => void] {
+  const setValue = useCallback((data: Matrix4) => {
+    _sharedMatrix.copy(data);
+  }, []);
+  return [_sharedMatrix, setValue];
 }

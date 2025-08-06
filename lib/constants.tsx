@@ -1,4 +1,4 @@
-export const FFT_SIZE = 64;
+export const FFT_SIZE = 128;
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
 export const SPEED_MULTIPLIER = 0.001;
@@ -21,8 +21,9 @@ export const VALID_RANGES: Record<string, [number, number]> = {
 };
 export const FBO_SIZE = 64;
 export const AUDIO_TEXTURE_SIZE = 256;
-export const PARTICLES_CAMERA_ZOOM = 10;
-export const PARTICLES_SIZE_RENDER_PASS = 0.1;
+export const PARTICLES_SIZE = 0.05;
+export const PARTICLES_SIZE_RENDER_PASS = 0.5;
+export const PARTICLES_CAMERA_ZOOM = 5;
 export const PARTICLES_TEXTURE_SIZE = 512;
 export const PARTICLES_COUNT = 128;
 export const DOF_FOCUS_LENGTH = 0.03;
@@ -36,3 +37,5 @@ export const CAMERA_DAMPING = 0.02;
 export const CAMERA_ZOOM_SPEED = 0.1;
 export const CAMERA_ZOOM_NEAR = 2;
 export const CAMERA_ZOOM_FAR = 10;
+export const ENVIRONMENT_LIGHT_INTENSITY = 3.5;
+export const AMBIENT_LIGHT_INTENSITY = 10;
