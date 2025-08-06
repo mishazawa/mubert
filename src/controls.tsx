@@ -26,10 +26,10 @@ export function useDebugParams(): any {
   const [debug] = useControls(
     "Debug",
     () => ({
-      postfx: false,
+      postfx: true,
       vertex: false,
       fragment: false,
-      stopCamera: true,
+      stopCamera: false,
       stopObject: false,
       pointSize: {
         value: 0.05,
