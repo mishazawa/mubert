@@ -9,26 +9,20 @@ import {
   CAMERA_ZOOM_SPEED,
 } from "../constants";
 import { PerspectiveCamera as Cam } from "@react-three/drei";
-import { Spherical, Vector3, type PerspectiveCamera } from "three";
+import { Vector3, type PerspectiveCamera } from "three";
 import { useFrame } from "@react-three/fiber";
 
 import { TrackballControls } from "@react-three/drei";
 import { useParameters } from "../hooks/useParameters";
 import { useDebug } from "../hooks/useDebug";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
-const GIMBAL_THRESH = 0.001;
 
 export function AnimatedCamera() {
   const cam = useRef<PerspectiveCamera>(null!);
   const ctx = useParameters();
-  const uni = useSharedUniforms();
+
   // example
-  const ctrl = useCameraAnimation((s: Spherical) => {
-    const rot_speed = ctx.rot_speed.current * 0.5;
-    const t = uni.current.uTime.value;
-    s.theta += 0.01 * rot_speed;
-    s.phi += 0.005 * Math.sin(t);
-  });
+  const ctrl = useCameraAnimation(ctx.rot_speed.current);
 
   useEffect(() => {
     if (!cam.current) return;
@@ -57,45 +51,28 @@ export function AnimatedCamera() {
   );
 }
 
-function useCameraAnimation(movement: (prev: Spherical) => void) {
+const _axis = new Vector3(0, 1, 0);
+function useCameraAnimation(rot_speed: number) {
   const controls = useRef<any>(null!);
-  const _spherical = useRef(new Spherical());
 
+  const uniforms = useSharedUniforms();
   const stopCamera = useDebug("stopCamera", false);
 
   useFrame(({ camera }) => {
     if (stopCamera) return;
 
-    // vibe coding
     if (controls.current) {
       if (!controls.current) return;
 
-      const target = controls.current.target! as Vector3;
+      controls.current.dispatchEvent({ type: "start" });
 
-      // Vector from target to camera
-      const offset = camera.position.clone().sub(target);
+      const fft_val = uniforms.current.uRMS.value;
 
-      // Convert to spherical coordinates
-      _spherical.current.setFromVector3(offset);
+      camera.position.applyAxisAngle(_axis, fft_val * rot_speed);
 
-      // transform function
-      movement(_spherical.current);
-
-      // Rotate horizontally (azimuthal angle)
-      _spherical.current.phi = Math.max(
-        GIMBAL_THRESH,
-        Math.min(Math.PI - GIMBAL_THRESH, _spherical.current.phi)
-      );
-
-      // Convert back to Cartesian
-      offset.setFromSpherical(_spherical.current);
-
-      // Apply new position
-      camera.position.copy(target.clone().add(offset));
-      camera.lookAt(target);
-
-      // Sync controls
       controls.current.update();
+      controls.current.dispatchEvent({ type: "change" });
+      controls.current.dispatchEvent({ type: "end" });
     }
   });
 
