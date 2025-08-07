@@ -11,6 +11,10 @@ import {
   DOF_BOKEH_SCALE,
   DOF_FOCUS_LENGTH,
   DOF_OFFSET,
+  FX_BLOOM_INTENSITY,
+  FX_BLOOM_LEVELS,
+  FX_BLOOM_LEVELS_MOBILE,
+  FX_BLOOM_LUMINANCE_THRESHOLD,
   FX_NOISE_SCALE,
 } from "../constants";
 import { AudioReactiveGlitch } from "./AudioReactiveGlitch";
@@ -28,7 +32,12 @@ export function FX() {
     return (
       <EffectComposer multisampling={0}>
         <AudioReactiveGlitch />
-        <Bloom mipmapBlur levels={7} intensity={0.5} />
+        <Bloom
+          mipmapBlur
+          levels={FX_BLOOM_LEVELS_MOBILE}
+          intensity={FX_BLOOM_INTENSITY}
+          luminanceThreshold={FX_BLOOM_LUMINANCE_THRESHOLD}
+        />
         <SMAA />
       </EffectComposer>
     );
@@ -44,7 +53,12 @@ export function FX() {
       <AudioReactiveGlitch />
 
       <Noise opacity={FX_NOISE_SCALE} />
-      <Bloom mipmapBlur levels={7} intensity={0.5} />
+      <Bloom
+        mipmapBlur
+        levels={FX_BLOOM_LEVELS}
+        intensity={FX_BLOOM_INTENSITY}
+        luminanceThreshold={FX_BLOOM_LUMINANCE_THRESHOLD}
+      />
       <SMAA />
     </EffectComposer>
   );

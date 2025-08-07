@@ -17,7 +17,7 @@ void main() {
     discard;
 
   // float pt = length(v_pos)*0.5;
-  float pt = 1.0-clamp(0.0, 1.0, (length(v_pos)-1.0) * 2.0);
+  float pt = 1.0 - clamp(0.0, 1.0, (length(v_pos) - 1.0) * 2.0);
   // float pt = 0.0;
   vec3 nc = mix(uColor1a, uColor2a, pt);
   float na = 1.0;
@@ -26,8 +26,7 @@ void main() {
   vec4 new_color = vec4(nc, na);
   new_color.a *= pow(length(new_color.rgb * 1.5), 2.0);
   // new_color.rgb = pow(new_color.rgb, vec3(1.0 / 2.2)); // gamma correction
-  
 
-  // new_color = vec4(1.0);
+  new_color = clamp(new_color, 0., 2.);
   csm_FragColor = vec4(new_color);
 }

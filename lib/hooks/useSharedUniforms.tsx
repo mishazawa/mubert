@@ -1,6 +1,5 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -16,7 +15,7 @@ import { SPEED_MULTIPLIER } from "../constants";
 import { useSharedTextures } from "./useSharedTextures";
 import { useDebug } from "./useDebug";
 import { ctv } from "../utils";
-import { Matrix4 } from "three";
+import { useUniformObjectMatrix } from "./useTransformsReactive";
 
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
@@ -34,7 +33,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   (uniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
 
   const speedControls = useDebug("speed", 1);
-
+  // const [matrix] = useSharedMatrix();
   // animate uniforms here
   useFrame(() => {
     let rms = ctx.getRMS();
@@ -123,7 +122,7 @@ export function UniformsProvider({ children }: { children: ReactNode }) {
   }, [ctx.data]);
 
   useAnimatedUniforms(uniforms);
-
+  useUniformObjectMatrix(uniforms);
   return (
     <UniformsContext.Provider value={uniforms}>
       {children}
@@ -136,14 +135,4 @@ export function useSharedUniforms() {
   if (!context)
     throw new Error("useSharedUniforms must be used within UniformsProvider");
   return context;
-}
-
-const _sharedMatrix = new Matrix4().identity();
-
-// crutch but ok for now
-export function useSharedMatrix(): [Matrix4, (data: Matrix4) => void] {
-  const setValue = useCallback((data: Matrix4) => {
-    _sharedMatrix.copy(data);
-  }, []);
-  return [_sharedMatrix, setValue];
 }

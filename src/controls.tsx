@@ -29,7 +29,7 @@ export function useDebugParams(): any {
       postfx: true,
       vertex: false,
       fragment: false,
-      stopCamera: false,
+      stopCamera: true,
       stopObject: false,
       pointSize: {
         value: 0.05,

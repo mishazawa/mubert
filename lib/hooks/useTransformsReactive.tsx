@@ -1,23 +1,21 @@
 import { useFrame } from "@react-three/fiber";
-import { type RefObject, useRef } from "react";
-import { Box3, Quaternion, Vector3, type Object3D } from "three";
+import { Matrix4, Quaternion, Vector3 } from "three";
 import { useParameters } from "./useParameters";
 import { useDebug } from "./useDebug";
-import { useSharedMatrix, useSharedUniforms } from "./useSharedUniforms";
 
-const _q = new Quaternion();
-const _bbox = new Box3();
-const _size = new Vector3();
+import { useRef, type RefObject } from "react";
+import type { GenerativeShaderUniforms } from "../shaders/types";
+
+const _tempq = new Quaternion().identity();
+const _axisq = new Quaternion();
 const _axis = new Vector3();
-export function useTransformsReactive<
-  T extends Object3D
->(): RefObject<Object3D> {
-  const ref = useRef<T>(null!);
-  const ctx = useParameters();
-  const uniforms = useSharedUniforms();
-  const stopObject = useDebug("stopObject", false);
 
-  const [_, setMatrix] = useSharedMatrix();
+export function useUniformObjectMatrix(
+  uniforms: RefObject<GenerativeShaderUniforms>
+) {
+  const mat = useRef<Matrix4>(new Matrix4().identity());
+  const ctx = useParameters();
+  const stopObject = useDebug("stopObject", false);
 
   useFrame(() => {
     if (stopObject) return;
@@ -33,17 +31,10 @@ export function useTransformsReactive<
       )
       .normalize();
 
-    _q.setFromAxisAngle(_axis, fft_val * rot_speed);
+    _axisq.setFromAxisAngle(_axis, fft_val * rot_speed);
 
-    _bbox.setFromObject(ref.current);
-    _bbox.getSize(_size);
-
-    if (_size.z > 0.1) {
-      ref.current.quaternion.multiply(_q);
-    }
-
-    setMatrix(ref.current.matrix);
+    _tempq.multiply(_axisq);
+    mat.current.makeRotationFromQuaternion(_tempq);
+    uniforms.current.uObjectMatrix.value = mat.current;
   });
-
-  return ref;
 }
