@@ -1,12 +1,9 @@
 import { useParameters } from "../../../hooks/useParameters";
-import {
-  useSharedMatrix,
-  useSharedUniforms,
-} from "../../../hooks/useSharedUniforms";
+import { useSharedUniforms } from "../../../hooks/useSharedUniforms";
 import { ctv } from "../../../utils";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
-import { DataTexture, Vector3 } from "three";
+import { DataTexture, Matrix4, Vector3 } from "three";
 import { useSharedTextures } from "../../../hooks/useSharedTextures";
 
 // consume texture and pass it to the shader + some small uniforms
@@ -16,7 +13,7 @@ export function useParticlesSimulation() {
   const ctx = useParameters();
 
   const { uSimulationTex } = useSharedTextures();
-  const [matrix] = useSharedMatrix();
+
   const localUniforms = useRef({
     uPositionsTex: { value: new DataTexture() },
     uColor1a: { value: ctv(ctx.palette[0]) },
@@ -24,7 +21,7 @@ export function useParticlesSimulation() {
     uTime: { value: 0 },
     uRMS: { value: 0 },
     uRotationAxis: { value: new Vector3() },
-    uObjectMatrix: { value: matrix },
+    uObjectMatrix: { value: new Matrix4().identity() },
   });
 
   useEffect(() => {
@@ -40,7 +37,8 @@ export function useParticlesSimulation() {
   useFrame(() => {
     localUniforms.current.uTime.value = uniforms.current.uTime.value;
     localUniforms.current.uRMS.value = uniforms.current.uRMS.value;
-    localUniforms.current.uObjectMatrix.value = matrix;
+    localUniforms.current.uObjectMatrix.value =
+      uniforms.current.uObjectMatrix.value;
   });
 
   return localUniforms;

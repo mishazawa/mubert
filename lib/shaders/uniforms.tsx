@@ -1,6 +1,7 @@
 //  ¯\_(ツ)_/¯
 // as const
 
+import { Matrix4 } from "three";
 import { FFT_SIZE } from "../constants";
 import type { GenerativeShaderUniforms, ShaderControls } from "./types";
 
@@ -34,6 +35,7 @@ uniform sampler2D uAudioTex;
 uniform sampler2D uRefractionTex;
 uniform vec2 uSimulationRes;
 uniform vec2 uParticlesRes;
+uniform mat4 uObjectMatrix;
 ` as const;
 
 export function generateDefaults() {
@@ -51,6 +53,7 @@ export function generateDefaults() {
     uColor3: { value: [0, 0, 0] },
     uColor4: { value: [0, 0, 0] },
     uColor5: { value: [0, 0, 0] },
+    uObjectMatrix: { value: new Matrix4().identity() },
   } as GenerativeShaderUniforms;
 }
 

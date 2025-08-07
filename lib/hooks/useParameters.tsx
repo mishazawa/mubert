@@ -18,6 +18,7 @@ import { useColorGenerator } from "./useColorGenerator";
 import {
   AUDIO_TEXTURE_SIZE,
   PARTICLES_TEXTURE_SIZE,
+  ROTATION_SPEED,
   VALID_RANGES,
 } from "../constants";
 import type { ShaderControls } from "../shaders/types";
@@ -61,7 +62,7 @@ export function ParametersContextWrap({
     return randomGenerator(props.seed);
   }, [props.seed]);
 
-  const rot_speed = useRef(0.05);
+  const rot_speed = useRef(ROTATION_SPEED);
 
   const palette = useColorGenerator(gen, props.seed);
 

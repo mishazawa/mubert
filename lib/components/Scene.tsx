@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { ParamsContext } from "../hooks/useParameters";
 import { useContextBridge } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -16,7 +16,7 @@ import { Particles } from "./particles/Particles";
 import { UniformsProvider } from "../hooks/useSharedUniforms";
 import { AnimatedCamera } from "./Camera";
 import { Background } from "./background/Background";
-import { useTransformsReactive } from "../hooks/useTransformsReactive";
+
 import { useDebug } from "../hooks/useDebug";
 import { OffscreenTexture } from "./utils/OffscreenTexture";
 import { SimulationProvider } from "./particles/Simulation";
@@ -39,9 +39,9 @@ export function Scene() {
             intensity={ENVIRONMENT_LIGHT_INTENSITY}
             preset={light}
           />
-          <TransformGroup>
-            <Model />
-          </TransformGroup>
+
+          <Model />
+
           <SimulationProvider>
             <Particles pointSize={PARTICLES_SIZE} />
 
@@ -60,16 +60,6 @@ export function Scene() {
         </UniformsProvider>
       </Canvas>
     </ContextBridge>
-  );
-}
-
-// do not place particles here.
-function TransformGroup({ children }: { children: ReactNode }) {
-  const ref = useTransformsReactive();
-  return (
-    <group ref={ref} position={[0, 0, 0]}>
-      {children}
-    </group>
   );
 }
 

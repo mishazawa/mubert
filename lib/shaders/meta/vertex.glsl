@@ -1,4 +1,5 @@
 void main() {
+
   vPosition = position;
   vNormal = normal;
   vUv = uv;
@@ -13,13 +14,14 @@ void main() {
   v_mmat = modelMatrix;
 
   // object space coordinates
-  vec3 objectPosition = (modelMatrix * vec4(vPositionD, 1.0)).xyz;
+  vec3 objectPosition =
+      (uObjectMatrix * modelMatrix * vec4(vPositionD, 1.0)).xyz;
   // view direction in object space
   vWorldPosition = normalize(cameraPosition - objectPosition);
   // normalized object space normals
-  vWorldNormal = normalize((modelMatrix * vec4(vNormalD, 0.0)).xyz);
+  vWorldNormal =
+      normalize((uObjectMatrix * modelMatrix * vec4(vNormalD, 0.0)).xyz);
 
-  csm_Position = vPositionD;
-
+  csm_Position = objectPosition;
   csm_Normal = vNormalD;
 }

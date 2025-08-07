@@ -1,4 +1,4 @@
-import type { DataTexture, Vector2, Vector3, Vector4 } from "three";
+import type { DataTexture, Matrix4, Vector2, Vector3, Vector4 } from "three";
 
 import type { SHADER_STYLE } from "../constants";
 import type { UNIFORMS } from "./uniforms";
@@ -30,6 +30,7 @@ type ProgramableUniforms = Omit<
   | "uParticlesRes"
   | "uSimulationRes"
   | "uRotationAxis"
+  | "uObjectMatrix"
 >;
 
 export type ShaderControls = {
@@ -49,6 +50,7 @@ type GlslToTsMap = {
   vec2: Vector2 | [number, number];
   vec3: Vector3 | [number, number, number];
   vec4: Vector4 | [number, number, number, number];
+  mat4: Matrix4;
   sampler2D: DataTexture;
 };
 

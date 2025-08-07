@@ -43,3 +43,4 @@ export const CAMERA_ZOOM_NEAR = 2;
 export const CAMERA_ZOOM_FAR = 10;
 export const ENVIRONMENT_LIGHT_INTENSITY = 3.5;
 export const AMBIENT_LIGHT_INTENSITY = 10;
+export const ROTATION_SPEED = 0.05;
