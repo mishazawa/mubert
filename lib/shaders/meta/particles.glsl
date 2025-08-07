@@ -8,7 +8,8 @@ vec3 gravity(in vec3 position, float falloff, float strength) {
 void main() {
 
   // Copy from previous frame
-  int NTRAILS = 64;
+
+  int NTRAILS = int(pow(2.0, random(uSeed + 0.123) * 6.0));
   int T_ID = int(gl_FragCoord.y) % NTRAILS;
   if (T_ID > 0) {
     vec2 uv2 =
@@ -49,7 +50,7 @@ void main() {
         vec3(random(float(id) + 1.23 + uTime * 1.124534224),
              random(float(id) + 3.33 + uTime * 1.424534424),
              random(float(id) + 4.53 + uTime * 1.422534224));
-    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 1.25;
+    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 0.5;
     // npos.xyz = vec3(uv.x, uv.y, 1.0);
   }
 

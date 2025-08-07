@@ -26,8 +26,8 @@ void main() {
 
   vec3 vector = vec3(0.0);
   vec3 vnoise = noise3(ppos.xyz * 0.25, animation);
-  vnoise += noise3(ppos.xyz * 1.0, 100.0+animation)*0.25;
-  vector += vnoise * 0.3;
+  vnoise += noise3(ppos.xyz * 1.0, 100.0+animation)*0.0;
+  vector += vnoise * 0.2;
 
 
   // float npatt = snoise(data_out.pattern*(0.05+pow(random(uSeed+0.921), 2.0))*0.2);
@@ -35,16 +35,16 @@ void main() {
   // vec3 new_pos = data_out.position + offset;
   // vec3 new_pos = data_out.position;
 
-  vec3 target = data_out.position*1.2;
+  vec3 target = data_out.position*1.5;
   // vec3 target = normalize(ppos.xyz);
 
   vec3 tforce = target - ppos.xyz;
   float tforce_length = length(tforce);
-  tforce = normalize(tforce) * pow(tforce_length, 2.0) * 0.1;
+  tforce = normalize(tforce) * pow(tforce_length, 2.0) * 1.0;
   vector += tforce;
 
 
-  vector = pvel.xyz * 0.9 + vector * uRMS * 2.0;
+  vector = pvel.xyz * 0.9 + vector * mix(0.1, 1.0, uRMS) * 2.0;
 
   vector = clamp(vector, -1.0, 1.0);
 
