@@ -10,19 +10,15 @@ import {
 } from "../constants";
 import { PerspectiveCamera as Cam } from "@react-three/drei";
 import { Vector3, type PerspectiveCamera } from "three";
-import { useFrame } from "@react-three/fiber";
 
 import { TrackballControls } from "@react-three/drei";
-import { useParameters } from "../hooks/useParameters";
 import { useDebug } from "../hooks/useDebug";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
+import { useParameters } from "../hooks/useParameters";
+import { useFrame } from "@react-three/fiber";
 
 export function AnimatedCamera() {
   const cam = useRef<PerspectiveCamera>(null!);
-  const ctx = useParameters();
-
-  // example
-  const ctrl = useCameraAnimation(ctx.rot_speed.current);
 
   useEffect(() => {
     if (!cam.current) return;
@@ -30,6 +26,8 @@ export function AnimatedCamera() {
     cam.current.updateProjectionMatrix();
   });
 
+  const isEnabled = useDebug("controls", false);
+  useCameraAnimation();
   return (
     <>
       <Cam
@@ -40,7 +38,7 @@ export function AnimatedCamera() {
         far={CAMERA_FAR}
       />
       <TrackballControls
-        ref={ctrl}
+        enabled={isEnabled}
         noPan
         dynamicDampingFactor={CAMERA_DAMPING}
         zoomSpeed={CAMERA_ZOOM_SPEED}
@@ -51,30 +49,19 @@ export function AnimatedCamera() {
   );
 }
 
-const _axis = new Vector3(0, 1, 0);
-function useCameraAnimation(rot_speed: number) {
-  const controls = useRef<any>(null!);
+const _axis = new Vector3();
 
+function useCameraAnimation() {
+  const ctx = useParameters();
   const uniforms = useSharedUniforms();
-  const stopCamera = useDebug("stopCamera", false);
+  const isCtrlsEnabled = useDebug("controls", false);
 
   useFrame(({ camera }) => {
-    if (stopCamera) return;
-
-    if (controls.current) {
-      if (!controls.current) return;
-
-      controls.current.dispatchEvent({ type: "start" });
-
-      const fft_val = uniforms.current.uRMS.value;
-
-      camera.position.applyAxisAngle(_axis, fft_val * rot_speed);
-
-      controls.current.update();
-      controls.current.dispatchEvent({ type: "change" });
-      controls.current.dispatchEvent({ type: "end" });
-    }
+    if (isCtrlsEnabled) return;
+    const fft_val = uniforms.current.uRMS.value;
+    const rot_speed = ctx.rot_speed.current * 0.5;
+    _axis.setY(Math.sin(uniforms.current.uTime.value * 0.4)).normalize();
+    camera.position.applyAxisAngle(_axis, fft_val * rot_speed);
+    camera.lookAt(0, 0, 0);
   });
-
-  return controls;
 }

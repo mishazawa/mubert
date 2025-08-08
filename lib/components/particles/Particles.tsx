@@ -7,12 +7,13 @@ import fragment from "./_frag.glsl?raw";
 
 import { useParticlesGeometry } from "./hooks/useParticlesGeometry";
 import { useParticlesSimulation } from "./hooks/useParticlesSimulation";
+import { useDebug } from "../../hooks/useDebug";
 
 export function Particles({ pointSize }: { pointSize: number }) {
   const geo = useParticlesGeometry();
   const localUniforms = useParticlesSimulation();
-
-  return (
+  const isEnabled = useDebug("particles", true);
+  return !isEnabled ? null : (
     <>
       <points geometry={geo}>
         <CustomShaderMaterial
