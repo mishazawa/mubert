@@ -6,10 +6,11 @@ import { LIGHT_PRESET } from "./presets";
 import { useParameters } from "../../hooks/useParameters";
 import { useDebug } from "../../hooks/useDebug";
 
-export function EnvironmentLight({
-  intensity,
-  preset = 0,
-}: EnvironmentLightProps) {
+export function EnvironmentLight({ intensity }: EnvironmentLightProps) {
+  const ctx = useParameters();
+
+  const preset = useDebug("light", ctx.lightPreset);
+
   return (
     <Environment resolution={ENV_MAP_RESOLUTION}>
       {LIGHT_PRESET[Math.min(preset, LIGHT_PRESET.length - 1)].map((l, idx) => (

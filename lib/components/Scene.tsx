@@ -24,9 +24,9 @@ import { SimulationProvider } from "./particles/Simulation";
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
 
-  const light = useDebug("light", 0);
-
   const DebugTools = useDebugFps();
+
+  const pointSize = useDebug("pointSize", 1);
 
   return (
     <ContextBridge>
@@ -35,18 +35,15 @@ export function Scene() {
           <Background />
 
           {DebugTools && <DebugTools />}
-          <EnvironmentLight
-            intensity={ENVIRONMENT_LIGHT_INTENSITY}
-            preset={light}
-          />
+          <EnvironmentLight intensity={ENVIRONMENT_LIGHT_INTENSITY} />
 
           <Model />
 
           <SimulationProvider>
-            <Particles pointSize={PARTICLES_SIZE} />
+            <Particles pointSize={PARTICLES_SIZE * pointSize} />
 
             <OffscreenTexture>
-              <Particles pointSize={PARTICLES_SIZE_RENDER_PASS} />
+              <Particles pointSize={PARTICLES_SIZE_RENDER_PASS * pointSize} />
             </OffscreenTexture>
           </SimulationProvider>
 

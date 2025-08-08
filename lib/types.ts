@@ -11,7 +11,6 @@ export type CanvasProps = AudioAnalysisFns & {
 
 export type EnvironmentLightProps = {
   intensity: number;
-  preset: number;
 };
 
 export type RendererProps = {

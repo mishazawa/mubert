@@ -1,4 +1,4 @@
-import { LIGHT_PRESET } from "@lib/components/light/presets";
+// import { LIGHT_PRESET } from "@lib/components/light/presets";
 
 import { randomGenerator } from "@lib/utils";
 import { button, useControls } from "leva";
@@ -27,21 +27,22 @@ export function useDebugParams(): any {
     "Debug",
     () => ({
       postfx: true,
-      vertex: false,
-      fragment: false,
-      stopCamera: true,
+      vertex: !false,
+      fragment: !false,
+      particles: !true,
+      controls: false,
       stopObject: false,
       pointSize: {
         value: 0.05,
         min: 0.01,
         max: 1,
       },
-      light: {
-        value: 0,
-        min: 0,
-        max: LIGHT_PRESET.length - 1,
-        step: 1,
-      },
+      // light: {
+      //   value: 0,
+      //   min: 0,
+      //   max: LIGHT_PRESET.length - 1,
+      //   step: 1,
+      // },
       lightAccent: {
         value: 0,
         min: 0,

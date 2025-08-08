@@ -31,6 +31,7 @@ import {
   ClampToEdgeWrapping,
   LinearFilter,
 } from "three";
+import { LIGHT_PRESET } from "../components/light/presets";
 
 export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   rot_speed: RefObject<number>;
@@ -44,6 +45,7 @@ export type ParametersCtx = Omit<CanvasProps, "seed"> & {
 } & {
   data: ShaderControls;
   isMobile: boolean;
+  lightPreset: number;
 };
 
 export const ParamsContext = createContext<ParametersCtx>(null!);
@@ -159,6 +161,10 @@ export function ParametersContextWrap({
     []
   );
 
+  const lightPreset = useMemo(
+    () => gen.int(0, LIGHT_PRESET.length),
+    [props.seed]
+  );
   return (
     <ParamsContext
       value={{
@@ -169,6 +175,7 @@ export function ParametersContextWrap({
         ...randomizedProperties,
         data: uniformData,
         isMobile,
+        lightPreset,
       }}
     >
       {children}
