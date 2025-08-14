@@ -22,6 +22,7 @@ export function useUniformObjectMatrix(
 
     const fft_val = uniforms.current.uRMS.value;
     const rot_speed = ctx.rot_speed.current * 0.5;
+    // TODO: FPS dependent rotation speed (*dt)
 
     _axis
       .set(
@@ -33,7 +34,7 @@ export function useUniformObjectMatrix(
 
     _axisq.setFromAxisAngle(_axis, fft_val * rot_speed);
 
-    _tempq.multiply(_axisq);
+    _tempq.multiply(_axisq).normalize(); // <-- normalization added here
     mat.current.makeRotationFromQuaternion(_tempq);
     uniforms.current.uObjectMatrix.value = mat.current;
   });

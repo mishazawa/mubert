@@ -27,8 +27,8 @@ export function useDebugParams(): any {
     "Debug",
     () => ({
       postfx: true,
-      vertex: !false,
-      fragment: !false,
+      vertex: false,
+      fragment: false,
       particles: !true,
       controls: false,
       stopObject: false,

@@ -50,7 +50,7 @@ void main() {
         vec3(random(float(id) + 1.23 + uTime * 1.124534224),
              random(float(id) + 3.33 + uTime * 1.424534424),
              random(float(id) + 4.53 + uTime * 1.422534224));
-    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 0.5;
+    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 1.5;
     // npos.xyz = vec3(uv.x, uv.y, 1.0);
   }
 

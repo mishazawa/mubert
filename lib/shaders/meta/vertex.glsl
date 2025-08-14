@@ -11,17 +11,27 @@ void main() {
 
   vNormalD = data_out.normal;
   vPositionD = data_out.position;
-  v_mmat = modelMatrix;
+  v_mmat = projectionMatrix * modelViewMatrix;
 
-  // object space coordinates
+  // // object space coordinates
   vec3 objectPosition =
       (uObjectMatrix * modelMatrix * vec4(vPositionD, 1.0)).xyz;
-  // view direction in object space
-  vWorldPosition = normalize(cameraPosition - objectPosition);
-  // normalized object space normals
-  vWorldNormal =
-      normalize((uObjectMatrix * modelMatrix * vec4(vNormalD, 0.0)).xyz);
+  // // view direction in object space
+  // vWorldPosition = normalize(cameraPosition - objectPosition);
+  // // normalized object space normals
+  // vWorldNormal =
+  //     normalize((uObjectMatrix * modelMatrix * vec4(vNormalD, 0.0)).xyz);
 
-  csm_Position = objectPosition;
+
+  mat3 M3 = mat3(modelMatrix);
+  mat3 O3 = mat3(uObjectMatrix);
+  vec3 worldPos = (modelMatrix * uObjectMatrix * vec4(vPositionD, 1.0)).xyz;
+  vec3 worldNrm = normalize(M3 * O3 * vNormalD);
+  vWorldPosition = worldPos;
+  vWorldNormal   = worldNrm;
+
+
+
+  csm_Position = worldPos;
   csm_Normal = vNormalD;
 }

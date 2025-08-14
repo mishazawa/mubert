@@ -21,8 +21,18 @@ void main() {
   v_color = vec4(vuv.y);
 
   vec4 pos = texture2D(uPositionsTex, vuv) * 2.0 - 1.0;
-  pos.xyz = (modelMatrix * uObjectMatrix * vec4(pos.xyz, 1.0)).xyz;
-  csm_Position = pos.xyz;
-  v_pos = pos.xyz;
+
+
+  mat3 M3 = mat3(modelMatrix);
+  mat3 O3 = mat3(uObjectMatrix);
+  vec3 worldPos = (modelMatrix * uObjectMatrix * vec4(pos.xyz, 1.0)).xyz;
+  // vec3 worldNrm = normalize(M3 * O3 * vNormalD);
+  // vWorldPosition = worldPos;
+  // vWorldNormal   = worldNrm;
+
+
+  // pos.xyz = (modelMatrix * uObjectMatrix * vec4(pos.xyz, 1.0)).xyz;
+  csm_Position = worldPos;
+  v_pos = worldPos;
   // csm_Position = vec3(0.0);
 }
