@@ -1,4 +1,6 @@
 // fragment shader
+
+
 void main() {
 
   // COPY
@@ -41,10 +43,10 @@ void main() {
   vec3 tforce = target - ppos.xyz;
   float tforce_length = length(tforce);
   tforce = normalize(tforce) * pow(tforce_length, 2.0) * 1.0;
-  vector += tforce;
+  vector = tforce;
 
 
-  vector = pvel.xyz * 0.9 + vector * mix(0.1, 1.0, uRMS) * 2.0;
+  vector = pvel.xyz * 0.5 + vector * mix(0.1, 1.0, uRMS) * 2.0;
 
   vector = clamp(vector, -1.0, 1.0);
 

@@ -1,3 +1,5 @@
+// in vec3 v_wpos;
+
 void main() {
   float animation = uTime * SPEED;
 

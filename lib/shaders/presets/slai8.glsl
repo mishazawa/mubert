@@ -14,23 +14,8 @@
 //#include<noise_distortion>
 //#include<line_functions>
 
-vec3 rgb2hsv(vec3 c)
-{
-    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
 
-    float d = q.x - min(q.w, q.y);
-    float e = 1.0e-10;
-    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-}
 
-vec3 hsv2rgb(vec3 c)
-{
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
 
 
 vec3 pattern(in vec3 P, in float animation) {
@@ -52,16 +37,32 @@ vec3 pattern(in vec3 P, in float animation) {
   float sinnoise_freq = pow(random(uSeed*0.933 + 64.0), 6.0) * 1.0;
 
   // Npos pars
-  float simpx_amp =     0.00+random(uSeed*9.333 + 64.0)*0.2;
-  float vor_amp =       0.00+random(uSeed*9.333 + 64.0)*1.0;
-  float symmetry_amp =  0.00+random(uSeed*9.333 + 64.0)*0.2;
-  float py_val =        0.00+random(uSeed*9.333 + 64.0)*0.2;
-  float pos_val =       0.00+random(uSeed*0.943 + 64.0)*0.2;
-  // float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0);
-  // float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0);
-  // float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0);
-  // float py_val =        pow(random(uSeed*0.831 + 31.0), 1.0);
-  // float pos_val =       pow(random(uSeed*0.943 + 64.0), 4.0);
+  float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0);
+  float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0);
+  float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0);
+  float py_val =        pow(random(uSeed*0.831 + 31.0), 1.0);
+  float pos_val =       pow(random(uSeed*0.943 + 64.0), 4.0);
+
+  float npow = 3.0;
+  simpx_amp = pow(simpx_amp, npow);
+  vor_amp = pow(vor_amp, npow);
+  symmetry_amp = pow(symmetry_amp, npow);
+  py_val = pow(py_val, npow);
+  pos_val = pow(pos_val, npow);
+
+  float nsum = 0.0;
+  nsum += simpx_amp;
+  nsum += vor_amp;
+  nsum += symmetry_amp;
+  nsum += py_val;
+  nsum += pos_val;
+
+  simpx_amp /= nsum;
+  vor_amp /= nsum;
+  symmetry_amp /= nsum;
+  py_val /= nsum;
+  pos_val /= nsum;
+
 
 
 
@@ -142,7 +143,7 @@ vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
   float npatt = snoise(patt*(0.05+pow(random(uSeed+0.921), 2.0))*0.2);
   vec3 offset = N*(npatt) + ns*(npatt*0.5+0.5) * pow(random(uSeed+0.99331), 2.0);
 
-  vec3 new_pos = P + offset * 0.5;
+  vec3 new_pos = P + offset;
 
   return new_pos;
 }
@@ -165,98 +166,43 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   // // // // // SETUP
-  #if !VERTEX
-  #define fragpos gl_FragCoord.xy
-  #else
+  #if VERTEX
   #define fragpos vec2(0.0)
-  #endif
-  #if !VERTEX
-  #define vWorldPosition_F vWorldPosition
   #else
-  #define vWorldPosition_F vec3(0.0)
+  #define fragpos gl_FragCoord.xy
   #endif
 
-
-  // // // // // // REFRACTION
-
-
-  // vec2 screen_uv = vec2(0.0);
-  // vec2 refract_uv = vec2(0.0);
-  // float chroma_step = 0.01;
-
-  // vec3 chroma_sample =
-  //     vec3(texture2D(uRefractionTex,
-  //                    vec2(screen_uv + refract_uv * (1.0 + 1.0 * chroma_step)))
-  //              .r,
-  //          texture2D(uRefractionTex,
-  //                    vec2(screen_uv + refract_uv * (1.0 + 2.0 * chroma_step)))
-  //              .g,
-  //          texture2D(uRefractionTex,
-  //                    vec2(screen_uv + refract_uv * (1.0 + 3.0 * chroma_step)))
-  //              .b);
-
-  // chroma_sample = vec3(refract_uv, 0.0);
-  // // // // // //
+  vec3 opos = (viewMatrix * vec4(data.position, 1.0)).xyz;
+  vec3 viewDir = normalize(vec3(0.0) - opos);
+  // float fresnel = pow(1.0 - max(dot(normalize(data.normal), normalize(viewDir)), 0.0), 2.0);
+  // vec3 reflected = reflect(viewDir, normalize(data.normal));
+  // // // // //
 
 
-  vec2      uViewport = vec2(uParticlesRes);      // screen size in pixels (width, height)
-  float     uIOR = 1.5;           // index of refraction of the medium, e.g. 1.5
-  float     uThickness = 50.0;     // refraction thickness/parallax scale in pixels (start e.g. 40.0)
+  // // // // // REFRACTION
+  float eta = 1.0 / 1.5; // refraction index
+  vec3 refracted = refract(viewDir, normalize(data.normal), eta);
 
-  // Base screen UV for this pixel
-  vec2 screen_uv = fragpos/vec2(uParticlesRes);
+  vec2 screen_uv = fragpos / uParticlesRes; // Particles???
+  vec2 refract_uv = refracted.xy;
+  float chroma_step = 0.01;
 
-  // World-space view vector: surface -> camera
-  vec3 V = normalize(cameraPosition - vWorldPosition_F);   // world
-  vec3 N = normalize(vWorldNormal);                      // world
-
-  // Refract the *incoming* ray toward the eye: use -V as incident
-  float eta = 1.0 / uIOR; // air->glass (n1/n2); if you render from inside glass, flip
-  vec3 R = refract(-V, N, eta);
-
-  // Project refracted ray to screen UV offset (simple parallax approx).
-  // Convert the world-space refracted direction into a view-facing basis
-  // so XY maps to screen roughly. We build a tangent frame around V:
-  vec3 up = abs(V.y) < 0.999 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
-  vec3 T = normalize(cross(up, V));
-  vec3 B = cross(V, T);
-
-  // Components of refracted direction in that view-aligned basis:
-  vec3 Rv = vec3(dot(R, T), dot(R, B), dot(R, V));
-
-  // Parallax: how much screen shift per unit depth along view
-  // (divide by forward component; clamp to avoid blowups at grazing angles)
-  float denom = max(abs(Rv.z), 1e-3);
-  vec2 refract_uv = (Rv.xy / denom) * (uThickness / uViewport); // pixels -> UV
-
-  // Optional: fresnel to dampen at grazing angles (looks nicer)
-  float F0 = pow((uIOR - 1.0) / (uIOR + 1.0), 2.0);
-  float fresnel = F0 + (1.0 - F0) * pow(1.0 - max(dot(N, V), 0.0), 5.0);
-
-  // Sample background with chromatic aberration (slight per-channel spread)
-  float chroma = 0.2; // tweak 0..1
-  vec3 col = vec3(
-    texture(uRefractionTex, screen_uv + refract_uv * (1.0 + 1.0*chroma)).r,
-    texture(uRefractionTex, screen_uv + refract_uv * (1.0 + 2.0*chroma)).g,
-    texture(uRefractionTex, screen_uv + refract_uv * (1.0 + 3.0*chroma)).b
-  );
-
-  // You can mix with your base material using fresnel if desired:
-  // vec3 base = ...; // your shaded base color
-  // col = mix(col, base, fresnel);
-
-  // Output
-  vec3 finalColor = uColor4 * (0.5+fresnel*0.5) + col;
-  // vec3 finalColor = texture(uRefractionTex, screen_uv).rga;
-  // vec3 finalColor = vec3(screen_uv.x, screen_uv.y, 0.0);
-
-
+  vec3 chroma_sample =
+      vec3(texture2D(uRefractionTex,
+                     vec2(screen_uv + refract_uv * (1.0 + 1.0 * chroma_step)))
+               .r,
+           texture2D(uRefractionTex,
+                     vec2(screen_uv + refract_uv * (1.0 + 2.0 * chroma_step)))
+               .g,
+           texture2D(uRefractionTex,
+                     vec2(screen_uv + refract_uv * (1.0 + 3.0 * chroma_step)))
+               .b);
+  // // // // //
 
 
   // // // // // COLOR
   vec3 color_rgb = vec3(0.0);
-  float cnoise_scale = random(uSeed + 1.0);
-  vec3 color_npos = data.pattern*mix(0.1,0.5,cnoise_scale);
+  vec3 color_npos = data.pattern;
   vec3 color_noise = vec3(snoise(color_npos + vec3(0.5, 0.0, 0.0)),
                      snoise(color_npos + vec3(10.5, 0.0, 0.0)),
                      snoise(color_npos + vec3(20.5, 0.0, 0.0))) *
@@ -268,32 +214,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
                  gain(pow(color_noise.z, 2.0), color_contrast));
 
 
-  // color_rgb = color_palette;
-  color_rgb = color_noise.rgb*1.0;
-
-  // new_col = vec3(data.pattern.x);
-
-
-  float mix_refract = data.pattern.z;
-  mix_refract = gain(pow(mix_refract, 2.0), 3.0);
-  float lightness = color_noise.x;
-  lightness = gain(lightness, 2.0);
-
-
-
-  vec3 new_col = mix(uColor5, uColor3, mix_refract);
-  vec3 col_hsv = rgb2hsv(new_col);
-  col_hsv.z = lightness;
-  col_hsv.x += lightness*0.15;
-  new_col = hsv2rgb(col_hsv);
-
-  new_col = mix(new_col, finalColor, mix_refract);
-  float new_alpha = 1.0;
-  // new_col = vec3(fresnel);
-
-
-
-  vec4 color = vec4(new_col, new_alpha);
+  color_rgb = color_palette;
+  vec4 color = vec4(color_rgb, 1.0);
   // // // // //
 
 
@@ -312,21 +234,21 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
                   2.0;
 
   float alignment = dot(normalize(newNorm), normalize(norm));
-  // norm = normalize(norm - newNorm * bump_strength);
+  norm = normalize(norm - newNorm * bump_strength);
   // // // // //
 
 
   // // // // // MATERIAL
-  float roughness = 1.0;
+  float roughness = 0.5;
   float emission = 0.0;
   float iridescence = 0.0;
   float metallic = 0.0;
 
   roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
-  roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
+  roughness = gain(roughness, 4.0);
 
   emission = snoise(data.pattern + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
-  emission = gain(pow(emission, mix(0.2,4.0,random(uSeed+2.31133))), 8.0);
+  emission = gain(pow(emission, 3.0), 2.0);
 
   iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
   iridescence = gain(pow(iridescence, 1.0), 1.0);
@@ -340,7 +262,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float scale = 1.0;
   #if IS_WIRES
     float wa = snoise(data.position * 0.5 + vec3(uSeed, 0.0, animation * 10.0)) * 0.5 + 0.5;
-    color = vec4(new_col*mix_refract, mix_refract);
+    color = vec4(uColor3, wa * 0.0);
   #else
   #endif
   // // // // //
