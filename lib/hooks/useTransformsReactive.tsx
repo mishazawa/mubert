@@ -21,7 +21,7 @@ export function useUniformObjectMatrix(
     if (stopObject) return;
 
     const fft_val = uniforms.current.uRMS.value;
-    const rot_speed = ctx.rot_speed.current * 0.5;
+    const rot_speed = ctx.rot_speed.current * 0.1;
     // TODO: FPS dependent rotation speed (*dt)
 
     _axis

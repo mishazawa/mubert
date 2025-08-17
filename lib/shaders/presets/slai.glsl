@@ -43,6 +43,7 @@ vec3 pattern(in vec3 P, in float animation) {
 
   ////// Parameters
   float tscale = pow(random(uSeed*0.855 + 19.0), 4.0);
+  tscale = 0.1;
   float symmetry_n = floor(mix(1.0, 6.0, random(uSeed + 7.1282)));
   float vor_scale = pow(random(uSeed*0.821 + 74.0), 4.0) * 1.0;
   float simpx_scale = pow(random(uSeed*0.923 + 31.0), 4.0) * 1.0;
@@ -52,11 +53,11 @@ vec3 pattern(in vec3 P, in float animation) {
   float sinnoise_freq = pow(random(uSeed*0.933 + 64.0), 6.0) * 1.0;
 
   // Npos pars
-  float simpx_amp =     0.00+random(uSeed*9.333 + 64.0)*0.2;
-  float vor_amp =       0.00+random(uSeed*9.333 + 64.0)*1.0;
-  float symmetry_amp =  0.00+random(uSeed*9.333 + 64.0)*0.2;
+  float simpx_amp =     0.00+random(uSeed*9.333 + 64.0)*0.5;
+  float vor_amp =       0.00+random(uSeed*9.333 + 64.0)*0.5;
+  float symmetry_amp =  0.00+random(uSeed*9.333 + 64.0)*0.5;
   float py_val =        0.00+random(uSeed*9.333 + 64.0)*0.2;
-  float pos_val =       0.00+random(uSeed*0.943 + 64.0)*0.2;
+  float pos_val =       0.00+random(uSeed*0.943 + 64.0)*0.5;
   // float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0);
   // float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0);
   // float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0);
@@ -68,7 +69,7 @@ vec3 pattern(in vec3 P, in float animation) {
 
 
   /////// Compute
-  pos = sinnoise_distort(pos, sinnoise_amp, sinnoise_freq, vec3(animation*0.0, 0.0, uSeed));
+  // pos = sinnoise_distort(pos, sinnoise_amp, sinnoise_freq, vec3(animation*0.0, 0.0, uSeed));
 
   float r_ax = pos.y;
   pos.xz = pos.xz * mat2(
@@ -92,18 +93,18 @@ vec3 pattern(in vec3 P, in float animation) {
   );
   npos += pos * pos_val;
 
-  npos *= global_scale;
+
 
   vec2 auv = vec2(
     snoise(npos+vec3(0.0, 0.0, random(uSeed + 6.0) * 100.0)),
     snoise(npos+vec3(0.0, 0.0, random(uSeed + 6.0) * 100.0))
     ) * 0.5 + 0.5;
-  float sub_scale = 2.0;
+  float sub_scale = 1.0;
   vec2 auv2 = vec2(
     snoise(npos*sub_scale+vec3(0.0, 0.0, random(uSeed + 7.0) * 100.0)),
     snoise(npos*sub_scale+vec3(0.0, 0.0, random(uSeed + 77.0) * 100.0))
     );
-  auv = auv*0.8+ auv2*0.2;
+  auv = auv*1.0+ auv2*0.0;
 
   // vec2 auv = vec2(0.5, pos.y);
   auv = clamp(auv, 0.0, 1.0);
@@ -114,9 +115,15 @@ vec3 pattern(in vec3 P, in float animation) {
 
   ////////// Apply UV
   float audio = texture(uAudioTex, auv).r;
-  float ablur = blur13(uAudioTex, auv, vec2(128.0, 128.0), vec2(1.0, 1.0)).r;
+  float ablur = blur13(uAudioTex, auv, vec2(128.0, 128.0), vec2(1.0, 1.0)*6.0).r;
   audio = mix(audio, ablur, float(VERTEX)>0.0); // blur only in fragment shader
+  audio = mix(audio, ablur, 1.0); // blur only in fragment shader
   ///////////
+
+  npos *= global_scale;
+  // if (VERTEX==1) {
+  //   npos *= 0.5;
+  // }
 
   audio = smoothstep(0.0, 1.0, pow(audio, 1.0));
   
@@ -139,8 +146,11 @@ vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
     snoise(npos + vec3(10.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
     snoise(npos + vec3(20.5, 2.0, fract(uSeed / 1000.0) * 100.0))
     );
-  float npatt = snoise(patt*(0.05+pow(random(uSeed+0.921), 2.0))*0.2);
+  float npatt = snoise(patt*1.0);
+
   vec3 offset = N*(npatt) + ns*(npatt*0.5+0.5) * pow(random(uSeed+0.99331), 2.0);
+  // npatt = pow(patt.z, 2.0);
+  // vec3 offset = normalize(N)*mix(-1.0, 1.0, npatt);
 
   vec3 new_pos = P + offset * 0.5;
 

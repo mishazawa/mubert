@@ -9,7 +9,7 @@ void main() {
 
   // Copy from previous frame
 
-  int NTRAILS = int(pow(2.0, random(uSeed + 0.123) * 6.0));
+  int NTRAILS = int(pow(2.0, random(uSeed + 0.123) * 7.0));
   int T_ID = int(gl_FragCoord.y) % NTRAILS;
   if (T_ID > 0) {
     vec2 uv2 =
@@ -31,18 +31,20 @@ void main() {
   ppos.xyz = ppos.xyz * 2.0 - 1.0;
   vel.xyz = vel.xyz * 2.0 - 1.0;
 
+  // vel.xyz = vec3(0.0, 0.0, 0.0);
+
 
   // UPDATE
 
 
   vec4 npos = ppos;
-  float strength = 0.01;
+  float strength = 0.1;
   // strength *= mix(0.1, 2.0, uRMS);
   npos.xyz += vel.xyz * strength * mass;
 
 
   // RESET PARTICLE
-  float rtime = random(float(id) + uTime * 1.424534224)*random(float(id) + uTime * 0.322224);
+  float rtime = random(float(id) + uTime * 1.42453224)*random(float(id) + uTime * 0.322224);
   float reset_rate = 0.0001;
   bool reset = (rtime < reset_rate);
   if (reset) {
@@ -50,7 +52,7 @@ void main() {
         vec3(random(float(id) + 1.23 + uTime * 1.124534224),
              random(float(id) + 3.33 + uTime * 1.424534424),
              random(float(id) + 4.53 + uTime * 1.422534224));
-    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 1.5;
+    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 0.5;
     // npos.xyz = vec3(uv.x, uv.y, 1.0);
   }
 

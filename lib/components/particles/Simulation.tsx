@@ -70,6 +70,21 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
     posVar.material.uniforms = uniforms.current;
     velVar.material.uniforms = uniforms.current;
 
+    const COMPUTE_VERT = `precision highp float;
+varying vec2 vUv;
+varying vec3 vWorldPosition;  // dummy
+varying vec3 vWorldNormal;    // dummy
+varying vec3 vPositionD;    // dummy
+varying vec3 vNormalD;    // dummy
+
+void main() {
+  vUv = uv;
+  vWorldPosition = vec3(0.0); // compute pass doesn't have world-space
+  gl_Position = vec4(position, 1.0);
+}`;
+    velVar.material.vertexShader = COMPUTE_VERT;
+    posVar.material.vertexShader = COMPUTE_VERT;
+
     gpuCompute.setVariableDependencies(velVar, [velVar, posVar]);
     gpuCompute.setVariableDependencies(posVar, [velVar, posVar]);
 

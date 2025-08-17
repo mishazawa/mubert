@@ -29,7 +29,7 @@ void main() {
   vec3 vector = vec3(0.0);
   vec3 vnoise = noise3(ppos.xyz * 0.25, animation);
   vnoise += noise3(ppos.xyz * 1.0, 100.0+animation)*0.0;
-  vector += vnoise * 0.2;
+  vector += vnoise * 0.1;
 
 
   // float npatt = snoise(data_out.pattern*(0.05+pow(random(uSeed+0.921), 2.0))*0.2);
@@ -43,7 +43,7 @@ void main() {
   vec3 tforce = target - ppos.xyz;
   float tforce_length = length(tforce);
   tforce = normalize(tforce) * pow(tforce_length, 2.0) * 1.0;
-  vector = tforce;
+  vector += tforce;
 
 
   vector = pvel.xyz * 0.5 + vector * mix(0.1, 1.0, uRMS) * 2.0;

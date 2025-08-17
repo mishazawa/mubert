@@ -14,8 +14,12 @@ import { useParameters } from "./useParameters";
 export function useSolidGeo(
   resolution: number
 ): Record<MaterialType, BufferGeometry> {
+  // const icosahedron = useMemo(
+  //   () => new IcosahedronGeometry(1, resolution),
+  //   [resolution]
+  // );
   const icosahedron = useMemo(
-    () => new IcosahedronGeometry(1, resolution),
+    () => new SphereGeometry(1, 8*resolution, 4*resolution),
     [resolution]
   );
   const icosahedronw = useMemo(

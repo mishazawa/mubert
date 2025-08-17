@@ -1,9 +1,10 @@
 // in vec3 v_wpos;
-
+in vec3 vPatternD;
 void main() {
   float animation = uTime * SPEED;
 
   vec3 pos1 = vPosition;
+  // pos1 = normalize(pos1)*1.0;
 #ifdef FLAT
   pos1 = vec3(gl_FragCoord.x, gl_FragCoord.y, 0.0) / 300.0 - 1.5;
 #endif
@@ -15,6 +16,10 @@ void main() {
       vUv);
 
   DisplacePatternOutput data_out = displace_pattern(data_in, animation);
+  // data_out.normal = vNormalD;
+  // data_out.position = vPositionD;
+  // data_out.pattern = vPatternD;
+
   CoatOutput coat = coat_pattern(data_out, animation);
 
   //#include<solid_parameters>

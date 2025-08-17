@@ -7,6 +7,7 @@ uniform mat4 uObjectMatrix;
 
 out vec4 v_color;
 out vec3 v_pos;
+// out vec3 vWorldPosition; 
 
 // just to draw particles
 void main() {
@@ -16,7 +17,7 @@ void main() {
   float vy = floor(vid / vres.x);
   float vx = mod(vid, vres.x);
   float vy2 = mod(vy, 8.0) / 7.0;
-  vec2 vuv = vec2(vx + 0.5, vy + 0.5) / vres;
+  vec2 vuv = vec2(vx + 0.0, vy + 0.0) / vres;
 
   v_color = vec4(vuv.y);
 
@@ -30,6 +31,7 @@ void main() {
   // vWorldPosition = worldPos;
   // vWorldNormal   = worldNrm;
 
+  // gl_PointSize = 20.0;
 
   // pos.xyz = (modelMatrix * uObjectMatrix * vec4(pos.xyz, 1.0)).xyz;
   csm_Position = worldPos;

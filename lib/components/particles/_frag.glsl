@@ -24,9 +24,10 @@ void main() {
   // na = smoothstep(0.0, 1.0, na) * 0.5;
 
   vec4 new_color = vec4(nc, na);
-  new_color.a *= pow(length(new_color.rgb * 1.5), 2.0);
+  new_color.a *= pow(length(new_color.rgb * 1.0), 4.0);
   // new_color.rgb = pow(new_color.rgb, vec3(1.0 / 2.2)); // gamma correction
 
-  new_color = clamp(new_color, 0., 2.);
+  new_color = clamp(new_color, 0., 1.);
   csm_FragColor = vec4(new_color);
+  // csm_FragColor = vec4(1.0);
 }
