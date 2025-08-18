@@ -1,7 +1,7 @@
 export const FFT_SIZE = 128;
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
-export const SPEED_MULTIPLIER = 0.001;
+export const SPEED_MULTIPLIER = 1;
 export const MESH_DETAIL = 64;
 export const POINT_DETAIL_DIVIDER = 4;
 export const AMBIENT_LIGHT_COLOR = 0x404040;
@@ -43,4 +43,4 @@ export const CAMERA_ZOOM_NEAR = 2;
 export const CAMERA_ZOOM_FAR = 10;
 export const ENVIRONMENT_LIGHT_INTENSITY = 3.5;
 export const AMBIENT_LIGHT_INTENSITY = 10;
-export const ROTATION_SPEED = 0.05;
+export const ROTATION_SPEED = 5;

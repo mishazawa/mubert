@@ -17,24 +17,24 @@ export function useUniformObjectMatrix(
   const ctx = useParameters();
   const stopObject = useDebug("stopObject", false);
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     if (stopObject) return;
 
     const fft_val = uniforms.current.uRMS.value;
-    const rot_speed = ctx.rot_speed.current * 0.1;
-    // TODO: FPS dependent rotation speed (*dt)
+    const rot_speed = ctx.rot_speed.current * dt;
 
     _axis
       .set(
         Math.sin(uniforms.current.uTime.value * 0.2),
-        Math.sin(uniforms.current.uTime.value * 0.4),
-        Math.sin(uniforms.current.uTime.value * 0.2)
+        Math.cos(uniforms.current.uTime.value * 0.4),
+        Math.sin(uniforms.current.uTime.value * 0.5)
       )
       .normalize();
 
     _axisq.setFromAxisAngle(_axis, fft_val * rot_speed);
 
     _tempq.multiply(_axisq).normalize(); // <-- normalization added here
+
     mat.current.makeRotationFromQuaternion(_tempq);
     uniforms.current.uObjectMatrix.value = mat.current;
   });
