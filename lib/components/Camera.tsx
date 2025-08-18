@@ -56,12 +56,12 @@ function useCameraAnimation() {
   const uniforms = useSharedUniforms();
   const isCtrlsEnabled = useDebug("controls", false);
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, dt) => {
     if (isCtrlsEnabled) return;
     const fft_val = uniforms.current.uRMS.value;
-    const rot_speed = ctx.rot_speed.current * 0.01;
+    const rot_speed = ctx.rot_speed.current * dt;
     _axis.setY(Math.sin(uniforms.current.uTime.value * 0.01)).normalize();
-    // camera.position.applyAxisAngle(_axis, fft_val * rot_speed);
+    camera.position.applyAxisAngle(_axis, fft_val * rot_speed);
     camera.lookAt(0, 0, 0);
   });
 }

@@ -33,9 +33,9 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   (uniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
 
   const speedControls = useDebug("speed", 1);
-  // const [matrix] = useSharedMatrix();
+
   // animate uniforms here
-  useFrame(() => {
+  useFrame((_, dt) => {
     let rms = ctx.getRMS();
     rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
@@ -54,7 +54,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
     uniforms.current.uFFT.value = ctx.getFFT();
 
     (uniforms.current.uTime as UniformValue<number>).value +=
-      SPEED_MULTIPLIER * speedControls * rms * 10.0;
+      SPEED_MULTIPLIER * speedControls * rms * dt;
   });
 
   // animate fft texture
