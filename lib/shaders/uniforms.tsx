@@ -33,6 +33,7 @@ uniform float uEmission;
 uniform float uRMS;
 uniform sampler2D uAudioTex;
 uniform sampler2D uRefractionTex;
+uniform sampler2D uCustomTex;
 uniform vec2 uSimulationRes;
 uniform vec2 uParticlesRes;
 uniform mat4 uObjectMatrix;

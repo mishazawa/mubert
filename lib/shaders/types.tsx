@@ -22,6 +22,7 @@ type ProgramableUniforms = Omit<
   | "uRMS"
   | "uAudioTex"
   | "uRefractionTex"
+  | "uCustomTex"
   | "uColor1"
   | "uColor2"
   | "uColor3"

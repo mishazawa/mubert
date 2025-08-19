@@ -7,6 +7,7 @@ type AudioAnalysisFns = {
 
 export type CanvasProps = AudioAnalysisFns & {
   seed: number;
+  texture?: string;
 };
 
 export type EnvironmentLightProps = {

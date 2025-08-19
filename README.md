@@ -30,7 +30,7 @@ const seed = 1;
 
 return (
   <>
-    <Scene seed={seed} getFFT={getFFT} getRMS={getRMS} />
+    <Scene seed={seed} getFFT={getFFT} getRMS={getRMS} texture={URL}/>
   </>
 )
 
@@ -43,5 +43,6 @@ interface Scene {
   seed: number;
   getFFT(): number[];
   getRMS(): number;
+  texture?: string;
 }
 ```

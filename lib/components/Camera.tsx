@@ -4,6 +4,7 @@ import {
   CAMERA_DISTANCE,
   CAMERA_FAR,
   CAMERA_FOV,
+  CAMERA_ROTATION_SPEED,
   CAMERA_ZOOM_FAR,
   CAMERA_ZOOM_NEAR,
   CAMERA_ZOOM_SPEED,
@@ -59,8 +60,8 @@ function useCameraAnimation() {
   useFrame(({ camera }, dt) => {
     if (isCtrlsEnabled) return;
     const fft_val = uniforms.current.uRMS.value;
-    const rot_speed = ctx.rot_speed.current * dt;
-    _axis.setY(Math.sin(uniforms.current.uTime.value * 0.01)).normalize();
+    const rot_speed = ctx.rot_speed.current * dt * CAMERA_ROTATION_SPEED;
+    _axis.setY(Math.cos(uniforms.current.uTime.value * 0.01)).normalize();
     camera.position.applyAxisAngle(_axis, fft_val * rot_speed);
     camera.lookAt(0, 0, 0);
   });
