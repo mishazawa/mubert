@@ -49,9 +49,14 @@ export function useDebugParams(): any {
         max: 4,
         step: 1,
       },
-      disableRefraction: false,
+
+      particlesTexture: {
+        value: [512, 512],
+        min: 0,
+        step: 1,
+      },
     }),
-    { collapsed: true }
+    { collapsed: false }
   );
 
   const [ao] = useControls(
@@ -72,7 +77,7 @@ export function useDebugParams(): any {
       screenSpaceRadius: true,
       renderMode: { step: 1, min: 0, max: 4, value: 0 },
     }),
-    { collapsed: true }
+    { collapsed: false }
   );
 
   return {
