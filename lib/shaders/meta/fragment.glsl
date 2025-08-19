@@ -33,6 +33,5 @@ void main() {
     discard;
 #else
 #endif
-  // csm_DiffuseColor.rgba = coat.color;
-  csm_DiffuseColor.rgba = texture2D(uCustomTex, vUv);
+  csm_DiffuseColor.rgba = coat.color;
 }
