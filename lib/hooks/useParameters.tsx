@@ -17,6 +17,7 @@ import {
 import { useColorGenerator } from "./useColorGenerator";
 import {
   AUDIO_TEXTURE_SIZE,
+  PARTICLES_COUNT,
   PARTICLES_TEXTURE_SIZE,
   ROTATION_SPEED,
   VALID_RANGES,
@@ -32,6 +33,7 @@ import {
   LinearFilter,
 } from "three";
 import { LIGHT_PRESET } from "../components/light/presets";
+import { useDebug } from "./useDebug";
 
 export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   rot_speed: RefObject<number>;
@@ -123,14 +125,19 @@ export function ParametersContextWrap({
     []
   );
 
+  const particlesRes: [number, number] = useDebug("particlesTexture", [
+    PARTICLES_COUNT,
+    PARTICLES_COUNT,
+  ]);
+
   useCreateSharedTexture(
     "uSimulationTex",
     () => {
-      const size = PARTICLES_TEXTURE_SIZE;
+      const [sizew, sizeh] = particlesRes;
       const tex = new DataTexture(
-        debugCheckerData(size),
-        size,
-        size,
+        debugCheckerData(sizew),
+        sizew,
+        sizeh,
         RGBAFormat
       );
 
@@ -139,7 +146,7 @@ export function ParametersContextWrap({
       tex.needsUpdate = true;
       return tex;
     },
-    []
+    [particlesRes]
   );
 
   useCreateSharedTexture(
