@@ -7,7 +7,7 @@ import { FFT_SIZE } from "./constants";
 
 export default function MubertCanvas(props: CanvasProps) {
   return (
-    <TexturesProvider>
+    <TexturesProvider texture={props.texture}>
       <ParametersContextWrap {...props}>
         <Scene />
       </ParametersContextWrap>

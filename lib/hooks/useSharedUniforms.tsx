@@ -26,11 +26,17 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
     max: 0,
   });
 
-  const { uAudioTex, uRefractionTex } = useSharedTextures();
+  const { uAudioTex, uRefractionTex, uCustomTex } = useSharedTextures();
 
-  // assign to shader
-  (uniforms.current.uAudioTex.value as any) = uAudioTex.current;
-  (uniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
+  useEffect(() => {
+    // assign to shader
+    (uniforms.current.uAudioTex.value as any) = uAudioTex.current;
+    (uniforms.current.uRefractionTex.value as any) = uRefractionTex.current;
+  }, []);
+
+  useEffect(() => {
+    (uniforms.current.uCustomTex.value as any) = uCustomTex;
+  }, [uCustomTex]);
 
   const speedControls = useDebug("speed", 1);
 

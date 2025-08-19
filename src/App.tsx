@@ -15,14 +15,42 @@ function App() {
   const fftfns = useSound();
 
   useAudioTrack(seed);
+  const img = useImage(seed);
 
   return (
     <>
       <DebugProvider value={debug}>
-        <Canvas seed={seed} {...fftfns} />
+        <Canvas seed={seed} {...fftfns} texture={img} />
       </DebugProvider>
     </>
   );
+}
+
+function useImage(seed: number) {
+  const gen = useMemo(() => randomGenerator(seed), []);
+
+  const files = [
+    "1.jpg",
+    "2.jpg",
+    "3.png",
+    "4.png",
+    "5.png",
+    "6.png",
+    "7.png",
+    "8.png",
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
+
+  const src = useMemo(() => {
+    const file = files[gen.int(0, files.length - 1)];
+    return file ? `/images/${file}` : undefined;
+  }, [seed]);
+
+  return src;
 }
 
 function useAudioTrack(seed: number) {
