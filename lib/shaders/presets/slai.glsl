@@ -53,16 +53,16 @@ vec3 pattern(in vec3 P, in float animation) {
   float sinnoise_freq = pow(random(uSeed*0.933 + 64.0), 6.0) * 1.0;
 
   // Npos pars
-  float simpx_amp =     0.00+random(uSeed*9.333 + 64.0)*0.5;
-  float vor_amp =       0.00+random(uSeed*9.333 + 64.0)*0.5;
-  float symmetry_amp =  0.00+random(uSeed*9.333 + 64.0)*0.5;
-  float py_val =        0.00+random(uSeed*9.333 + 64.0)*0.2;
-  float pos_val =       0.00+random(uSeed*0.943 + 64.0)*0.5;
-  // float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0);
-  // float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0);
-  // float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0);
-  // float py_val =        pow(random(uSeed*0.831 + 31.0), 1.0);
-  // float pos_val =       pow(random(uSeed*0.943 + 64.0), 4.0);
+  // float simpx_amp =     0.00+random(uSeed*9.333 + 55.0)*0.5;
+  // float vor_amp =       0.00+random(uSeed*3.534 + 64.0)*0.5;
+  // float symmetry_amp =  0.00+random(uSeed*2.029 + 43.0)*0.5;
+  // float py_val =        0.00+random(uSeed*5.432 + 67.0)*0.2;
+  // float pos_val =       0.00+random(uSeed*0.444 + 98.0)*0.5;
+  float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0);
+  float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0);
+  float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0);
+  float py_val =        pow(random(uSeed*0.831 + 31.0), 1.0);
+  float pos_val =       pow(random(uSeed*0.943 + 64.0), 4.0);
 
 
 
@@ -92,12 +92,13 @@ vec3 pattern(in vec3 P, in float animation) {
     vor_dist * vor_amp + simpx * simpx_amp
   );
   npos += pos * pos_val;
+  npos *= 0.2+random(uSeed+333.9)*0.5;
 
 
 
   vec2 auv = vec2(
     snoise(npos+vec3(0.0, 0.0, random(uSeed + 6.0) * 100.0)),
-    snoise(npos+vec3(0.0, 0.0, random(uSeed + 6.0) * 100.0))
+    snoise(npos+vec3(0.0, 0.0, random(uSeed + 9.0) * 100.0))
     ) * 0.5 + 0.5;
   float sub_scale = 1.0;
   vec2 auv2 = vec2(
@@ -138,7 +139,7 @@ vec3 pattern(in vec3 P, in float animation) {
 
 vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
 
-  vec3 npos = P*pow(random(uSeed+5.41), 2.0);
+  vec3 npos = P*pow(random(uSeed+5.41), 2.0)*0.5;
   npos = sinnoise_distort(npos, 0.5, 0.25, vec3(animation, 0.0, uSeed));
 
   vec3 ns = vec3(
@@ -146,9 +147,10 @@ vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
     snoise(npos + vec3(10.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
     snoise(npos + vec3(20.5, 2.0, fract(uSeed / 1000.0) * 100.0))
     );
-  float npatt = snoise(patt*1.0);
+  float npatt = snoise(patt*2.0);
 
-  vec3 offset = N*(npatt) + ns*(npatt*0.5+0.5) * pow(random(uSeed+0.99331), 2.0);
+  // vec3 offset = N*(npatt) + ns*(npatt*0.5+0.5) * pow(random(uSeed+0.99331), 2.0);
+  vec3 offset = N*(patt.z*2.0-1.0) + ns*(npatt*0.5+0.5)*1.0;
   // npatt = pow(patt.z, 2.0);
   // vec3 offset = normalize(N)*mix(-1.0, 1.0, npatt);
 
@@ -256,7 +258,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // col = mix(col, base, fresnel);
 
   // Output
-  vec3 finalColor = uColor4 * (0.5+fresnel*0.5) + col;
+  // vec3 finalColor = uColor4 * (0.5+fresnel*0.5) + col;
+  vec3 finalColor = col;
   // vec3 finalColor = texture(uRefractionTex, screen_uv).rga;
   // vec3 finalColor = vec3(screen_uv.x, screen_uv.y, 0.0);
 
@@ -266,7 +269,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // // // // // COLOR
   vec3 color_rgb = vec3(0.0);
   float cnoise_scale = random(uSeed + 1.0);
-  vec3 color_npos = data.pattern*mix(0.1,0.5,cnoise_scale);
+  vec3 color_npos = data.pattern*mix(0.5,1.5,cnoise_scale)*2.0;
   vec3 color_noise = vec3(snoise(color_npos + vec3(0.5, 0.0, 0.0)),
                      snoise(color_npos + vec3(10.5, 0.0, 0.0)),
                      snoise(color_npos + vec3(20.5, 0.0, 0.0))) *
@@ -279,31 +282,35 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   // color_rgb = color_palette;
-  color_rgb = color_noise.rgb*1.0;
+  color_rgb = color_noise.rgb;
 
   // new_col = vec3(data.pattern.x);
 
 
   float mix_refract = data.pattern.z;
-  mix_refract = gain(pow(mix_refract, 2.0), 3.0);
-  float lightness = color_noise.x;
-  lightness = gain(lightness, 2.0);
+  // mix_refract = gain(pow(mix_refract, 2.0), 3.0);
+  // float lightness = color_noise.x;
+  // lightness = gain(lightness, 2.0);
 
 
 
-  vec3 new_col = mix(uColor5, uColor3, mix_refract);
-  vec3 col_hsv = rgb2hsv(new_col);
-  col_hsv.z = lightness;
-  col_hsv.x += lightness*0.15;
-  new_col = hsv2rgb(col_hsv);
+  vec3 new_col = color_rgb;
+  // vec3 col_hsv = rgb2hsv(new_col);
+  // col_hsv.z = lightness;
+  // col_hsv.x += lightness*0.15;
+  // new_col = hsv2rgb(col_hsv);
+
+
+
+
+  new_col = texture(uCustomTex, data.pattern.rg).xyz;
 
   new_col = mix(new_col, finalColor, mix_refract);
   float new_alpha = 1.0;
-  // new_col = vec3(fresnel);
-
 
 
   vec4 color = vec4(new_col, new_alpha);
+  // color = vec4(0.0);
   // // // // //
 
 
@@ -332,8 +339,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float iridescence = 0.0;
   float metallic = 0.0;
 
-  roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
-  roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
+  // roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
+  // roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
 
   emission = snoise(data.pattern + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
   emission = gain(pow(emission, mix(0.2,4.0,random(uSeed+2.31133))), 8.0);
@@ -341,16 +348,16 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
   iridescence = gain(pow(iridescence, 1.0), 1.0);
 
-  metallic = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
-  metallic = gain(pow(metallic, 2.0), 4.0);
+  // metallic = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
+  // metallic = gain(pow(metallic, 2.0), 4.0);
   // // // // //
 
 
   // // // // // WIRE FRAME
   float scale = 1.0;
   #if IS_WIRES
-    float wa = snoise(data.position * 0.5 + vec3(uSeed, 0.0, animation * 10.0)) * 0.5 + 0.5;
-    color = vec4(new_col*mix_refract, mix_refract);
+    float wa = snoise(vPosition * 1.0 + vec3(uSeed, 0.0, animation * 10.0)) * 0.5 + 0.5;
+    color = vec4(mix(uColor1, uColor5, gain(wa, 2.0)), 1.0);
   #else
   #endif
   // // // // //

@@ -29,26 +29,17 @@ function App() {
 function useImage(seed: number) {
   const gen = useMemo(() => randomGenerator(seed), []);
 
-  const files = [
-    "1.jpg",
-    "2.jpg",
-    "3.png",
-    "4.png",
-    "5.png",
-    "6.png",
-    "7.png",
-    "8.png",
-    null,
-    null,
-    null,
-    null,
-    null,
-  ];
+  const files = [];
+  for (let i = 1; i <= 1000; i++) {
+    files.push(`img${i}.jpg`);
+  }
 
   const src = useMemo(() => {
     const file = files[gen.int(0, files.length - 1)];
     return file ? `/images/${file}` : undefined;
   }, [seed]);
+
+  window.customImage = src;
 
   return src;
 }
