@@ -11,15 +11,23 @@ import { useSharedTextures } from "../../../hooks/useSharedTextures";
 
 export function useParticlesSimulation() {
   const ctx = useParameters();
+  const ps = ctx.random.float(0, 1);
+  const ps2 = ctx.random.float(0, 1);
+
 
   const { uSimulationTex } = useSharedTextures();
 
   const localUniforms = useRef({
     uPositionsTex: { value: new DataTexture() },
     uColor1a: { value: ctv(ctx.palette[0]) },
-    uColor2a: { value: ctv(ctx.palette[4]) },
+    uColor2a: { value: ctv(ctx.palette[1]) },
+    uColor3a: { value: ctv(ctx.palette[2]) },
+    uColor4a: { value: ctv(ctx.palette[3]) },
+    uColor5a: { value: ctv(ctx.palette[4]) },
     uTime: { value: 0 },
     uRMS: { value: 0 },
+    uPsize: { value: ps },
+    uPsize2: { value: ps2 },
     uRotationAxis: { value: new Vector3() },
     uObjectMatrix: { value: new Matrix4().identity() },
   });
@@ -29,8 +37,13 @@ export function useParticlesSimulation() {
     localUniforms.current.uPositionsTex.value.needsUpdate = true;
   });
 
-  localUniforms.current.uColor1a.value = ctv(ctx.palette[4]);
-  localUniforms.current.uColor2a.value = ctv(ctx.palette[2]);
+  localUniforms.current.uColor1a.value = ctv(ctx.palette[0]);
+  localUniforms.current.uColor2a.value = ctv(ctx.palette[1]);
+  localUniforms.current.uColor3a.value = ctv(ctx.palette[2]);
+  localUniforms.current.uColor4a.value = ctv(ctx.palette[3]);
+  localUniforms.current.uColor5a.value = ctv(ctx.palette[4]);
+  localUniforms.current.uPsize.value = ps;
+  localUniforms.current.uPsize2.value = ps2;
 
   const uniforms = useSharedUniforms();
 

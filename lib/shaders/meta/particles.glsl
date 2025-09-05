@@ -10,7 +10,7 @@ void main() {
   // Copy from previous frame
 
   int NTRAILS = int(pow(2.0, random(uSeed + 0.123) * 7.0));
-  int T_ID = int(gl_FragCoord.y) % NTRAILS;
+  int T_ID = int(gl_FragCoord.y);
   if (T_ID > 0) {
     vec2 uv2 =
         (gl_FragCoord.xy + vec2(0.0) + vec2(0.0, -1.0)) / uSimulationRes.xy;
@@ -47,12 +47,23 @@ void main() {
   float rtime = random(float(id) + uTime * 1.42453224)*random(float(id) + uTime * 0.322224);
   float reset_rate = 0.0001;
   bool reset = (rtime < reset_rate);
+  float spread = random(uSeed + 103.22);
+  spread = mix(1.0, 10.0, spread);
   if (reset) {
-    vec3 newpos =
-        vec3(random(float(id) + 1.23 + uTime * 1.124534224),
-             random(float(id) + 3.33 + uTime * 1.424534424),
-             random(float(id) + 4.53 + uTime * 1.422534224));
-    npos = vec4(normalize(newpos * 2.0 - 1.0), 1.0) * 0.5;
+
+    // vec3 newpos =
+    //     vec3(random(float(id) + 1.23 + uTime * 1.124534224),
+    //          random(float(id) + 3.33 + uTime * 1.424534424),
+    //          random(float(id) + 4.53 + uTime * 1.422534224));
+    vec3 newpos = vec3(
+      snoise(vec3(float(id)*0.00001*spread + 1.23,  uTime * 1.124534224, 0.0)),
+      snoise(vec3(float(id)*0.00001*spread + 1.23,  uTime * 1.124534224, 10.0)),
+      snoise(vec3(float(id)*0.00001*spread + 1.23,  uTime * 1.124534224, 20.0))
+    );
+
+
+
+    npos = vec4(normalize(newpos), 1.0) * 0.5;
     // npos.xyz = vec3(uv.x, uv.y, 1.0);
   }
 

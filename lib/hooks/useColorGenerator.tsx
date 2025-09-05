@@ -3,13 +3,29 @@ import { formatHex } from "culori";
 import { Poline, positionFunctions, type PositionFunction } from "poline";
 import { useMemo } from "react";
 import { Color } from "three";
+import { palettes } from "../palettes";
 
 const POSITION_FUNCTIONS = Object.values(positionFunctions);
 
 const typedTuple = <T extends unknown[]>(...args: T): T => args;
 
 export function useColorGenerator(rand: RandomGenerator, seed: number) {
+
+
+  
+  const keys = Object.keys(palettes);
+  const randomKey = keys[Math.floor(rand.float(0, 1) * keys.length)];
+  
+  const key_ = window.customImage.split('.')[0].split('/').pop() || randomKey;
+
+  const cpal = palettes[key_];
+  
+  return cpal.map((c) => new Color(c).toArray());
+
+
   const posFunctions = pickRandomFns(rand);
+
+
 
   const rv = rand.float(0, 1);
   const hue1 = rv * 360;
