@@ -6,7 +6,7 @@ import {
   randomSwapRange,
   type RandomGenerator,
 } from "../utils";
-import type { CanvasProps } from "../types";
+import type { CanvasProps, OptionalProps } from "../types";
 import {
   createContext,
   useContext,
@@ -55,7 +55,7 @@ export const ParamsContext = createContext<ParametersCtx>(null!);
 export function ParametersContextWrap({
   children,
   ...props
-}: CanvasProps & { children: any }) {
+}: CanvasProps & OptionalProps & { children: any }) {
   const isMobile = useMemo(() => {
     console.log("is mobile: " + isMobileUA());
     return isMobileUA();
@@ -74,10 +74,10 @@ export function ParametersContextWrap({
     () => ({
       geoShowWireframe: !!gen.casino(0.8),
       geoWireframeScale: gen.float(1.05, 1.2),
-      geoWireframeDetail: gen.int(1, 4),
+      geoWireframeDetail: props.resolution ?? gen.int(1, 4),
       geoWireframeType: gen.int(0, 3),
     }),
-    [props.seed]
+    [props.seed, props.resolution]
   );
 
   const uniformData = useMemo(
@@ -172,6 +172,7 @@ export function ParametersContextWrap({
     () => gen.int(0, LIGHT_PRESET.length),
     [props.seed]
   );
+
   return (
     <ParamsContext
       value={{
