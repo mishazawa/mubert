@@ -10,6 +10,10 @@ export type CanvasProps = AudioAnalysisFns & {
   texture?: string;
 };
 
+export type OptionalProps = {
+  resolution?: number;
+};
+
 export type EnvironmentLightProps = {
   intensity: number;
 };
