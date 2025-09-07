@@ -68,7 +68,7 @@ export function ParametersContextWrap({
 
   const rot_speed = useRef(ROTATION_SPEED);
 
-  const palette = useColorGenerator(gen, props.seed);
+  const palette = useColorGenerator(gen, props.seed, props.palette);
 
   const randomizedProperties = useMemo(
     () => ({

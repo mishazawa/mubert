@@ -5,7 +5,7 @@
     "outDir": "dist/app",
     "tsBuildInfoFile": "dist/app/tsconfig.app.tsbuildinfo"
   },
-  "include": ["src", "lib/palettes.js"],
+  "include": ["src"],
   "references": [
     { "path": "./tsconfig.lib.json" } // ensures TS knows to build lib first
   ]

@@ -1,4 +1,4 @@
-import Canvas, { FFT_DATA_SIZE } from "@lib/main";
+import Canvas, { FFT_DATA_SIZE, PALETTES } from "@lib/main";
 
 import { useSeed, useDebugParams } from "./controls";
 
@@ -26,20 +26,16 @@ function App() {
   );
 }
 
+const IMG_LEN = 1368;
 function useImage(seed: number) {
   const gen = useMemo(() => randomGenerator(seed), []);
 
-  const files = [];
-  for (let i = 1; i <= 1000; i++) {
-    files.push(`img${i}.jpg`);
-  }
-
   const src = useMemo(() => {
-    const file = files[gen.int(0, files.length - 1)];
-    return file ? `/images/${file}` : undefined;
+    const file_num = gen.int(1, IMG_LEN);
+    return `/images/img${file_num}.jpg`;
   }, [seed]);
 
-  window.customImage = src;
+  // window.customImage = src;
 
   return src;
 }

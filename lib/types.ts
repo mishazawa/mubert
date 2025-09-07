@@ -10,8 +10,11 @@ export type CanvasProps = AudioAnalysisFns & {
   texture?: string;
 };
 
+export type PropsPalette = [string, string, string, string, string];
+
 export type OptionalProps = {
   resolution?: number;
+  palette?: PropsPalette;
 };
 
 export type EnvironmentLightProps = {

@@ -12,7 +12,7 @@ import { assignUniforms, generateDefaults } from "../shaders/uniforms";
 import { useFrame } from "@react-three/fiber";
 import { SPEED_MULTIPLIER } from "../constants";
 
-import { useSharedTextures } from "./useSharedTextures";
+import { useSharedTextures, useCustomTexture } from "./useSharedTextures";
 import { useDebug } from "./useDebug";
 import { ctv } from "../utils";
 import { useUniformObjectMatrix } from "./useTransformsReactive";
@@ -26,7 +26,8 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
     max: 0,
   });
 
-  const { uAudioTex, uRefractionTex, uCustomTex } = useSharedTextures();
+  const { uAudioTex, uRefractionTex } = useSharedTextures();
+  const { uCustomTex } = useCustomTexture();
 
   useEffect(() => {
     // assign to shader
