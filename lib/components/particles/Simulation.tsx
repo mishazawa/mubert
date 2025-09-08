@@ -5,7 +5,7 @@ import { type DataTexture } from "three";
 
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 import { useParameters } from "../../hooks/useParameters";
-import { PARTICLES_COUNT } from "../../constants";
+import { PARTICLES_HEIGHT, PARTICLES_WIDTH } from "../../constants";
 import { compile } from "../../shaders/compiler";
 import particles from "../../shaders/meta/particles.glsl?raw";
 import { useSharedTextures } from "../../hooks/useSharedTextures";
@@ -19,17 +19,7 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
   // create uniforms for particles CSM
   const uniforms = useSharedUniforms();
 
-  // const PARTICLES_WIDTH = ctx.random.int(1,128);
-  // const PARTICLES_HEIGHT = ctx.random.int(1,32);
-  const PARTICLES_WIDTH = 256;
-  const PARTICLES_HEIGHT = 16;
-  window.PARTICLES_WIDTH = PARTICLES_WIDTH;
-  window.PARTICLES_HEIGHT = PARTICLES_HEIGHT;
-
-  console.log('PARTICLES_WIDTH:', PARTICLES_WIDTH, 'PARTICLES_HEIGHT:', PARTICLES_HEIGHT);
-
   const particlesRes: [number, number] = useDebug("particlesTexture", [
-    // PARTICLES_COUNT,
     PARTICLES_WIDTH,
     PARTICLES_HEIGHT,
   ]);
@@ -45,13 +35,12 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
     const pos0 = gpuCompute.createTexture();
     const vel0 = gpuCompute.createTexture();
 
-
-        // fill pos0 with initial positions
-    const posArray = pos0.image.data; // Float32Array, length = width * height * 4
+    // fill pos0 with initial positions
+    const posArray = pos0.image.data as Float32Array; // Float32Array, length = width * height * 4
     for (let i = 0; i < posArray.length; i += 4) {
-      posArray[i + 0] = 0.5 + ( Math.random() * 2 - 1)*0.05; // x
-      posArray[i + 1] = 0.5 + ( Math.random() * 2 - 1)*0.05; // y
-      posArray[i + 2] = 0.5 + ( Math.random() * 2 - 1)*0.05; // z
+      posArray[i + 0] = 0.5 + (Math.random() * 2 - 1) * 0.05; // x
+      posArray[i + 1] = 0.5 + (Math.random() * 2 - 1) * 0.05; // y
+      posArray[i + 2] = 0.5 + (Math.random() * 2 - 1) * 0.05; // z
       posArray[i + 3] = 1.0; // w, can be 1.0 if not used
     }
 

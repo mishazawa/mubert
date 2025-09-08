@@ -1,12 +1,9 @@
-import { PARTICLES_COUNT } from "../../../constants";
+import { PARTICLES_HEIGHT, PARTICLES_WIDTH } from "../../../constants";
 import { useMemo } from "react";
 import { BufferAttribute, BufferGeometry } from "three";
 
 export function useParticlesGeometry() {
   return useMemo(() => {
-    const resolution = PARTICLES_COUNT;
-    const PARTICLES_WIDTH = window.PARTICLES_WIDTH;
-    const PARTICLES_HEIGHT = window.PARTICLES_HEIGHT;
     let pg = new BufferGeometry();
     let pos = new Float32Array(PARTICLES_WIDTH * PARTICLES_HEIGHT * 3);
     let uv = new Float32Array(PARTICLES_WIDTH * PARTICLES_HEIGHT * 2);

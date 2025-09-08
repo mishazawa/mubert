@@ -16,7 +16,7 @@ function App() {
 
   useAudioTrack(seed);
   const img = useImage(seed);
-
+  console.log(PALETTES[0]);
   return (
     <>
       <DebugProvider value={debug}>

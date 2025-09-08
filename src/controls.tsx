@@ -29,7 +29,7 @@ export function useDebugParams(): any {
       postfx: true,
       vertex: false,
       fragment: false,
-      particles: !true,
+      particles: true,
       controls: false,
       stopObject: false,
       pointSize: {

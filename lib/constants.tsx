@@ -25,7 +25,9 @@ export const PARTICLES_SIZE = 0.05;
 export const PARTICLES_SIZE_RENDER_PASS = 0.05;
 export const PARTICLES_CAMERA_ZOOM = 1;
 export const PARTICLES_TEXTURE_SIZE = 512; // refraction tex
-export const PARTICLES_COUNT = 128;
+
+export const PARTICLES_WIDTH = 256;
+export const PARTICLES_HEIGHT = 16;
 export const DOF_FOCUS_LENGTH = 0.03;
 export const DOF_BOKEH_SCALE = 3;
 export const DOF_OFFSET = 0;
