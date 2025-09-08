@@ -1,11 +1,11 @@
 import { createContext, useMemo, type ReactNode } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { GPUComputationRenderer } from "three/examples/jsm/misc/GPUComputationRenderer.js";
-import type { DataTexture } from "three";
+import { type DataTexture } from "three";
 
 import { useSharedUniforms } from "../../hooks/useSharedUniforms";
 import { useParameters } from "../../hooks/useParameters";
-import { PARTICLES_COUNT } from "../../constants";
+import { PARTICLES_HEIGHT, PARTICLES_WIDTH } from "../../constants";
 import { compile } from "../../shaders/compiler";
 import particles from "../../shaders/meta/particles.glsl?raw";
 import { useSharedTextures } from "../../hooks/useSharedTextures";
@@ -20,8 +20,8 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
   const uniforms = useSharedUniforms();
 
   const particlesRes: [number, number] = useDebug("particlesTexture", [
-    PARTICLES_COUNT,
-    PARTICLES_COUNT,
+    PARTICLES_WIDTH,
+    PARTICLES_HEIGHT,
   ]);
 
   (uniforms.current.uSimulationRes.value as any) = particlesRes;
@@ -34,6 +34,15 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
 
     const pos0 = gpuCompute.createTexture();
     const vel0 = gpuCompute.createTexture();
+
+    // fill pos0 with initial positions
+    const posArray = pos0.image.data as Float32Array; // Float32Array, length = width * height * 4
+    for (let i = 0; i < posArray.length; i += 4) {
+      posArray[i + 0] = 0.5 + (Math.random() * 2 - 1) * 0.05; // x
+      posArray[i + 1] = 0.5 + (Math.random() * 2 - 1) * 0.05; // y
+      posArray[i + 2] = 0.5 + (Math.random() * 2 - 1) * 0.05; // z
+      posArray[i + 3] = 1.0; // w, can be 1.0 if not used
+    }
 
     const COMMON_DEFINES = {
       PI: "3.14159265358979323846",

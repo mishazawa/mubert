@@ -23,6 +23,7 @@ export function Background() {
           uColor3: new Uniform(ctx.palette[2]),
           uColor4: new Uniform(ctx.palette[3]),
           uColor5: new Uniform(ctx.palette[4]),
+          uCustomTex: sharedUniforms.current.uCustomTex,
         },
         vertexShader,
         fragmentShader,

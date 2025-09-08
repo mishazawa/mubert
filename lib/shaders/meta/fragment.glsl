@@ -34,4 +34,5 @@ void main() {
 #else
 #endif
   csm_DiffuseColor.rgba = coat.color;
+  // csm_Transmission = coat.color.a;
 }

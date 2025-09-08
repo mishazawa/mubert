@@ -68,3 +68,12 @@ export function debugCheckerData(size: number) {
   }
   return data;
 }
+
+export function shuffle<T>(array: readonly T[]): T[] {
+  const result = [...array]; // copy so input isn't modified
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}

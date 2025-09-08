@@ -1,4 +1,4 @@
-import Canvas, { FFT_DATA_SIZE } from "@lib/main";
+import Canvas, { FFT_DATA_SIZE, PALETTES } from "@lib/main";
 
 import { useSeed, useDebugParams } from "./controls";
 
@@ -16,7 +16,7 @@ function App() {
 
   useAudioTrack(seed);
   const img = useImage(seed);
-
+  console.log(PALETTES[0]);
   return (
     <>
       <DebugProvider value={debug}>
@@ -26,29 +26,16 @@ function App() {
   );
 }
 
+const IMG_LEN = 1368;
 function useImage(seed: number) {
   const gen = useMemo(() => randomGenerator(seed), []);
 
-  const files = [
-    "1.jpg",
-    "2.jpg",
-    "3.png",
-    "4.png",
-    "5.png",
-    "6.png",
-    "7.png",
-    "8.png",
-    null,
-    null,
-    null,
-    null,
-    null,
-  ];
-
   const src = useMemo(() => {
-    const file = files[gen.int(0, files.length - 1)];
-    return file ? `/images/${file}` : undefined;
+    const file_num = gen.int(1, IMG_LEN);
+    return `/images/img${file_num}.jpg`;
   }, [seed]);
+
+  // window.customImage = src;
 
   return src;
 }

@@ -1,14 +1,14 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useRef,
-  useState,
   type ReactNode,
   type RefObject,
 } from "react";
 import { DataTexture, Texture, TextureLoader } from "three";
+import { useLoader } from "@react-three/fiber";
+import { useParameters } from "./useParameters";
 
 const SHARED_TEXTURES = [
   "uAudioTex",
@@ -20,27 +20,41 @@ type SharedTextureKeys = (typeof SHARED_TEXTURES)[number];
 
 export type SharedTextures = {
   [key in SharedTextureKeys]: RefObject<DataTexture>;
-} & {
+};
+
+type CustomTexture = {
   uCustomTex: Texture;
 };
 
 const Context = createContext<SharedTextures>(null!);
+const CustomTextureContext = createContext<CustomTexture>(null!);
 
-export const TexturesProvider = ({
-  children,
-  texture,
-}: {
-  children: ReactNode;
-  texture?: string;
-}) => {
+export const TexturesProvider = ({ children }: { children: ReactNode }) => {
   const uAudioTex = useRef<DataTexture>(null!);
   const uRefractionTex = useRef<DataTexture>(null!);
   const uSimulationTex = useRef<DataTexture>(null!);
-  const uCustomTex = useOptionalTexture(texture);
 
-  const tex = { uAudioTex, uRefractionTex, uSimulationTex, uCustomTex };
+  const tex = { uAudioTex, uRefractionTex, uSimulationTex };
 
   return <Context.Provider value={tex}>{children}</Context.Provider>;
+};
+
+export const CustomTextureProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const { texture } = useParameters();
+
+  const uCustomTex = useOptionalTexture(texture);
+
+  const tex = { uCustomTex };
+
+  return (
+    <CustomTextureContext.Provider value={tex}>
+      {children}
+    </CustomTextureContext.Provider>
+  );
 };
 
 export function useSharedTextures(): SharedTextures {
@@ -50,6 +64,14 @@ export function useSharedTextures(): SharedTextures {
   return context;
 }
 
+export function useCustomTexture(): CustomTexture {
+  const context = useContext(CustomTextureContext);
+  if (!context)
+    throw new Error(
+      "useCustomTexture must be used within CustomTextureProvider"
+    );
+  return context;
+}
 export function useCreateSharedTexture(
   name: SharedTextureKeys,
   init: () => DataTexture,
@@ -73,22 +95,10 @@ function createBlankTexture() {
   return canvas;
 }
 
-function useOptionalTexture(url?: string) {
-  const [texture, setTexture] = useState<Texture>(
-    new Texture(createBlankTexture())
-  );
-
-  useEffect(() => {
-    if (!url) {
-      setTexture(new Texture(createBlankTexture()));
-      return;
-    }
-
-    const loader = new TextureLoader();
-    loader.load(url, (loaded) => {
-      setTexture(loaded);
-    });
-  }, [url]);
+function useOptionalTexture(url?: string): Texture {
+  const texture = url
+    ? useLoader(TextureLoader, url) // suspends until loaded
+    : new Texture(createBlankTexture()); // blank fallback texture
 
   return texture;
 }

@@ -17,8 +17,9 @@ import {
 import { useColorGenerator } from "./useColorGenerator";
 import {
   AUDIO_TEXTURE_SIZE,
-  PARTICLES_COUNT,
+  PARTICLES_HEIGHT,
   PARTICLES_TEXTURE_SIZE,
+  PARTICLES_WIDTH,
   ROTATION_SPEED,
   VALID_RANGES,
 } from "../constants";
@@ -68,7 +69,7 @@ export function ParametersContextWrap({
 
   const rot_speed = useRef(ROTATION_SPEED);
 
-  const palette = useColorGenerator(gen, props.seed);
+  const palette = useColorGenerator(gen, props.seed, props.palette);
 
   const randomizedProperties = useMemo(
     () => ({
@@ -126,8 +127,8 @@ export function ParametersContextWrap({
   );
 
   const particlesRes: [number, number] = useDebug("particlesTexture", [
-    PARTICLES_COUNT,
-    PARTICLES_COUNT,
+    PARTICLES_WIDTH,
+    PARTICLES_HEIGHT,
   ]);
 
   useCreateSharedTexture(

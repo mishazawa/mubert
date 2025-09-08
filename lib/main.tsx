@@ -5,9 +5,11 @@ import { Scene } from "./components/Scene";
 import { TexturesProvider } from "./hooks/useSharedTextures";
 import { FFT_SIZE } from "./constants";
 
+export { PALETTES } from "./palettes";
+
 export default function MubertCanvas(props: CanvasProps & OptionalProps) {
   return (
-    <TexturesProvider texture={props.texture}>
+    <TexturesProvider>
       <ParametersContextWrap {...props}>
         <Scene />
       </ParametersContextWrap>

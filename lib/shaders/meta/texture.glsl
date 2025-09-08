@@ -27,9 +27,8 @@ void main() {
 
 
   vec3 vector = vec3(0.0);
-  vec3 vnoise = noise3(ppos.xyz * 0.25, animation);
-  vnoise += noise3(ppos.xyz * 1.0, 100.0+animation)*0.0;
-  vector += vnoise * 0.1;
+  vec3 vnoise = noise3(ppos.xyz * 0.33, animation);
+  vector += vnoise * 0.2;
 
 
   // float npatt = snoise(data_out.pattern*(0.05+pow(random(uSeed+0.921), 2.0))*0.2);
