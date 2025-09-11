@@ -22,10 +22,10 @@ void main() {
   float parb = 1.0-pow(v_texuv.y*2.0-1.0, 2.0);
   a *= parb;
 
-  if (uv.x > uPsize2)
-    discard;
-  if (uPsize2 < 0.5)
-    discard;
+  // if (uv.x > uPsize2)
+  //   discard;
+  // if (uPsize2 < 0.5)
+  //   discard;
 
   if (a < 0.15)
     discard;

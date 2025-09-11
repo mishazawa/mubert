@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 
 # --- CONFIG ---
-IMAGE_FOLDER = "../src/images"          # folder with your images
+IMAGE_FOLDER = "../src/images2"          # folder with your images
 OUTPUT_FILE = "../src/palettes.js"      # output JS file
 NUM_COLORS = 5                   # number of colors per image
 

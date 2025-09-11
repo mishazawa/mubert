@@ -29,11 +29,12 @@ export function useSolidGeo(
   return {
     solid: icosahedron,
     point: icosahedron,
-    wireframe: icosahedronw,
+    // wireframe: icosahedronw,
+    wireframe: icosahedron,
   };
 }
 
-export function useWireframeGeo(): BufferGeometry[] {
+export function useWireframeGeo(mesh_detail: number): BufferGeometry[] {
   const { geoWireframeScale: scale, geoWireframeDetail: resolution } =
     useParameters();
 
@@ -53,5 +54,11 @@ export function useWireframeGeo(): BufferGeometry[] {
     () => new EdgesGeometry(new IcosahedronGeometry(scale, resolution), 0.1),
     [scale, resolution]
   );
-  return [o2, o3, o4];
+
+  const icosahedron = useMemo(
+    () => new IcosahedronGeometry(1, mesh_detail * 2),
+    [mesh_detail]
+  );
+  // return [o2, o3, o4];
+  return [icosahedron];
 }

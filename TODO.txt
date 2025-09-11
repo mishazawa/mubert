@@ -1,0 +1,3 @@
+- When any of postfx is on, background is brightened
+- Glitch tame
+- More bg contrast / edge

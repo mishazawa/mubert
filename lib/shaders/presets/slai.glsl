@@ -92,7 +92,7 @@ vec3 pattern(in vec3 P, in float animation) {
     vor_dist * vor_amp + simpx * simpx_amp
   );
   npos += pos * pos_val;
-  npos *= 0.2+random(uSeed+333.9)*0.5;
+  npos *= 0.2+random(uSeed+333.9)*0.2;
 
 
 
@@ -212,7 +212,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   vec2      uViewport = vec2(uParticlesRes);      // screen size in pixels (width, height)
-  float     uIOR = 1.5;           // index of refraction of the medium, e.g. 1.5
+  float     uIOR = 1.9;           // index of refraction of the medium, e.g. 1.5
   float     uThickness = 50.0;     // refraction thickness/parallax scale in pixels (start e.g. 40.0)
 
   // Base screen UV for this pixel
@@ -246,11 +246,12 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float fresnel = F0 + (1.0 - F0) * pow(1.0 - max(dot(N, V), 0.0), 5.0);
 
   // Sample background with chromatic aberration (slight per-channel spread)
-  float chroma = 0.2; // tweak 0..1
+  float chroma = 0.1; // tweak 0..1
+  float sscale = 1.0; // tweak 0..1
   vec3 col = vec3(
-    texture(uRefractionTex, screen_uv + refract_uv * (1.0 + 1.0*chroma)).r,
-    texture(uRefractionTex, screen_uv + refract_uv * (1.0 + 2.0*chroma)).g,
-    texture(uRefractionTex, screen_uv + refract_uv * (1.0 + 3.0*chroma)).b
+    texture(uRefractionTex, (screen_uv*2.0-1.0)*sscale*0.5+0.5 + refract_uv * (1.0 + 1.0*chroma)).r,
+    texture(uRefractionTex, (screen_uv*2.0-1.0)*sscale*0.5+0.5 + refract_uv * (1.0 + 2.0*chroma)).g,
+    texture(uRefractionTex, (screen_uv*2.0-1.0)*sscale*0.5+0.5 + refract_uv * (1.0 + 3.0*chroma)).b
   );
 
   // You can mix with your base material using fresnel if desired:
@@ -258,8 +259,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   // col = mix(col, base, fresnel);
 
   // Output
-  // vec3 finalColor = uColor4 * (0.5+fresnel*0.5) + col;
   vec3 finalColor = col;
+  // vec3 finalColor = col;
   // vec3 finalColor = texture(uRefractionTex, screen_uv).rga;
   // vec3 finalColor = vec3(screen_uv.x, screen_uv.y, 0.0);
 
@@ -288,6 +289,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   float mix_refract = data.pattern.z;
+  // float mix_refract = 0.0;
   // mix_refract = gain(pow(mix_refract, 2.0), 3.0);
   // float lightness = color_noise.x;
   // lightness = gain(lightness, 2.0);
@@ -302,14 +304,17 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
 
-
-  new_col = texture(uCustomTex, data.pattern.rg).xyz;
+  if (random(uSeed + 4.0) > 0.5) {
+    new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
+  }
+    new_col = color_palette;
 
   new_col = mix(new_col, finalColor, mix_refract);
   float new_alpha = 1.0;
 
 
   vec4 color = vec4(new_col, new_alpha);
+  // vec4 color = vec4(finalColor.rgb, 1.0);
   // color = vec4(0.0);
   // // // // //
 
@@ -329,27 +334,29 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
                   2.0;
 
   float alignment = dot(normalize(newNorm), normalize(norm));
-  // norm = normalize(norm - newNorm * bump_strength);
+  norm = normalize(norm - newNorm * bump_strength);
   // // // // //
 
 
   // // // // // MATERIAL
   float roughness = 1.0;
-  float emission = 0.0;
+  float emission = 1.0;
   float iridescence = 0.0;
   float metallic = 0.0;
 
-  // roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
-  // roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
+  roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
+  roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
+  roughness = mix(0.25, 1.0, roughness);
 
   emission = snoise(data.pattern + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
-  emission = gain(pow(emission, mix(0.2,4.0,random(uSeed+2.31133))), 8.0);
+  emission = gain(pow(emission, mix(0.2,2.0,random(uSeed+2.31133))), 4.0);
 
   iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
   iridescence = gain(pow(iridescence, 1.0), 1.0);
 
-  // metallic = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
-  // metallic = gain(pow(metallic, 2.0), 4.0);
+  metallic = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
+  metallic = gain(pow(metallic, 2.0), 4.0);
+  metallic = mix(0.0, 0.99, metallic);
   // // // // //
 
 

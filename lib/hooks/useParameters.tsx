@@ -73,9 +73,10 @@ export function ParametersContextWrap({
 
   const randomizedProperties = useMemo(
     () => ({
-      geoShowWireframe: !!gen.casino(0.8),
+      // geoShowWireframe: !!gen.casino(0.8),
+      geoShowWireframe: false,
       geoWireframeScale: gen.float(1.05, 1.2),
-      geoWireframeDetail: props.resolution ?? gen.int(1, 4),
+      geoWireframeDetail: props.resolution,
       geoWireframeType: gen.int(0, 3),
     }),
     [props.seed, props.resolution]
