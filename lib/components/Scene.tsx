@@ -43,7 +43,7 @@ export function Scene() {
               <Model />
 
               <SimulationProvider>
-                <Particles pointSize={PARTICLES_SIZE * pointSize} />
+                {/* <Particles pointSize={PARTICLES_SIZE * pointSize} /> */}
 
                 <OffscreenTexture>
                   <Particles

@@ -27,7 +27,7 @@ function RenderLines() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
 
-  const itemsw = useWireframeGeo();
+  const itemsw = useWireframeGeo(MESH_DETAIL);
   const itemw = itemsw[ctx.geoWireframeType];
 
   const vertex = useDebug("vertex", false);

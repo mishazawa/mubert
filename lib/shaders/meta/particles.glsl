@@ -38,9 +38,11 @@ void main() {
 
 
   vec4 npos = ppos;
-  float strength = 0.1;
+  float strength = 0.01;
   // strength *= mix(0.1, 2.0, uRMS);
   npos.xyz += vel.xyz * strength * mass;
+  // npos.xyz *= 0.0;
+  npos.xyz = vec3(0.0, 0.0, 0.0);
 
 
   // RESET PARTICLE

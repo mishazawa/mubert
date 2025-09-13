@@ -21,8 +21,8 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
 
   const smoothFFT = useRef({
-    mix_min: 0.05,
-    mix_max: 0.2,
+    mix_min: 0.5,
+    mix_max: 0.9,
     max: 0,
   });
 

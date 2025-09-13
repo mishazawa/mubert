@@ -21,9 +21,9 @@ void main() {
 
   vec3 n_pos = normalize(ppos.xyz);
   // vec3 n_pos = ppos.xyz;
-  DisplacePatternInput data_in =
-      DisplacePatternInput(n_pos, n_pos, uv);
-  DisplacePatternOutput data_out = displace_pattern(data_in, animation);
+  // DisplacePatternInput data_in =
+  //     DisplacePatternInput(n_pos, n_pos, uv);
+  // DisplacePatternOutput data_out = displace_pattern(data_in, animation);
 
 
   vec3 vector = vec3(0.0);
@@ -36,16 +36,16 @@ void main() {
   // vec3 new_pos = data_out.position + offset;
   // vec3 new_pos = data_out.position;
 
-  vec3 target = data_out.position*1.5;
+  // vec3 target = data_out.position*1.5;
   // vec3 target = normalize(ppos.xyz);
 
-  vec3 tforce = target - ppos.xyz;
-  float tforce_length = length(tforce);
-  tforce = normalize(tforce) * pow(tforce_length, 2.0) * 1.0;
-  vector += tforce;
+  // vec3 tforce = target - ppos.xyz;
+  // float tforce_length = length(tforce);
+  // tforce = normalize(tforce) * pow(tforce_length, 2.0) * 1.0;
+  // vector += tforce;
 
 
-  vector = pvel.xyz * 0.5 + vector * mix(0.1, 1.0, uRMS) * 2.0;
+  vector = pvel.xyz * 1.5 + vector * mix(0.1, 1.0, uRMS) * 2.0;
 
   vector = clamp(vector, -1.0, 1.0);
 
