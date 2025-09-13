@@ -2,7 +2,7 @@ import { useParameters } from "../../../hooks/useParameters";
 import { useSharedUniforms } from "../../../hooks/useSharedUniforms";
 import { ctv } from "../../../utils";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { DataTexture, Matrix4, Vector3 } from "three";
 import { useSharedTextures } from "../../../hooks/useSharedTextures";
 
@@ -11,9 +11,8 @@ import { useSharedTextures } from "../../../hooks/useSharedTextures";
 
 export function useParticlesSimulation() {
   const ctx = useParameters();
-  const ps = ctx.random.float(0, 1);
-  const ps2 = ctx.random.float(0, 1);
-
+  const ps = useMemo(() => ctx.random.float(0, 1), [ctx.data.uSeed]);
+  const ps2 = useMemo(() => ctx.random.float(0, 1), [ctx.data.uSeed]);
 
   const { uSimulationTex } = useSharedTextures();
 
@@ -35,15 +34,15 @@ export function useParticlesSimulation() {
   useEffect(() => {
     localUniforms.current.uPositionsTex.value = uSimulationTex.current;
     localUniforms.current.uPositionsTex.value.needsUpdate = true;
-  });
 
-  localUniforms.current.uColor1a.value = ctv(ctx.palette[0]);
-  localUniforms.current.uColor2a.value = ctv(ctx.palette[1]);
-  localUniforms.current.uColor3a.value = ctv(ctx.palette[2]);
-  localUniforms.current.uColor4a.value = ctv(ctx.palette[3]);
-  localUniforms.current.uColor5a.value = ctv(ctx.palette[4]);
-  localUniforms.current.uPsize.value = ps;
-  localUniforms.current.uPsize2.value = ps2;
+    localUniforms.current.uColor1a.value = ctv(ctx.palette[0]);
+    localUniforms.current.uColor2a.value = ctv(ctx.palette[1]);
+    localUniforms.current.uColor3a.value = ctv(ctx.palette[2]);
+    localUniforms.current.uColor4a.value = ctv(ctx.palette[3]);
+    localUniforms.current.uColor5a.value = ctv(ctx.palette[4]);
+    localUniforms.current.uPsize.value = ps;
+    localUniforms.current.uPsize2.value = ps2;
+  });
 
   const uniforms = useSharedUniforms();
 

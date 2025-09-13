@@ -55,6 +55,7 @@ export function generateDefaults() {
     uColor4: { value: [0, 0, 0] },
     uColor5: { value: [0, 0, 0] },
     uObjectMatrix: { value: new Matrix4().identity() },
+    uParticlesRes: { value: [256, 256] },
   } as GenerativeShaderUniforms;
 }
 

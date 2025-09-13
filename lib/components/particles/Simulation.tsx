@@ -1,4 +1,4 @@
-import { createContext, useMemo, type ReactNode } from "react";
+import { createContext, useEffect, useMemo, type ReactNode } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { GPUComputationRenderer } from "three/examples/jsm/misc/GPUComputationRenderer.js";
 import { type DataTexture } from "three";
@@ -92,6 +92,7 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
         vWorldPosition = vec3(0.0); // compute pass doesn't have world-space
         gl_Position = vec4(position, 1.0);
       }`;
+
     velVar.material.vertexShader = COMPUTE_VERT;
     posVar.material.vertexShader = COMPUTE_VERT;
 
@@ -108,10 +109,12 @@ export const SimulationProvider = ({ children }: { children: ReactNode }) => {
 
   const { uSimulationTex } = useSharedTextures();
 
-  // update textures
-  const tex = sim.getCurrentRenderTarget(positions).texture as DataTexture;
-  uSimulationTex.current = tex;
-  uSimulationTex.current.needsUpdate = true;
+  useEffect(() => {
+    // update textures
+    const tex = sim.getCurrentRenderTarget(positions).texture as DataTexture;
+    uSimulationTex.current = tex;
+    uSimulationTex.current.needsUpdate = true;
+  }, [sim]);
 
   useFrame(() => {
     sim.compute();

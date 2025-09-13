@@ -6,7 +6,6 @@ import {
   AMBIENT_LIGHT_COLOR,
   AMBIENT_LIGHT_INTENSITY,
   ENVIRONMENT_LIGHT_INTENSITY,
-  PARTICLES_SIZE,
   PARTICLES_SIZE_RENDER_PASS,
 } from "../constants";
 import { FX } from "../effects";
@@ -43,8 +42,6 @@ export function Scene() {
               <Model />
 
               <SimulationProvider>
-                {/* <Particles pointSize={PARTICLES_SIZE * pointSize} /> */}
-
                 <OffscreenTexture>
                   <Particles
                     pointSize={PARTICLES_SIZE_RENDER_PASS * pointSize}

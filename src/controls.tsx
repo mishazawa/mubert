@@ -30,7 +30,6 @@ export function useDebugParams(): any {
       vertex: false,
       fragment: false,
       particles: true,
-      controls: false,
       stopObject: false,
       pointSize: {
         value: 2,

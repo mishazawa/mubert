@@ -1,18 +1,13 @@
 import { useRef, useEffect } from "react";
 import {
-  CAMERA_DAMPING,
   CAMERA_DISTANCE,
   CAMERA_FAR,
   CAMERA_FOV,
   CAMERA_ROTATION_SPEED,
-  CAMERA_ZOOM_FAR,
-  CAMERA_ZOOM_NEAR,
-  CAMERA_ZOOM_SPEED,
 } from "../constants";
 import { PerspectiveCamera as Cam } from "@react-three/drei";
 import { Vector3, type PerspectiveCamera } from "three";
 
-import { TrackballControls } from "@react-three/drei";
 import { useDebug } from "../hooks/useDebug";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
 import { useParameters } from "../hooks/useParameters";
@@ -27,7 +22,6 @@ export function AnimatedCamera() {
     cam.current.updateProjectionMatrix();
   });
 
-  const isEnabled = useDebug("controls", false);
   useCameraAnimation();
   return (
     <>
@@ -37,14 +31,6 @@ export function AnimatedCamera() {
         position={[0, 0, CAMERA_DISTANCE]}
         makeDefault={true}
         far={CAMERA_FAR}
-      />
-      <TrackballControls
-        enabled={isEnabled}
-        noPan
-        dynamicDampingFactor={CAMERA_DAMPING}
-        zoomSpeed={CAMERA_ZOOM_SPEED}
-        minDistance={CAMERA_ZOOM_NEAR}
-        maxDistance={CAMERA_ZOOM_FAR}
       />
     </>
   );

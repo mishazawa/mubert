@@ -27,7 +27,7 @@ function RenderLines() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
 
-  const itemsw = useWireframeGeo(MESH_DETAIL);
+  const itemsw = useWireframeGeo();
   const itemw = itemsw[ctx.geoWireframeType];
 
   const vertex = useDebug("vertex", false);
@@ -73,7 +73,7 @@ function RenderLines() {
 
 function RenderSolid() {
   const uniforms = useSharedUniforms();
-  const items = useSolidGeo(MESH_DETAIL);
+  const solid = useSolidGeo(MESH_DETAIL);
 
   const vertex = useDebug("vertex", false);
   const fragment = useDebug("fragment", false);
@@ -103,7 +103,7 @@ function RenderSolid() {
   );
 
   return (
-    <mesh geometry={items.solid}>
+    <mesh geometry={solid}>
       <CustomShaderMaterial
         uniforms={uniforms.current}
         baseMaterial={MeshPhysicalMaterial}
