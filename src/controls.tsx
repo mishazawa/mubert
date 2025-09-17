@@ -1,5 +1,4 @@
-// import { LIGHT_PRESET } from "@lib/components/light/presets";
-
+import { LIGHT_PRESET } from "@lib/components/light/presets";
 import { randomGenerator } from "@lib/utils";
 import { button, useControls } from "leva";
 import { useMemo } from "react";
@@ -29,30 +28,19 @@ export function useDebugParams(): any {
       postfx: true,
       vertex: false,
       fragment: false,
-      particles: true,
       controls: false,
       stopObject: false,
-      pointSize: {
-        value: 2,
-        min: 0.01,
-        max: 10,
+
+      light: {
+        value: 0,
+        min: 0,
+        max: LIGHT_PRESET.length - 1,
+        step: 1,
       },
-      // light: {
-      //   value: 0,
-      //   min: 0,
-      //   max: LIGHT_PRESET.length - 1,
-      //   step: 1,
-      // },
       lightAccent: {
         value: 0,
         min: 0,
         max: 4,
-        step: 1,
-      },
-
-      particlesTexture: {
-        value: [512, 512],
-        min: 0,
         step: 1,
       },
     }),
