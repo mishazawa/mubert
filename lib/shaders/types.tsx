@@ -15,8 +15,8 @@ export type GenerativeShaderUniforms = {
   readonly [P in keyof Uniforms]: UniformValue<Uniforms[P]>;
 };
 
-type ProgramableUniforms = Omit<
-  GenerativeShaderUniforms,
+type NotGeneratedUniforms =
+  | "uHui" // hui: add uniform here if u want to program it manually somewhere
   | "uTime"
   | "uFFT"
   | "uRMS"
@@ -31,8 +31,9 @@ type ProgramableUniforms = Omit<
   | "uParticlesRes"
   | "uSimulationRes"
   | "uRotationAxis"
-  | "uObjectMatrix"
->;
+  | "uObjectMatrix";
+
+type ProgramableUniforms = Omit<GenerativeShaderUniforms, NotGeneratedUniforms>;
 
 export type ShaderControls = {
   -readonly [P in keyof ProgramableUniforms]: GenerativeShaderUniforms[P] extends UniformValue<

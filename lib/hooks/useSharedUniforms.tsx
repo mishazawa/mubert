@@ -128,8 +128,15 @@ export function UniformsProvider({ children }: { children: ReactNode }) {
     uniforms.current.uColor5.value = ctv(ctx.palette[4]);
   }, [ctx.data]);
 
+  // hui: assign prop value to uniform
+  useEffect(() => {
+    if (!ctx.hui) return;
+    uniforms.current.uHui.value = ctx.hui;
+  }, [ctx.hui]);
+
   useAnimatedUniforms(uniforms);
   useUniformObjectMatrix(uniforms);
+
   return (
     <UniformsContext.Provider value={uniforms}>
       {children}
