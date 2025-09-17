@@ -8,7 +8,7 @@ import { compile } from "../shaders/compiler";
 
 import { useParameters } from "../hooks/useParameters";
 import { useSharedUniforms } from "../hooks/useSharedUniforms";
-import { useSharedTextures } from "../hooks/useSharedTextures";
+
 import { useSolidGeo, useWireframeGeo } from "../hooks/useGeometryGenerator";
 import { useDebug } from "../hooks/useDebug";
 
@@ -27,13 +27,10 @@ function RenderLines() {
   const ctx = useParameters();
   const uniforms = useSharedUniforms();
 
-  const itemsw = useWireframeGeo(MESH_DETAIL);
-  const itemw = itemsw[ctx.geoWireframeType];
+  const itemw = useWireframeGeo();
 
   const vertex = useDebug("vertex", false);
   const fragment = useDebug("fragment", false);
-
-  const { uRefractionTex } = useSharedTextures();
 
   const [vertexShaderWire, fragmentShaderWire] = useMemo(
     () => [
@@ -42,7 +39,7 @@ function RenderLines() {
         shaderType: "vertex",
         preset: vertex ? "debug" : "slai",
         defines: {
-          REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
+          REFRACTION_TEXTURE_SIZE: "1", // tbr
         },
       }),
       compile({
@@ -50,7 +47,7 @@ function RenderLines() {
         shaderType: "fragment",
         preset: fragment ? "debug" : "slai",
         defines: {
-          REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
+          REFRACTION_TEXTURE_SIZE: "1", // tbr
         },
       }),
     ],
@@ -73,12 +70,10 @@ function RenderLines() {
 
 function RenderSolid() {
   const uniforms = useSharedUniforms();
-  const items = useSolidGeo(MESH_DETAIL);
+  const geo = useSolidGeo(MESH_DETAIL);
 
   const vertex = useDebug("vertex", false);
   const fragment = useDebug("fragment", false);
-
-  const { uRefractionTex } = useSharedTextures();
 
   const [vertexShader, fragmentShader] = useMemo(
     () => [
@@ -87,7 +82,7 @@ function RenderSolid() {
         shaderType: "vertex",
         preset: vertex ? "debug" : "slai",
         defines: {
-          REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
+          REFRACTION_TEXTURE_SIZE: "1", // tbr
         },
       }),
       compile({
@@ -95,7 +90,7 @@ function RenderSolid() {
         shaderType: "fragment",
         preset: fragment ? "debug" : "slai",
         defines: {
-          REFRACTION_TEXTURE_SIZE: `${uRefractionTex.current.image.width}`,
+          REFRACTION_TEXTURE_SIZE: "1", // tbr
         },
       }),
     ],
@@ -103,7 +98,7 @@ function RenderSolid() {
   );
 
   return (
-    <mesh geometry={items.solid}>
+    <mesh geometry={geo}>
       <CustomShaderMaterial
         uniforms={uniforms.current} // hui: automatically consumed here
         baseMaterial={MeshPhysicalMaterial}

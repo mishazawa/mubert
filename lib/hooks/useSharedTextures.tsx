@@ -10,11 +10,7 @@ import { DataTexture, Texture, TextureLoader } from "three";
 import { useLoader } from "@react-three/fiber";
 import { useParameters } from "./useParameters";
 
-const SHARED_TEXTURES = [
-  "uAudioTex",
-  "uRefractionTex",
-  "uSimulationTex",
-] as const;
+const SHARED_TEXTURES = ["uAudioTex"] as const;
 
 type SharedTextureKeys = (typeof SHARED_TEXTURES)[number];
 
@@ -31,10 +27,8 @@ const CustomTextureContext = createContext<CustomTexture>(null!);
 
 export const TexturesProvider = ({ children }: { children: ReactNode }) => {
   const uAudioTex = useRef<DataTexture>(null!);
-  const uRefractionTex = useRef<DataTexture>(null!);
-  const uSimulationTex = useRef<DataTexture>(null!);
 
-  const tex = { uAudioTex, uRefractionTex, uSimulationTex };
+  const tex = { uAudioTex };
 
   return <Context.Provider value={tex}>{children}</Context.Provider>;
 };

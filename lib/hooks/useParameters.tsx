@@ -1,5 +1,4 @@
 import {
-  debugCheckerData,
   getVector3,
   isMobileUA,
   randomGenerator,
@@ -15,26 +14,17 @@ import {
   type RefObject,
 } from "react";
 import { useColorGenerator } from "./useColorGenerator";
-import {
-  AUDIO_TEXTURE_SIZE,
-  PARTICLES_HEIGHT,
-  PARTICLES_TEXTURE_SIZE,
-  PARTICLES_WIDTH,
-  ROTATION_SPEED,
-  VALID_RANGES,
-} from "../constants";
+import { AUDIO_TEXTURE_SIZE, ROTATION_SPEED, VALID_RANGES } from "../constants";
 import type { ShaderControls } from "../shaders/types";
 import { useCreateSharedTexture } from "./useSharedTextures";
 import {
   DataTexture,
   RGBAFormat,
-  RepeatWrapping,
   UnsignedByteType,
   ClampToEdgeWrapping,
   LinearFilter,
 } from "three";
 import { LIGHT_PRESET } from "../components/light/presets";
-import { useDebug } from "./useDebug";
 
 export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   rot_speed: RefObject<number>;
@@ -107,48 +97,6 @@ export function ParametersContextWrap({
       uEmission: gen.float(0, 1),
     }),
     [props.seed]
-  );
-
-  useCreateSharedTexture(
-    "uRefractionTex",
-    () => {
-      const size = PARTICLES_TEXTURE_SIZE;
-      const tex = new DataTexture(
-        debugCheckerData(size),
-        size,
-        size,
-        RGBAFormat
-      );
-      tex.wrapS = RepeatWrapping;
-      tex.wrapT = RepeatWrapping;
-      tex.needsUpdate = true;
-      return tex;
-    },
-    []
-  );
-
-  const particlesRes: [number, number] = useDebug("particlesTexture", [
-    PARTICLES_WIDTH,
-    PARTICLES_HEIGHT,
-  ]);
-
-  useCreateSharedTexture(
-    "uSimulationTex",
-    () => {
-      const [sizew, sizeh] = particlesRes;
-      const tex = new DataTexture(
-        debugCheckerData(sizew),
-        sizew,
-        sizeh,
-        RGBAFormat
-      );
-
-      tex.wrapS = RepeatWrapping;
-      tex.wrapT = RepeatWrapping;
-      tex.needsUpdate = true;
-      return tex;
-    },
-    [particlesRes]
   );
 
   useCreateSharedTexture(
