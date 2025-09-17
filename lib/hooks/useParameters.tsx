@@ -49,7 +49,7 @@ export type ParametersCtx = Omit<CanvasProps, "seed"> & {
   data: ShaderControls;
   isMobile: boolean;
   lightPreset: number;
-};
+} & OptionalProps;
 
 export const ParamsContext = createContext<ParametersCtx>(null!);
 
@@ -69,14 +69,14 @@ export function ParametersContextWrap({
 
   const rot_speed = useRef(ROTATION_SPEED);
 
-  const palette = useColorGenerator(gen, props.seed, props.palette);
+  const palette = useColorGenerator(gen, props.seed, props.customPalette);
 
   const randomizedProperties = useMemo(
     () => ({
       // geoShowWireframe: !!gen.casino(0.8),
       geoShowWireframe: false,
       geoWireframeScale: gen.float(1.05, 1.2),
-      geoWireframeDetail: props.resolution,
+      geoWireframeDetail: props.resolution ?? 1,
       geoWireframeType: gen.int(0, 3),
     }),
     [props.seed, props.resolution]

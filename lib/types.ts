@@ -1,4 +1,4 @@
-import type { BufferGeometry } from "three";
+import type { BufferGeometry, Vector3 } from "three";
 
 type AudioAnalysisFns = {
   getFFT: () => number[];
@@ -14,7 +14,8 @@ export type PropsPalette = [string, string, string, string, string];
 
 export type OptionalProps = {
   resolution?: number;
-  palette?: PropsPalette;
+  customPalette?: PropsPalette;
+  hui?: Vector3; // hui: define optional parameter for component
 };
 
 export type EnvironmentLightProps = {

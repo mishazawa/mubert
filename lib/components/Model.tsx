@@ -105,7 +105,7 @@ function RenderSolid() {
   return (
     <mesh geometry={items.solid}>
       <CustomShaderMaterial
-        uniforms={uniforms.current}
+        uniforms={uniforms.current} // hui: automatically consumed here
         baseMaterial={MeshPhysicalMaterial}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}

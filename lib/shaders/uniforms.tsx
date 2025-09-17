@@ -37,7 +37,8 @@ uniform sampler2D uCustomTex;
 uniform vec2 uSimulationRes;
 uniform vec2 uParticlesRes;
 uniform mat4 uObjectMatrix;
-` as const;
+uniform vec3 uHui;
+` as const; // hui: added here
 
 export function generateDefaults() {
   return {
@@ -55,6 +56,7 @@ export function generateDefaults() {
     uColor4: { value: [0, 0, 0] },
     uColor5: { value: [0, 0, 0] },
     uObjectMatrix: { value: new Matrix4().identity() },
+    uHui: { value: [0, 0, 0] }, // hui: add default value to prevent errors
   } as GenerativeShaderUniforms;
 }
 
