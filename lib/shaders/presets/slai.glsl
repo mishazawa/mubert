@@ -100,12 +100,12 @@ vec3 pattern(in vec3 P, in float animation) {
     snoise(npos+vec3(0.0, 0.0, random(uSeed + 6.0) * 100.0)),
     snoise(npos+vec3(0.0, 0.0, random(uSeed + 9.0) * 100.0))
     ) * 0.5 + 0.5;
-  float sub_scale = 1.0;
+  float sub_scale = 0.25+random(uSeed + 88.0)*0.5;
   vec2 auv2 = vec2(
-    snoise(npos*sub_scale+vec3(0.0, 0.0, random(uSeed + 7.0) * 100.0)),
-    snoise(npos*sub_scale+vec3(0.0, 0.0, random(uSeed + 77.0) * 100.0))
+    snoise(npos*sub_scale+vec3(2.0, 0.0, random(uSeed + 7.0) * 100.0)),
+    snoise(npos*sub_scale+vec3(2.0, 0.0, random(uSeed + 77.0) * 100.0))
     );
-  auv = auv*1.0+ auv2*0.0;
+  auv = auv*1.0 + auv2*0.5*random(uSeed + 8.0);
 
   // vec2 auv = vec2(0.5, pos.y);
   auv = clamp(auv, 0.0, 1.0);
@@ -169,6 +169,8 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
   vec3 n = calcNormalFromSamples(
       p, displace(samples.a, data.normal, patt, animation),
       displace(samples.b, data.normal, patt, animation));
+  n = normalize(n);
+  n = data.normal; // disable normal
   return DisplacePatternOutput(p, n, patt);
 }
 
@@ -309,7 +311,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   }
     new_col = color_palette;
 
-  new_col = mix(new_col, finalColor, mix_refract);
+  // new_col = mix(new_col, finalColor, mix_refract);
   float new_alpha = 1.0;
 
 
@@ -325,7 +327,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float bump_strength = random(uSeed + 8.0) * 0.5;
   bump_strength = gain(bump_strength, 3.0);
 
-  vec3 norm = data.normal;
+  vec3 norm = normalize(data.normal);
   vec3 nnp = data.position * bump_scale;
 
   vec3 newNorm = vec3(snoise(nnp + vec3(0.5, 0.0, 0.0)),

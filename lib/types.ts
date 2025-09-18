@@ -16,6 +16,9 @@ export type OptionalProps = {
   resolution?: number;
   customPalette?: PropsPalette;
   hui?: Vector3; // hui: define optional parameter for component
+  smoothFFTmin: 0.2,
+  smoothFFTmax: 0.7,
+  smoothRMS: 0.5,
 };
 
 export type EnvironmentLightProps = {

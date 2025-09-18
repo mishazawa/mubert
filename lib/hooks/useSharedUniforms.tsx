@@ -21,9 +21,9 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
 
   const smoothFFT = useRef({
-    mix_min: 0.5,
-    mix_max: 0.9,
-    max: 0,
+    mix_min: ctx.smoothFFTmin,
+    mix_max: ctx.smoothFFTmax,
+    max: ctx.smoothRMS
   });
 
   const { uAudioTex } = useSharedTextures();
