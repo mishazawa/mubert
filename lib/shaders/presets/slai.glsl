@@ -1,3 +1,5 @@
+precision highp float;
+
 #define DIST_AMP 5.
 #define NOISE_DIST_AMP 1.
 #define SPEED .1
@@ -5,7 +7,6 @@
 #define FRAC_SCALE 16
 #define DISPLACE_SCALE 2.0
 #define DISPLACE_POS_SCALE 0.5
-
 
 //#include<math>
 //#include<noise3>
@@ -166,11 +167,19 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
   Neighbours samples = getNeighbours(data.position, data.normal);
   vec3 patt = pattern(data.position, animation);
   vec3 p = displace(data.position, data.normal, patt, animation);
+  vec3 pa = pattern(normalize(samples.a), animation);
+  vec3 pb = pattern(normalize(samples.b), animation);
   vec3 n = calcNormalFromSamples(
-      p, displace(samples.a, data.normal, patt, animation),
-      displace(samples.b, data.normal, patt, animation));
+      p, displace(normalize(samples.a), data.normal, pa, animation),
+      displace(normalize(samples.b), data.normal, pb, animation));
   n = normalize(n);
-  n = data.normal; // disable normal
+
+  vec3 new_n = normalize(
+    displace(data.position, normalize(data.position), patt, animation) -
+    displace(data.position + normalize(data.position) * 0.01, normalize(data.position), patt, animation)
+  );
+  // n = new_n;
+  // n = data.normal; // disable normal
   return DisplacePatternOutput(p, n, patt);
 }
 
@@ -306,10 +315,11 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
 
-  if (random(uSeed + 4.0) > 0.5) {
-    new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
+  new_col = color_palette;
+  if (uUseTex) {
+    // new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
+    new_col = texture(uCustomTex, color_noise.rg*0.25).xyz;
   }
-    new_col = color_palette;
 
   // new_col = mix(new_col, finalColor, mix_refract);
   float new_alpha = 1.0;
@@ -342,7 +352,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
   // // // // // MATERIAL
   float roughness = 1.0;
-  float emission = 1.0;
+  float emission = 0.0;
   float iridescence = 0.0;
   float metallic = 0.0;
 
@@ -351,7 +361,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   roughness = mix(0.25, 1.0, roughness);
 
   emission = snoise(data.pattern + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
-  emission = gain(pow(emission, mix(0.2,2.0,random(uSeed+2.31133))), 4.0);
+  emission = gain(pow(emission, mix(0.1,0.5,random(uSeed+2.31133))), 4.0);
 
   iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
   iridescence = gain(pow(iridescence, 1.0), 1.0);

@@ -32,7 +32,7 @@ function useImage(seed: number) {
 
   const src = useMemo(() => {
     const file_num = gen.int(1, IMG_LEN);
-    return `/images/img${file_num}.jpg`;
+    return `/images2/img.0.${file_num}.jpg`;
   }, [seed]);
 
   // window.customImage = src;

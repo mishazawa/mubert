@@ -23,7 +23,7 @@ vec3 orthogonal(vec3 v) {
 
 
 Neighbours getNeighbours(in vec3 P, in vec3 N) {
-  float offset = 0.001;
+  float offset = 0.01;
   vec3 tangent = orthogonal(N);
   vec3 bitangent = normalize(cross(N, tangent));
   vec3 neighbour1 = P + tangent * offset;

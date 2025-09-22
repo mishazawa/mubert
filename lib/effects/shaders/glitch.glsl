@@ -37,7 +37,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv,
     float edgeRamp = smoothstep(0.0, 1.5, pow(r, 0.5));
     float amount   = uRMS * 1.0 * r * edgeRamp; // tune 0.06 as desired
     vec4 base = texture(inputBuffer, uv);
-    amount *= length(base.rgb)*0.5; // modulate by brightness
+    amount *= length(base.rgb)*0.25; // modulate by brightness
     amount = clamp(amount, 0.0, 1.0); // avoid excessive offset
 
     // Channel-specific offsets (R outwards, B inwards, G stays)

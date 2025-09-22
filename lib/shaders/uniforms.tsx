@@ -38,6 +38,7 @@ uniform vec2 uSimulationRes;
 uniform vec2 uParticlesRes;
 uniform mat4 uObjectMatrix;
 uniform vec3 uHui;
+uniform bool uUseTex;
 ` as const; // hui: added here
 
 export function generateDefaults() {
@@ -57,6 +58,7 @@ export function generateDefaults() {
     uColor5: { value: [0, 0, 0] },
     uObjectMatrix: { value: new Matrix4().identity() },
     uHui: { value: [0, 0, 0] }, // hui: add default value to prevent errors
+    uUseTex: { value: false }, // hui: add default value to prevent errors
     uParticlesRes: { value: [256, 256] },
   } as GenerativeShaderUniforms;
 }

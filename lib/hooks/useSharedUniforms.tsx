@@ -17,6 +17,8 @@ import { useDebug } from "./useDebug";
 import { ctv } from "../utils";
 import { useUniformObjectMatrix } from "./useTransformsReactive";
 
+
+
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
 
@@ -41,10 +43,15 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const speedControls = useDebug("speed", 1);
 
   // animate uniforms here
+  const useTexture = useDebug("useTexture", false);
   useFrame((_, dt) => {
     let rms = ctx.getRMS();
     rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
+
+
+    uniforms.current.uUseTex.value = useTexture;
+
 
     const pastRms = uniforms.current.uRMS.value;
 
@@ -131,6 +138,7 @@ export function UniformsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ctx.hui) return;
     uniforms.current.uHui.value = ctx.hui;
+
   }, [ctx.hui]);
 
   useAnimatedUniforms(uniforms);

@@ -17,6 +17,7 @@ export function Background() {
       new ShaderMaterial({
         uniforms: {
           uTime: new Uniform(0),
+          uUseTex: new Uniform(false),
           uResolution: new Uniform([size.width, size.height]),
           uColor1: new Uniform(ctx.palette[0]),
           uColor2: new Uniform(ctx.palette[1]),
@@ -35,6 +36,7 @@ export function Background() {
 
   useFrame(() => {
     shaderMaterial.uniforms.uTime.value = sharedUniforms.current.uTime.value;
+    shaderMaterial.uniforms.uUseTex.value = sharedUniforms.current.uUseTex.value;
   });
 
   return (

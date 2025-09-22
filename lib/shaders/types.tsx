@@ -17,6 +17,7 @@ export type GenerativeShaderUniforms = {
 
 type NotGeneratedUniforms =
   | "uHui" // hui: add uniform here if u want to program it manually somewhere
+  | "uUseTex"
   | "uTime"
   | "uFFT"
   | "uRMS"
