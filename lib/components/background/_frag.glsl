@@ -27,8 +27,8 @@ void main() {
 
   // vec3 newColor = mix(a, b, pow(uv.y, 0.7) * 0.2);
 
-  vec3 texColor = texture(uCustomTex, vec2(0.0, 0.0+radial)).xyz;
-  texColor = mix(texColor, pow(texColor*0.25, vec3(1.5)), radial);
+  vec3 texColor = texture(uCustomTex, vec2(0.0, 0.0+radial*0.1)).xyz;
+  texColor = mix(texColor, pow(texColor*0.25, vec3(2.0)), radial);
 
   vec3 newColor = a;
   if (uUseTex) {

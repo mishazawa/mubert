@@ -167,24 +167,23 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
   Neighbours samples = getNeighbours(data.position, data.normal);
   vec3 patt = pattern(data.position, animation);
   vec3 p = displace(data.position, data.normal, patt, animation);
-  vec3 pa = pattern(normalize(samples.a), animation);
-  vec3 pb = pattern(normalize(samples.b), animation);
-  vec3 n = calcNormalFromSamples(
-      p, displace(normalize(samples.a), data.normal, pa, animation),
-      displace(normalize(samples.b), data.normal, pb, animation));
-  n = normalize(n);
+  // vec3 pa = pattern(normalize(samples.a), animation);
+  // vec3 pb = pattern(normalize(samples.b), animation);
+  // vec3 n = calcNormalFromSamples(
+  //     p, displace(normalize(samples.a), data.normal, pa, animation),
+  //     displace(normalize(samples.b), data.normal, pb, animation));
+  // n = normalize(n);
+  vec3 n = data.normal;
 
-  vec3 new_n = normalize(
-    displace(data.position, normalize(data.position), patt, animation) -
-    displace(data.position + normalize(data.position) * 0.01, normalize(data.position), patt, animation)
-  );
-  // n = new_n;
+
+
   // n = data.normal; // disable normal
   return DisplacePatternOutput(p, n, patt);
 }
 
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
+
 
 
   // // // // // SETUP
@@ -195,9 +194,16 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   #endif
   #if !VERTEX
   #define vWorldPosition_F vWorldPosition
+    vec3 new_n = vec3(0.0);
+    vec3 dpdx = dFdx(vWorldPosition_F);
+    vec3 dpdy = dFdy(vWorldPosition_F);
+    new_n = normalize(cross(dpdx, dpdy));
+    data.normal = new_n;
   #else
   #define vWorldPosition_F vec3(0.0)
   #endif
+
+
 
 
   // // // // // // REFRACTION
@@ -318,7 +324,7 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   new_col = color_palette;
   if (uUseTex) {
     // new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
-    new_col = texture(uCustomTex, color_noise.rg*0.25).xyz;
+    new_col = texture(uCustomTex, (color_noise.rg*0.5+color_noise.b*0.5+data.pattern.rg*0.5)).xyz;
   }
 
   // new_col = mix(new_col, finalColor, mix_refract);

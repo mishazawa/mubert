@@ -33,6 +33,42 @@ export function useDebugParams(): any {
       stopObject: false,
       useTexture: true,
 
+      fft_min: {
+        value: 0.1,
+        min: 0,
+        max: 1,
+        step: 0.0001,
+      },
+
+      fft_max: {
+        value: 0.3,
+        min: 0,
+        max: 1,
+        step: 0.0001,
+      },
+
+      rms_min: {
+        value: 0.2,
+        min: 0,
+        max: 1,
+        step: 0.0001,
+      },
+
+      rms_max: {
+        value: 0.5,
+        min: 0,
+        max: 1,
+        step: 0.0001,
+      },
+
+      rms_speed: {
+        value: 0.2,
+        min: 0,
+        max: 1,
+        step: 0.0001,
+      },
+
+
       light: {
         value: 0,
         min: 0,

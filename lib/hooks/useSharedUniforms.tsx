@@ -23,9 +23,9 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
 
   const smoothFFT = useRef({
-    mix_min: ctx.smoothFFTmin,
-    mix_max: ctx.smoothFFTmax,
-    max: ctx.smoothRMS
+    mix_min: 0.5,
+    mix_max: 0.5,
+    max: 0.5
   });
 
   const { uAudioTex } = useSharedTextures();
@@ -44,30 +44,29 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
   // animate uniforms here
   const useTexture = useDebug("useTexture", false);
+  const mix_min = useDebug("fft_min", 0.5);
+  const mix_max = useDebug("fft_max", 0.5);
+  const rms_min = useDebug("rms_min", 0.5);
+  const rms_max = useDebug("rms_max", 0.5);
+  const rms_speed = useDebug("rms_speed", 0.5);
+
   useFrame((_, dt) => {
     let rms = ctx.getRMS();
     rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
-
-
     uniforms.current.uUseTex.value = useTexture;
-
-
     const pastRms = uniforms.current.uRMS.value;
 
-    const mix_min = smoothFFT.current.mix_min ?? 0.4;
-    const mix_max = smoothFFT.current.mix_max ?? 0.99;
-
     const newRms =
-      pastRms < 0
-        ? pastRms * (1.0 - mix_max) + rms * mix_max
-        : pastRms * (1.0 - mix_min) + rms * mix_min;
+      pastRms < rms
+        ? pastRms * (1.0 - rms_max) + rms * rms_max
+        : pastRms * (1.0 - rms_min) + rms * rms_min;
 
     uniforms.current.uRMS.value = newRms;
     uniforms.current.uFFT.value = ctx.getFFT();
 
     (uniforms.current.uTime as UniformValue<number>).value +=
-      SPEED_MULTIPLIER * speedControls * rms * dt;
+      SPEED_MULTIPLIER * speedControls * rms * dt * rms_speed * 10.0;
   });
 
   // animate fft texture
@@ -93,8 +92,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
       smoothFFT.current.max = new_max;
 
-      const mix_min = smoothFFT.current.mix_min ?? 0.4;
-      const mix_max = smoothFFT.current.mix_max ?? 0.99;
 
       for (let i = 0; i < fft.length; i++) {
         let v = fft[i];
