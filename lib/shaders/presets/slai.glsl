@@ -155,7 +155,7 @@ vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
   // npatt = pow(patt.z, 2.0);
   // vec3 offset = normalize(N)*mix(-1.0, 1.0, npatt);
 
-  vec3 new_pos = P + offset * 0.5;
+  vec3 new_pos = P*0.5 + offset * 0.5;
 
   return new_pos;
 }
@@ -323,8 +323,9 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
   new_col = color_palette;
   if (uUseTex) {
+    vec2 tex_uv = vec2(color_noise.rg)*vec2(0.5);
     // new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
-    new_col = texture(uCustomTex, (color_noise.rg*0.5+color_noise.b*0.5+data.pattern.rg*0.5)).xyz;
+    new_col = texture(uCustomTex, tex_uv).xyz;
   }
 
   // new_col = mix(new_col, finalColor, mix_refract);
@@ -366,8 +367,8 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
   roughness = mix(0.25, 1.0, roughness);
 
-  emission = snoise(data.pattern + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
-  emission = gain(pow(emission, mix(0.1,0.5,random(uSeed+2.31133))), 4.0);
+  emission = snoise(smoothstep(0.5, 1.0, length(color)) + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
+  // emission = gain(pow(emission, mix(0.1,0.5,random(uSeed+2.31133))), 4.0);
 
   iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
   iridescence = gain(pow(iridescence, 1.0), 1.0);

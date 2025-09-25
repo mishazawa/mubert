@@ -18,6 +18,45 @@ import { useSharedUniforms } from "../hooks/useSharedUniforms";
 import { useParameters } from "../hooks/useParameters";
 import { useFrame } from "@react-three/fiber";
 
+import { MathUtils } from "three";
+import { useThree } from "@react-three/fiber";
+
+/**
+ * Keeps the smaller viewport side equal to `targetSizeWorld` (in world units),
+ * assuming the camera is looking at (0,0,0) and orbits around the origin.
+ */
+function useFitSmallerSide({
+  cam,
+  targetSizeWorld = 4, // e.g. -1..1 -> 2
+}: {
+  cam: React.RefObject<PerspectiveCamera>;
+  targetSizeWorld?: number;
+}) {
+  const { size } = useThree(); // gives width/height in px
+
+  useEffect(() => {
+    const camera = cam.current;
+    if (!camera) return;
+
+    const aspect = size.width / size.height;
+    const minAspectFactor = Math.min(1, aspect);
+    const fovRad = MathUtils.degToRad(camera.fov);
+    const tanHalfFov = Math.tan(fovRad / 2);
+
+    // required orbit radius so that the smaller side == targetSizeWorld
+    const requiredDistance =
+      targetSizeWorld / (2 * tanHalfFov * minAspectFactor);
+
+    // keep current direction, just change radius
+    const dir = new Vector3().copy(camera.position).normalize();
+    camera.position.copy(dir.multiplyScalar(requiredDistance));
+    camera.updateProjectionMatrix();
+  }, [cam, size.width, size.height]);
+}
+
+
+
+
 export function AnimatedCamera() {
   const cam = useRef<PerspectiveCamera>(null!);
 
@@ -26,6 +65,10 @@ export function AnimatedCamera() {
     cam.current.setFocalLength(CAMERA_FOV);
     cam.current.updateProjectionMatrix();
   });
+
+
+  // Keep the smaller viewport side at -1..1 (size = 2 world units)
+  useFitSmallerSide({ cam, targetSizeWorld: 2.5 });
 
   const isEnabled = useDebug("controls", false);
   useCameraAnimation();
