@@ -24,7 +24,7 @@ export function Scene() {
 
   return (
     <ContextBridge>
-      <Canvas className="vis_canvas" dpr={1} frameloop="never">
+      <Canvas className="vis_canvas" dpr={1} frameloop="never" linear>
         <Suspense fallback={null}>
           <FrameLimiter fps={60} />
           <CustomTextureProvider>
