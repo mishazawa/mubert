@@ -19,8 +19,8 @@ export type OptionalProps = {
   smoothFFTmin?: 0.5 | number;
   smoothFFTmax?: 0.5 | number;
   smoothRMS?: 0.5 | number;
-  useTex: true,
-  texPath: null | string,
+  useTex?: boolean;
+  texPath?: string;
 };
 
 export type EnvironmentLightProps = {

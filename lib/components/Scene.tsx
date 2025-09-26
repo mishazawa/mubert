@@ -15,6 +15,7 @@ import { AnimatedCamera } from "./Camera";
 import { Background } from "./background/Background";
 
 import { CustomTextureProvider } from "../hooks/useSharedTextures";
+import { FrameLimiter } from "./utils/FrameLimiter";
 
 export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
@@ -23,8 +24,9 @@ export function Scene() {
 
   return (
     <ContextBridge>
-      <Canvas className="vis_canvas" dpr={1}>
+      <Canvas className="vis_canvas" dpr={1} frameloop="never">
         <Suspense fallback={null}>
+          <FrameLimiter fps={60} />
           <CustomTextureProvider>
             <UniformsProvider>
               <Background />

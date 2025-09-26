@@ -1,6 +1,6 @@
 import { LIGHT_PRESET } from "@lib/components/light/presets";
 import { randomGenerator } from "@lib/utils";
-import { useTexture } from "@react-three/drei";
+
 import { button, useControls } from "leva";
 import { useMemo } from "react";
 
@@ -67,7 +67,6 @@ export function useDebugParams(): any {
         max: 1,
         step: 0.0001,
       },
-
 
       light: {
         value: 0,
