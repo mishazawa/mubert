@@ -45,7 +45,7 @@ export function FX() {
         intensity={FX_BLOOM_INTENSITY}
         luminanceThreshold={FX_BLOOM_LUMINANCE_THRESHOLD}
       />
-      <SMAA />
+      <SMAA opacity />
     </EffectComposer>
   );
 }
