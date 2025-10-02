@@ -65,8 +65,10 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
     uniforms.current.uRMS.value = newRms;
     uniforms.current.uFFT.value = ctx.getFFT();
 
+    // TODO: dt is 0
+
     (uniforms.current.uTime as UniformValue<number>).value +=
-      SPEED_MULTIPLIER * speedControls * rms * dt * rms_speed * 10.0;
+      SPEED_MULTIPLIER * speedControls * rms * rms_speed * 1.0;
   });
 
   // animate fft texture

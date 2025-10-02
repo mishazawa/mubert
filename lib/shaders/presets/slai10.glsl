@@ -116,11 +116,10 @@ vec3 pattern(in vec3 P, in float animation) {
   // auv.y = 1.0-auv.y; // flip y
 
   ////////// Apply UV
-  float audio = textureLod(uAudioTex, auv, 10.0).r;
-  // float audio = textureLod(uAudioTex, pos.xy*0.2, 5.0).r;
-  // float ablur = blur13(uAudioTex, auv, vec2(128.0, 128.0), vec2(1.0, 1.0)*6.0).r;
-  // audio = mix(audio, ablur, float(VERTEX)>0.0); // blur only in fragment shader
-  // audio = mix(audio, ablur, 1.0); // blur only in fragment shader
+  float audio = texture(uAudioTex, auv).r;
+  float ablur = blur13(uAudioTex, auv, vec2(128.0, 128.0), vec2(1.0, 1.0)*6.0).r;
+  audio = mix(audio, ablur, float(VERTEX)>0.0); // blur only in fragment shader
+  audio = mix(audio, ablur, 1.0); // blur only in fragment shader
   ///////////
 
   npos *= global_scale;
@@ -130,7 +129,7 @@ vec3 pattern(in vec3 P, in float animation) {
 
   audio = smoothstep(0.0, 1.0, pow(audio, 1.0));
   
-  vec3 patt = vec3(auv*1.0, audio*1.0);
+  vec3 patt = vec3(auv, audio);
 
 
 
@@ -141,8 +140,8 @@ vec3 pattern(in vec3 P, in float animation) {
 
 vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
 
-  vec3 npos = P;
-  // npos = sinnoise_distort(npos, 0.5, 0.25, vec3(animation*0.2, 0.0, uSeed));
+  vec3 npos = P*pow(random(uSeed+5.41), 2.0)*0.5;
+  npos = sinnoise_distort(npos, 0.5, 0.25, vec3(animation, 0.0, uSeed));
 
   vec3 ns = vec3(
     snoise(npos + vec3(0.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
@@ -152,13 +151,11 @@ vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
   float npatt = snoise(patt*2.0);
 
   // vec3 offset = N*(npatt) + ns*(npatt*0.5+0.5) * pow(random(uSeed+0.99331), 2.0);
-  // vec3 offset = N*(patt.z*2.0-1.0) + ns*(npatt*0.5+0.5)*1.0;
-  vec3 offset = ns;
+  vec3 offset = N*(patt.z*2.0-1.0) + ns*(npatt*0.5+0.5)*1.0;
   // npatt = pow(patt.z, 2.0);
   // vec3 offset = normalize(N)*mix(-1.0, 1.0, npatt);
 
-  vec3 new_pos = P+ns*0.0+N*(npatt);
-  // new_pos = P;
+  vec3 new_pos = P*0.5 + offset * 0.5;
 
   return new_pos;
 }
@@ -181,8 +178,6 @@ DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
 
 
   // n = data.normal; // disable normal
-  // p = data.position; // disable displacement
-
   return DisplacePatternOutput(p, n, patt);
 }
 
@@ -199,19 +194,11 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   #endif
   #if !VERTEX
   #define vWorldPosition_F vWorldPosition
-
     vec3 new_n = vec3(0.0);
-    // vec3 dpdx = dFdx(vWorldPosition_F);
-    // vec3 dpdy = dFdy(vWorldPosition_F);
-    vec3 dpdx = dFdx(data.position);
-    vec3 dpdy = dFdy(data.position);
-    // vec3 dpdx = dFdx(data.position);
-    // vec3 dpdy = dFdy(data.position);
+    vec3 dpdx = dFdx(vWorldPosition_F);
+    vec3 dpdy = dFdy(vWorldPosition_F);
     new_n = normalize(cross(dpdx, dpdy));
     data.normal = new_n;
-    // data.normal = vNormalD;
-
-
   #else
   #define vWorldPosition_F vec3(0.0)
   #endif
@@ -335,7 +322,6 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   new_col = color_palette;
-  
   if (uUseTex) {
     vec2 tex_uv = vec2(color_noise.rg)*vec2(0.5);
     // new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
@@ -346,8 +332,6 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float new_alpha = 1.0;
 
 
-  new_col = vec3(1.0);
-
   vec4 color = vec4(new_col, new_alpha);
   // vec4 color = vec4(finalColor.rgb, 1.0);
   // color = vec4(0.0);
@@ -355,47 +339,43 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   // // // // // BUMP
-
-
-  // vec3 vor = voronoi3d(data.position * 20.0);
-  // float bump_scale = 0.5 + gain(pow(random(uSeed + 6.0), 2.0), 2.0);
-  // float bump_strength = random(uSeed + 8.0) * 0.5;
-  // bump_strength = gain(bump_strength, 3.0);
+  vec3 vor = voronoi3d(data.position * 20.0);
+  float bump_scale = 0.5 + gain(pow(random(uSeed + 6.0), 2.0), 2.0);
+  float bump_strength = random(uSeed + 8.0) * 0.5;
+  bump_strength = gain(bump_strength, 3.0);
 
   vec3 norm = normalize(data.normal);
-  // vec3 nnp = data.position * bump_scale;
+  vec3 nnp = data.position * bump_scale;
 
-  // vec3 newNorm = vec3(snoise(nnp + vec3(0.5, 0.0, 0.0)),
-  //                      snoise(nnp + vec3(10.5, 0.0, 0.0)),
-  //                      snoise(nnp + vec3(20.5, 0.0, 0.0))) *
-  //                 2.0;
+  vec3 newNorm = vec3(snoise(nnp + vec3(0.5, 0.0, 0.0)),
+                       snoise(nnp + vec3(10.5, 0.0, 0.0)),
+                       snoise(nnp + vec3(20.5, 0.0, 0.0))) *
+                  2.0;
 
-  // float alignment = dot(normalize(newNorm), normalize(norm));
-  // norm = normalize(norm - newNorm * bump_strength);
-
-
+  float alignment = dot(normalize(newNorm), normalize(norm));
+  norm = normalize(norm - newNorm * bump_strength);
   // // // // //
 
 
   // // // // // MATERIAL
-  float roughness = 0.0;
+  float roughness = 1.0;
   float emission = 0.0;
   float iridescence = 0.0;
-  float metallic = 1.0;
+  float metallic = 0.0;
 
-  // roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
-  // roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
-  // roughness = mix(0.25, 1.0, roughness);
+  roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
+  roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
+  roughness = mix(0.25, 1.0, roughness);
 
-  // emission = snoise(smoothstep(0.5, 1.0, length(color)) + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
+  emission = snoise(smoothstep(0.5, 1.0, length(color)) + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
   // emission = gain(pow(emission, mix(0.1,0.5,random(uSeed+2.31133))), 4.0);
 
-  // iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
-  // iridescence = gain(pow(iridescence, 1.0), 1.0);
+  iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
+  iridescence = gain(pow(iridescence, 1.0), 1.0);
 
-  // metallic = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
-  // metallic = gain(pow(metallic, 2.0), 4.0);
-  // metallic = mix(0.0, 0.99, metallic);
+  metallic = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
+  metallic = gain(pow(metallic, 2.0), 4.0);
+  metallic = mix(0.0, 0.99, metallic);
   // // // // //
 
 
