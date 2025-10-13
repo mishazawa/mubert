@@ -1,4 +1,5 @@
-csm_FragNormal = coat.bump;
+csm_FragNormal = vNormalD;
+csm_FragNormal = normalMatrix * coat.bump;
 csm_ClearcoatNormal = coat.bump;
 csm_Roughness = coat.roughness;
 csm_Iridescence = coat.iridescence;
@@ -7,3 +8,6 @@ csm_Clearcoat = uClearcoat;
 csm_ClearcoatRoughness = uClearcoatRoughness;
 csm_Metalness = coat.metallic;
 // csm_Transmission = 1.0;
+
+// csm_Roughness = 0.0;
+// csm_Clearcoat = 0.0;

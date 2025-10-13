@@ -1,17 +1,22 @@
 
-
+uniform mat3 normalMatrix; // provided by Three.js
 // in vec3 v_wpos;
 in vec3 vPatternD;
 void main() {
 
 
-
+  vec3 pp = vec3(vPosition);
+  // pp = stoc(vUv);
+  vec3 nn = normalize(pp);
 
   float animation = uTime * SPEED;
+  // DisplacePatternInput data_in = DisplacePatternInput(
+  //     vPosition,
+  //     vNormal,
+  //     vUv);
   DisplacePatternInput data_in = DisplacePatternInput(
-      // just for formatting sake
-      normalize(vPosition),
-      //#include<vNormal>
+      pp,
+      nn,
       vUv);
   DisplacePatternOutput data_out = displace_pattern(data_in, animation);
   // data_out.position = vPositionD;
@@ -22,6 +27,11 @@ void main() {
 
 
   csm_DiffuseColor.rgba = coat.color;
+  // csm_DiffuseColor.rgba = vec4(0.5, 0.5, 0.5, 1.0);
+  // csm_DiffuseColor.rgba = vec4(vUv.x, vUv.y, 0.0, 0.0);
+  vec3 new_normal = normalize(data_out.normal);
+  new_normal = normalMatrix * new_normal;
+  // csm_FragNormal = vNormalD;
   // csm_Transmission = coat.color.a;
 
 
