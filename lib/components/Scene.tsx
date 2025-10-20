@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
-import { ParamsContext } from "../hooks/useParameters";
+import { ParamsContext, useParameters } from "../hooks/useParameters";
 import { useContextBridge } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import {
@@ -21,10 +21,16 @@ export function Scene() {
   const ContextBridge = useContextBridge(ParamsContext);
 
   const DebugTools = useDebugFps();
-
+  const ctx = useParameters();
   return (
     <ContextBridge>
-      <Canvas className="vis_canvas" gl={{ antialias: true }} dpr={[1, 2]} frameloop="never" linear>
+      <Canvas
+        className="vis_canvas"
+        gl={{ antialias: true }}
+        dpr={ctx.dpr || 1}
+        frameloop="never"
+        linear
+      >
         <Suspense fallback={null}>
           <FrameLimiter fps={60} />
           <CustomTextureProvider>

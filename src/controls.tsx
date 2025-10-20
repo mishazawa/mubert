@@ -22,6 +22,7 @@ export function useSeed() {
   return seed;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useDebugParams(): any {
   const [debug] = useControls(
     "Debug",
@@ -32,7 +33,12 @@ export function useDebugParams(): any {
       controls: false,
       stopObject: false,
       useTexture: true,
-
+      dpr: {
+        value: 1,
+        min: 1,
+        max: 2,
+        step: 1,
+      },
       fft_min: {
         value: 0.1,
         min: 0,

@@ -19,14 +19,13 @@ import { useUniformObjectMatrix } from "./useTransformsReactive";
 
 import * as THREE from "three";
 
-
 function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const ctx = useParameters();
 
   const smoothFFT = useRef({
     mix_min: 0.5,
     mix_max: 0.5,
-    max: 0.5
+    max: 0.5,
   });
 
   const { uAudioTex } = useSharedTextures();
@@ -51,7 +50,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   const rms_max = useDebug("rms_max", 0.5);
   const rms_speed = useDebug("rms_speed", 0.5);
 
-  useFrame((_, dt) => {
+  useFrame(() => {
     let rms = ctx.getRMS();
     rms = Math.pow(rms * 2.0, 2.0);
     // rms = rms / ((window.fft_max ?? 255)/255);
@@ -66,8 +65,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
     uniforms.current.uRMS.value = newRms;
     uniforms.current.uFFT.value = ctx.getFFT();
 
-    // TODO: dt is 0
-
     (uniforms.current.uTime as UniformValue<number>).value +=
       SPEED_MULTIPLIER * speedControls * rms * rms_speed * 1.0;
   });
@@ -75,12 +72,14 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
   // animate fft texture
   const buffer = uAudioTex.current.image.data as Uint8Array;
   const ROW = uAudioTex.current.image.width;
-  console.log("uAudioTex size", uAudioTex.current.image.width, uAudioTex.current.image.height);
+  console.log(
+    "uAudioTex size",
+    uAudioTex.current.image.width,
+    uAudioTex.current.image.height
+  );
 
   useFrame(() => {
     try {
-
-
       // const fft_step = 16;
       // // 1. scroll everything down by fft_step lines (drops last row)
       // buffer.copyWithin(fft_step * ROW, 0, buffer.length - fft_step * ROW);
@@ -98,7 +97,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
       // }
 
       // smoothFFT.current.max = new_max;
-
 
       // for (let i = 0; i < fft.length; i++) {
       //   let v = fft[i];
@@ -151,20 +149,21 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
       buffer.copyWithin(fft_step * ROW, 0, buffer.length - fft_step * ROW);
 
       // 2) Normalize new FFT with a decaying peak
-      const fftRaw = ctx.getFFT();               // Float32Array (0..?)
+      const fftRaw = ctx.getFFT(); // Float32Array (0..?)
       let currMax = 0;
-      for (let i = 0; i < fftRaw.length; i++) currMax = Math.max(currMax, fftRaw[i]);
+      for (let i = 0; i < fftRaw.length; i++)
+        currMax = Math.max(currMax, fftRaw[i]);
 
       let peak = currMax;
       if (smoothFFT.current.max !== undefined) {
-        const fade = 0.99;                       // slower decay -> smoother levels
+        const fade = 0.99; // slower decay -> smoother levels
         peak = Math.max(currMax, smoothFFT.current.max * fade);
       }
       smoothFFT.current.max = peak || 1e-6;
 
       // 3) Per-bin attack/release EMA (in place -> newRow[])
-      const attack = typeof mix_max === "number" ? mix_max : 0.40;  // rise speed
-      const release = typeof mix_min === "number" ? mix_min : 0.10; // fall speed
+      const attack = typeof mix_max === "number" ? mix_max : 0.4; // rise speed
+      const release = typeof mix_min === "number" ? mix_min : 0.1; // fall speed
 
       const newRow = new Uint8Array(fftRaw.length);
       for (let i = 0; i < fftRaw.length; i++) {
@@ -192,7 +191,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
         }
       }
 
-
       uAudioTex.current.needsUpdate = true;
 
       uAudioTex.current.generateMipmaps = true;
@@ -201,7 +199,6 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
       uAudioTex.current.minFilter = THREE.LinearMipmapLinearFilter;
 
       // console.log("Updated audio texture");
-
     } catch (_) {}
   });
 }
@@ -227,7 +224,6 @@ export function UniformsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ctx.hui) return;
     uniforms.current.uHui.value = ctx.hui;
-
   }, [ctx.hui]);
 
   useAnimatedUniforms(uniforms);

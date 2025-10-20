@@ -9,8 +9,8 @@ import {
 import { DataTexture, Texture, TextureLoader } from "three";
 import { useLoader } from "@react-three/fiber";
 import { useParameters } from "./useParameters";
-import * as THREE from "three";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SHARED_TEXTURES = ["uAudioTex"] as const;
 
 type SharedTextureKeys = (typeof SHARED_TEXTURES)[number];
@@ -69,6 +69,7 @@ export function useCustomTexture(): CustomTexture {
 export function useCreateSharedTexture(
   name: SharedTextureKeys,
   init: () => DataTexture,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deps: any[]
 ) {
   const tex = useMemo(init, deps);
@@ -91,7 +92,8 @@ function createBlankTexture() {
 
 function useOptionalTexture(url?: string): Texture {
   const texture = url
-    ? useLoader(TextureLoader, url) // suspends until loaded
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useLoader(TextureLoader, url) // suspends until loaded
     : new Texture(createBlankTexture()); // blank fallback texture
 
   return texture;
