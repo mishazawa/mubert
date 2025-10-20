@@ -61,7 +61,7 @@ function RenderLines() {
         uniforms={uniforms.current}
         vertexShader={vertexShaderWire}
         fragmentShader={fragmentShaderWire}
-        toneMapped={false}
+        toneMapped
         linewidth={2}
       />
     </lineSegments>
@@ -106,7 +106,7 @@ function RenderSolid() {
         fragmentShader={fragmentShader}
         roughness={1}
         iridescence={1}
-        toneMapped={false}
+        toneMapped
         clearcoat={1}
       />
     </mesh>

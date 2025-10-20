@@ -17,11 +17,11 @@ export function useUniformObjectMatrix(
   const ctx = useParameters();
   const stopObject = useDebug("stopObject", false);
 
-  useFrame((_, dt) => {
+  useFrame(() => {
     if (stopObject) return;
 
     const fft_val = uniforms.current.uRMS.value;
-    const rot_speed = ctx.rot_speed.current * dt;
+    const rot_speed = ctx.rot_speed.current;
 
     _axis
       .set(

@@ -20,7 +20,7 @@ function App() {
   return (
     <>
       <DebugProvider value={debug}>
-        <Canvas seed={seed} {...fftfns} texture={img} />
+        <Canvas seed={seed} {...fftfns} texture={img} dpr={debug.dpr} />
       </DebugProvider>
     </>
   );

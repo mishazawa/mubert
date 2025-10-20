@@ -14,6 +14,7 @@ export type PropsPalette = [string, string, string, string, string];
 
 export type OptionalProps = {
   resolution?: number;
+  dpr?: 1 | 2;
   customPalette?: PropsPalette;
   hui?: Vector3; // hui: define optional parameter for component
   smoothFFTmin?: 0.5 | number;
