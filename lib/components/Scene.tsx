@@ -24,7 +24,7 @@ export function Scene() {
 
   return (
     <ContextBridge>
-      <Canvas className="vis_canvas" dpr={1} frameloop="never" linear>
+      <Canvas className="vis_canvas" gl={{ antialias: true }} dpr={[1, 2]} frameloop="never" linear>
         <Suspense fallback={null}>
           <FrameLimiter fps={60} />
           <CustomTextureProvider>

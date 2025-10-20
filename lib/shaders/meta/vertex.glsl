@@ -1,80 +1,84 @@
+precision highp float;
+
 varying vec3 vPatternD;
 
-
-
+// vec3 stoc(vec2 uv) {
+//   vec3 p;
+//   float phi = (uv.x - 0.5) * PI * 2.0;
+//   float the = uv.y * PI;
+//   p.x = sin(the)*cos(phi);
+//   p.y = cos(the);
+//   p.z = sin(the)*sin(phi);
+//   return p;
+// }
 
 void main() {
 
-  vPosition = position;
-  vNormal = normal;
-  vUv = uv;
+  vec3 pp = vec3(position);
+  // pp = stoc(uv);
+  vec3 nn = normalize(pp);
+  
+
   float animation = uTime * SPEED;
-
-  DisplacePatternInput data_in = DisplacePatternInput(vPosition, vNormal, vUv);
+  DisplacePatternInput data_in = DisplacePatternInput(pp, nn, uv);
   DisplacePatternOutput data_out = displace_pattern(data_in, animation);
-
-  // DisplacePatternInput data_in1;
-  // DisplacePatternInput data_in2;
-  // DisplacePatternInput data_in3;
-  // DisplacePatternInput data_in4;
-  // float eps2 = 1.0/32.0/4.0*1.0;
-  // vec2 pos2 = ctos(vPosition);
-  // vec2 pos2_1 = pos2 + vec2(eps2, 0.0);
-  // vec2 pos2_2 = pos2 + vec2(0.0, eps2*2.0);
-  // vec2 pos2_3 = pos2 + vec2(-eps2, 0.0);
-  // vec2 pos2_4 = pos2 + vec2(0.0, -eps2*2.0);
-  // vec3 pos3_1 = stoc(pos2_1);
-  // vec3 pos3_2 = stoc(pos2_2);
-  // vec3 pos3_3 = stoc(pos2_3);
-  // vec3 pos3_4 = stoc(pos2_4);
-
-  // data_in1.position = pos3_1;
-  // data_in2.position = pos3_2;
-  // data_in3.position = pos3_3;
-  // data_in4.position = pos3_4;
-
-  // data_in1.normal = normalize(data_in1.position);
-  // data_in2.normal = normalize(data_in2.position);
-  // data_in3.normal = normalize(data_in3.position);
-  // data_in4.normal = normalize(data_in4.position);
-
-  // DisplacePatternOutput data_out1 = displace_pattern(data_in1, animation);
-  // DisplacePatternOutput data_out2 = displace_pattern(data_in2, animation);
-  // DisplacePatternOutput data_out3 = displace_pattern(data_in3, animation);
-  // DisplacePatternOutput data_out4 = displace_pattern(data_in4, animation);
-
-  // data_out.position = mix((
-  //   data_out1.position +
-  //   data_out2.position +
-  //   data_out3.position +
-  //   data_out4.position
-  //   ) / 4.0, data_out.position, 0.5);
+  vec3 new_normal = normalize(data_out.normal);
+  vec3 new_position = data_out.position;
 
 
-  vNormalD = data_out.normal;
-  vPositionD = data_out.position;
-  vPatternD = data_out.pattern;
-  v_mmat = projectionMatrix * modelViewMatrix;
+  vPosition = pp;
+  vNormal = nn;
+  vUv = uv;
+  vPositionD = new_position;
+  vNormalD = normalMatrix * new_normal;
 
-  // // object space coordinates
-  vec3 objectPosition =
-      (uObjectMatrix * modelMatrix * vec4(vPositionD, 1.0)).xyz;
-  // // view direction in object space
-  // vWorldPosition = normalize(cameraPosition - objectPosition);
-  // // normalized object space normals
-  // vWorldNormal =
-  //     normalize((uObjectMatrix * modelMatrix * vec4(vNormalD, 0.0)).xyz);
+  csm_Normal = new_normal;
+  csm_PositionRaw = projectionMatrix * modelViewMatrix * vec4(new_position, 1.0);
 
 
-  mat3 M3 = mat3(modelMatrix);
-  mat3 O3 = mat3(uObjectMatrix);
-  vec3 worldPos = (modelMatrix * uObjectMatrix * vec4(vPositionD, 1.0)).xyz;
-  vec3 worldNrm = normalize(M3 * O3 * vNormalD);
-  vWorldPosition = worldPos;
-  vWorldNormal   = worldNrm;
+  v_nmat = normalMatrix;
 
-
-
-  csm_Position = worldPos;
-  csm_Normal = vNormalD;
 }
+
+// void main() {
+//   csm_Position = position;
+//   csm_Normal = normal;
+
+//   vPosition = position;
+//   // vNormal = normalize(position);
+//   vNormal = normal;
+//   vUv = uv;
+  
+//   float animation = uTime * SPEED;
+//   DisplacePatternInput data_in = DisplacePatternInput(vPosition, vNormal, vUv);
+//   DisplacePatternOutput data_out = displace_pattern(data_in, animation);
+
+//   vNormalD = data_out.normal;
+//   vPositionD = data_out.position;
+//   vPositionD = data_out.position;
+//   vPatternD = data_out.pattern;
+
+//   v_mmat = projectionMatrix * modelViewMatrix;
+
+//   mat3 M3 = mat3(modelMatrix);
+//   mat3 O3 = mat3(uObjectMatrix);
+
+//   // vec3 worldPos = (modelMatrix * uObjectMatrix * vec4(vPositionD, 1.0)).xyz;
+//   // vec3 worldNrm = normalize(M3 * O3 * vNormalD);
+
+//   // vec3 worldPos = (modelMatrix * vec4(vPositionD, 1.0)).xyz;
+//   // vec3 worldNrm = normalize(normalMatrix * vNormalD);
+
+//   // vWorldPosition = worldPos;
+//   // vWorldNormal   = worldNrm;
+
+//   vWorldPosition = position;
+//   vWorldNormal   = normal;
+
+//   // csm_Position = worldPos;
+//   // csm_Normal = vNormalD;
+
+//   csm_Position = position;
+//   csm_Normal = normal;
+//   // return;
+// }

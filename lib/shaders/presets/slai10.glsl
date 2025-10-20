@@ -1,11 +1,12 @@
 precision highp float;
 
-
-
-#define SPEED .01
+#define DIST_AMP 5.
+#define NOISE_DIST_AMP 1.
+#define SPEED .1
 #define FREQ 1.
-
-#define NORMAL_OFFSET 0.1
+#define FRAC_SCALE 16
+#define DISPLACE_SCALE 2.0
+#define DISPLACE_POS_SCALE 0.5
 
 //#include<math>
 //#include<noise3>
@@ -14,13 +15,36 @@ precision highp float;
 //#include<noise_distortion>
 //#include<line_functions>
 
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+
 vec3 pattern(in vec3 P, in float animation) {
 
+  ////// Pre-distort
   vec3 pos = P;
+  // pos = normalize(pos);
+  //////
+
 
   ////// Parameters
   float tscale = pow(random(uSeed*0.855 + 19.0), 4.0);
-  // tscale = 0.1;
+  tscale = 0.1;
   float symmetry_n = floor(mix(1.0, 6.0, random(uSeed + 7.1282)));
   float vor_scale = pow(random(uSeed*0.821 + 74.0), 4.0) * 1.0;
   float simpx_scale = pow(random(uSeed*0.923 + 31.0), 4.0) * 1.0;
@@ -35,10 +59,10 @@ vec3 pattern(in vec3 P, in float animation) {
   // float symmetry_amp =  0.00+random(uSeed*2.029 + 43.0)*0.5;
   // float py_val =        0.00+random(uSeed*5.432 + 67.0)*0.2;
   // float pos_val =       0.00+random(uSeed*0.444 + 98.0)*0.5;
-  float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0) * 1.0;
-  float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0) * 1.0;
-  float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0) * 0.2;
-  float py_val =        pow(random(uSeed*0.831 + 31.0), 3.0) * 0.25;
+  float simpx_amp =     pow(random(uSeed*0.855 + 19.0), 3.0);
+  float vor_amp =       pow(random(uSeed*0.841 + 43.0), 1.0);
+  float symmetry_amp =  pow(random(uSeed*0.821 + 39.0), 3.0);
+  float py_val =        pow(random(uSeed*0.831 + 31.0), 1.0);
   float pos_val =       pow(random(uSeed*0.943 + 64.0), 4.0);
 
 
@@ -57,8 +81,8 @@ vec3 pattern(in vec3 P, in float animation) {
   float angle = atan(pos.z, pos.x);
   float symmetry = sin(angle * symmetry_n) * smoothstep(1.0, 0.0, pow(abs(pos.y), 2.0));
 
-  float simpx = snoise(pos*simpx_scale+vec3(0.0, fract(animation) * 10.0, uSeed * 10.0)) * 0.5 + 0.5;
-  vec3 vor = voronoi3d(pos*vor_scale+vec3(0.0, random(uSeed) + fract(animation) * 10.0, 0.0));
+  float simpx = snoise(pos*simpx_scale+vec3(0.0, animation * 10.0, uSeed * 10.0)) * 0.5 + 0.5;
+  vec3 vor = voronoi3d(pos*vor_scale+vec3(0.0, uSeed + animation * 10.0, 0.0));
   float vor_idr = random(uSeed + vor.z*10.0);
   float vor_dist = smoothstep(0.0, 1.0, vor.x);
 
@@ -68,28 +92,19 @@ vec3 pattern(in vec3 P, in float animation) {
     symmetry * symmetry_amp,
     vor_dist * vor_amp + simpx * simpx_amp
   );
-  npos = sinnoise_distort(npos, 0.2, 0.25, vec3(fract(animation*0.1)*10.0, 0.0, uSeed));
-  // npos += pos * pos_val;
+  npos += pos * pos_val;
   npos *= 0.2+random(uSeed+333.9)*0.2;
-  // npos *= 0.1;
-  // vec3 npos = pos;
 
 
 
   vec2 auv = vec2(
-    snoise(npos+vec3(0.0, 0.0, (random(uSeed + 6.0) * 100.0))),
-    snoise(npos+vec3(0.0, 0.0, (random(uSeed + 9.0) * 100.0)))
+    snoise(npos+vec3(0.0, 0.0, random(uSeed + 6.0) * 100.0)),
+    snoise(npos+vec3(0.0, 0.0, random(uSeed + 9.0) * 100.0))
     ) * 0.5 + 0.5;
-
-  // vec2 auv = sinnoise_distort(npos*0.1, 0.0, 0.5, vec3(0.0)).xy;
-  // npos = sinnoise_distort(npos*0.2, 0.25, 0.75, vec3(0.0));
-  // vec2 auv = npos.xy*vec2(1.0, 1.0);
-  // auv = auv*0.5+0.5;
-
   float sub_scale = 0.25+random(uSeed + 88.0)*0.5;
   vec2 auv2 = vec2(
-    snoise(npos*sub_scale+vec3(2.0, 0.0, (random(uSeed + 7.0) * 100.0))),
-    snoise(npos*sub_scale+vec3(2.0, 0.0, (random(uSeed + 77.0) * 100.0)))
+    snoise(npos*sub_scale+vec3(2.0, 0.0, random(uSeed + 7.0) * 100.0)),
+    snoise(npos*sub_scale+vec3(2.0, 0.0, random(uSeed + 77.0) * 100.0))
     );
   auv = auv*1.0 + auv2*0.5*random(uSeed + 8.0);
 
@@ -101,21 +116,10 @@ vec3 pattern(in vec3 P, in float animation) {
   // auv.y = 1.0-auv.y; // flip y
 
   ////////// Apply UV
-  // float audio = textureLod(uAudioTex, auv, 2.0).r;
-  
-  // vec2 px = vec2(1.0 / float(textureSize(uAudioTex, 0).x), 0.0);
-  // float a0 = texture(uAudioTex, auv - 2.0*px).r;
-  // float a1 = texture(uAudioTex, auv - 1.0*px).r;
-  // float a2 = texture(uAudioTex, auv).r;
-  // float a3 = texture(uAudioTex, auv + 1.0*px).r;
-  // float a4 = texture(uAudioTex, auv + 2.0*px).r;
-  // float audio = (a0 + 4.0*a1 + 6.0*a2 + 4.0*a3 + a4) / 16.0; // 1D Gaussian
-  
-  // float audio = texture(uAudioTex, auv).r;
-  float audio = textureLod(uAudioTex, auv, 0.5).r;
-  // float audio = blur13(uAudioTex, auv, vec2(256.0, 256.0), vec2(1.0, 1.0)*1.0).r;
-  // audio = mix(audio, ablur, float(VERTEX)>0.0); // blur only in fragment shader
-  // audio = mix(audio, ablur, 1.0); // blur only in fragment shader
+  float audio = texture(uAudioTex, auv).r;
+  float ablur = blur13(uAudioTex, auv, vec2(128.0, 128.0), vec2(1.0, 1.0)*6.0).r;
+  audio = mix(audio, ablur, float(VERTEX)>0.0); // blur only in fragment shader
+  audio = mix(audio, ablur, 1.0); // blur only in fragment shader
   ///////////
 
   npos *= global_scale;
@@ -125,21 +129,19 @@ vec3 pattern(in vec3 P, in float animation) {
 
   audio = smoothstep(0.0, 1.0, pow(audio, 1.0));
   
-  vec3 patt = vec3(auv*1.0, audio*1.0);
+  vec3 patt = vec3(auv, audio);
 
-  return patt.xyz;
+
+
+  return patt;
 
 }
 
 
-
 vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
 
-  vec3 npos = P;
-
-
-  // npos *= mix(0.1, 1.0, patt.z);
-  // npos = sinnoise_distort(npos, 0.5, 0.75, vec3(fract(animation*0.2), 0.0, fract(uSeed)));
+  vec3 npos = P*pow(random(uSeed+5.41), 2.0)*0.5;
+  npos = sinnoise_distort(npos, 0.5, 0.25, vec3(animation, 0.0, uSeed));
 
   vec3 ns = vec3(
     snoise(npos + vec3(0.5, 2.0, fract(uSeed / 1000.0) * 100.0)),
@@ -147,128 +149,37 @@ vec3 displace(in vec3 P, in vec3 N, in vec3 patt, in float animation) {
     snoise(npos + vec3(20.5, 2.0, fract(uSeed / 1000.0) * 100.0))
     );
   float npatt = snoise(patt*2.0);
-  // npos += ns;
 
   // vec3 offset = N*(npatt) + ns*(npatt*0.5+0.5) * pow(random(uSeed+0.99331), 2.0);
-  // vec3 offset = N*(patt.z*2.0-1.0) + ns*(npatt*0.5+0.5)*1.0;
-  // vec3 offset = ns;
+  vec3 offset = N*(patt.z*2.0-1.0) + ns*(npatt*0.5+0.5)*1.0;
   // npatt = pow(patt.z, 2.0);
-  vec3 offset = normalize(N)*mix(-0.5, 1.0, npatt);
+  // vec3 offset = normalize(N)*mix(-1.0, 1.0, npatt);
 
-  vec3 new_pos = npos+offset*0.5;
-  // new_pos = P;
+  vec3 new_pos = P*0.5 + offset * 0.5;
 
   return new_pos;
 }
 
 
-
-// vec3 orthogonal(vec3 v) {
-//     return normalize(abs(v.x) > abs(v.z) ? vec3(-v.y, v.x, 0.0)
-//     : vec3(0.0, -v.z, v.y));
-// }
-
-// vec3 orthogonal(vec3 n) {
-//     float s = n.z >= 0.0 ? 1.0 : -1.0;
-//     float a = -1.0 / (s + n.z);
-//     float bxy = n.x * n.y * a;
-//     return normalize(vec3(1.0 + s * n.x * n.x * a, s * bxy, -s * n.x));
-// }
-
-vec3 orthogonal(vec3 n) {
-    // Seam-free except at y = -1
-    if (n.y < -0.9999999)
-        return vec3(0.0, 0.0, -1.0);   // stable fallback direction
-
-    float a = 1.0 / (1.0 + n.y);
-    float b = -n.x * n.z * a;
-    return normalize(vec3(1.0 - n.x * n.x * a, -n.x, b));
-}
-
-
-// Frisvad (2012): Building an Orthonormal Basis, Revisited
-// Returns tangent (t) and bitangent (b) given unit normal n.
-// void make_tangent_basis(in vec3 n, out vec3 t, out vec3 b) {
-//   float s = n.z >= 0.0 ? 1.0 : -1.0;
-//   float a = -1.0 / (s + n.z);
-//   float bxy = n.x * n.y * a;
-//   t = normalize(vec3(1.0 + s * n.x * n.x * a, s * bxy, -s * n.x));
-//   b = normalize(cross(n, t));
-// }
-
-// Seam-free orthonormal basis (Frisvad 2012, corrected)
-void make_tangent_basis(in vec3 n, out vec3 t, out vec3 b)
-{
-    if (n.z < -0.9999999) {
-        t = vec3(0.0, -1.0, 0.0);
-        b = vec3(-1.0,  0.0, 0.0);
-    } else {
-        float a = 1.0 / (1.0 + n.z);
-        float b_factor = -n.x * n.y * a;
-        t = vec3(1.0 - n.x * n.x * a, b_factor, -n.x);
-        b = vec3(b_factor, 1.0 - n.y * n.y * a, -n.y);
-    }
-}
-
-
-// #include<calc_normal>
+//#include<calc_normal>
 DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
                                        float animation) {
+  Neighbours samples = getNeighbours(data.position, data.normal);
+  vec3 patt = pattern(data.position, animation);
+  vec3 p = displace(data.position, data.normal, patt, animation);
+  // vec3 pa = pattern(normalize(samples.a), animation);
+  // vec3 pb = pattern(normalize(samples.b), animation);
+  // vec3 n = calcNormalFromSamples(
+  //     p, displace(normalize(samples.a), data.normal, pa, animation),
+  //     displace(normalize(samples.b), data.normal, pb, animation));
+  // n = normalize(n);
+  vec3 n = data.normal;
 
-  vec3 position = data.position;
-  vec3 normal = data.normal;
 
-  vec3 patt = pattern(position, animation);
-  vec3 new_pos = displace(position, normal, patt, animation);
 
-  float offset = NORMAL_OFFSET;
-  vec3 tangent = orthogonal(normal);
-  vec3 bitangent = normalize(cross(normal, tangent));
-  vec3 neighbour1 = position + tangent * offset;
-  vec3 neighbour2 = position + bitangent * offset;
-
-  vec3 patt1 = pattern(neighbour1, animation);
-  vec3 patt2 = pattern(neighbour2, animation);
-
-  vec3 displacedNeighbour1 = displace(neighbour1, normal, patt1, animation);
-  vec3 displacedNeighbour2 = displace(neighbour2, normal, patt2, animation);
-
-  vec3 displacedTangent = displacedNeighbour1 - new_pos;
-  vec3 displacedBitangent = displacedNeighbour2 - new_pos;
-
-  vec3 new_normal = normalize(cross(displacedTangent, displacedBitangent));
-
-  return DisplacePatternOutput(new_pos, new_normal, patt);
+  // n = data.normal; // disable normal
+  return DisplacePatternOutput(p, n, patt);
 }
-
-// DisplacePatternOutput displace_pattern(in DisplacePatternInput data,
-//                                        float animation) {
-//   vec3 p = data.position;
-//   vec3 n = normalize(data.normal);
-
-//   vec3 patt = pattern(p, animation);
-//   vec3 pNew = displace(p, n, patt, animation);
-
-//   vec3 T, B;
-//   make_tangent_basis(n, T, B);
-
-//   float offset = 0.05;
-//   vec3 p1 = p + T * offset;
-//   vec3 p2 = p + B * offset;
-
-//   vec3 patt1 = pattern(p1, animation);
-//   vec3 patt2 = pattern(p2, animation);
-
-//   vec3 pNew1 = displace(p1, n, patt1, animation);
-//   vec3 pNew2 = displace(p2, n, patt2, animation);
-
-//   vec3 dT = pNew1 - pNew;
-//   vec3 dB = pNew2 - pNew;
-
-//   vec3 nNew = normalize(cross(dT, dB));
-
-//   return DisplacePatternOutput(pNew, nNew, patt);
-// }
 
 
 CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
@@ -283,19 +194,11 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   #endif
   #if !VERTEX
   #define vWorldPosition_F vWorldPosition
-
     vec3 new_n = vec3(0.0);
-    // vec3 dpdx = dFdx(vWorldPosition_F);
-    // vec3 dpdy = dFdy(vWorldPosition_F);
-    vec3 dpdx = dFdx(data.position);
-    vec3 dpdy = dFdy(data.position);
-    // vec3 dpdx = dFdx(data.position);
-    // vec3 dpdy = dFdy(data.position);
+    vec3 dpdx = dFdx(vWorldPosition_F);
+    vec3 dpdy = dFdy(vWorldPosition_F);
     new_n = normalize(cross(dpdx, dpdy));
-    // data.normal = new_n;
-    // data.normal = vNormalD;
-
-
+    data.normal = new_n;
   #else
   #define vWorldPosition_F vec3(0.0)
   #endif
@@ -419,7 +322,6 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
 
 
   new_col = color_palette;
-  
   if (uUseTex) {
     vec2 tex_uv = vec2(color_noise.rg)*vec2(0.5);
     // new_col = texture(uCustomTex, data.pattern.rg*mix(0.2,4.0,random(uSeed + 44.0))).xyz;
@@ -430,52 +332,43 @@ CoatOutput coat_pattern(in DisplacePatternOutput data, float animation) {
   float new_alpha = 1.0;
 
 
-  // new_col = vec3(1.0);
-
   vec4 color = vec4(new_col, new_alpha);
-  // color = vec4(data.normal, new_alpha);
   // vec4 color = vec4(finalColor.rgb, 1.0);
   // color = vec4(0.0);
   // // // // //
 
 
   // // // // // BUMP
+  vec3 vor = voronoi3d(data.position * 20.0);
+  float bump_scale = 0.5 + gain(pow(random(uSeed + 6.0), 2.0), 2.0);
+  float bump_strength = random(uSeed + 8.0) * 0.5;
+  bump_strength = gain(bump_strength, 3.0);
 
-
-  // vec3 vor = voronoi3d(data.position * 20.0);
-  // float bump_scale = 0.5 + gain(pow(random(uSeed + 6.0), 2.0), 2.0);
-  // float bump_strength = random(uSeed + 8.0) * 0.5;
-  // bump_strength = gain(bump_strength, 3.0);
   vec3 norm = normalize(data.normal);
-  // if (data.position.z < 0.0) {
-  //   norm = -norm;
-  // }
-  // vec3 nnp = data.position * bump_scale;
+  vec3 nnp = data.position * bump_scale;
 
-  // vec3 newNorm = vec3(snoise(nnp + vec3(0.5, 0.0, 0.0)),
-  //                      snoise(nnp + vec3(10.5, 0.0, 0.0)),
-  //                      snoise(nnp + vec3(20.5, 0.0, 0.0))) *
-  //                 2.0;
+  vec3 newNorm = vec3(snoise(nnp + vec3(0.5, 0.0, 0.0)),
+                       snoise(nnp + vec3(10.5, 0.0, 0.0)),
+                       snoise(nnp + vec3(20.5, 0.0, 0.0))) *
+                  2.0;
 
-  // float alignment = dot(normalize(newNorm), normalize(norm));
-  // norm = normalize(norm - newNorm * bump_strength);
-
-
+  float alignment = dot(normalize(newNorm), normalize(norm));
+  norm = normalize(norm - newNorm * bump_strength);
   // // // // //
 
 
   // // // // // MATERIAL
-  float roughness = 0.0;
+  float roughness = 1.0;
   float emission = 0.0;
   float iridescence = 0.0;
-  float metallic = 1.0;
+  float metallic = 0.0;
 
   roughness = snoise(data.pattern*0.2 + vec3(0.0, 0.0, uSeed * 11.491)) * 0.5 + 0.5;
   roughness = gain(pow(roughness, mix(0.2,4.0,random(uSeed+2.31133))), 2.0);
   roughness = mix(0.25, 1.0, roughness);
 
   emission = snoise(smoothstep(0.5, 1.0, length(color)) + vec3(0.0, 0.0, uSeed * 13.4131)) * 0.5 + 0.5;
-  emission = gain(pow(emission, mix(0.1,0.5,random(uSeed+2.31133))), 4.0);
+  // emission = gain(pow(emission, mix(0.1,0.5,random(uSeed+2.31133))), 4.0);
 
   iridescence = snoise(data.pattern - 5.4 + vec3(0.0, 0.0, uSeed * 30.0)) * 0.5 + 0.5;
   iridescence = gain(pow(iridescence, 1.0), 1.0);
