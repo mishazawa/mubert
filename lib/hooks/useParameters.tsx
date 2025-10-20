@@ -11,6 +11,7 @@ import {
   useContext,
   useMemo,
   useRef,
+  type ReactNode,
   type RefObject,
 } from "react";
 import { useColorGenerator } from "./useColorGenerator";
@@ -46,7 +47,7 @@ export const ParamsContext = createContext<ParametersCtx>(null!);
 export function ParametersContextWrap({
   children,
   ...props
-}: CanvasProps & OptionalProps & { children: any }) {
+}: CanvasProps & OptionalProps & { children: ReactNode }) {
   const isMobile = useMemo(() => {
     console.log("is mobile: " + isMobileUA());
     return isMobileUA();
@@ -70,6 +71,16 @@ export function ParametersContextWrap({
       geoWireframeType: gen.int(0, 3),
     }),
     [props.seed, props.resolution]
+  );
+
+  const optionalProps = useMemo(
+    () => ({
+      dpr: props.dpr || 1,
+      smoothFFT: props.smoothFFT || [0.4, 0.1],
+      smoothRMS: props.smoothRMS || [0.5, 0.5],
+      rmsSpeed: props.rmsSpeed || 0.2,
+    }),
+    [props.dpr, props.smoothFFT, props.smoothRMS, props.rmsSpeed]
   );
 
   const uniformData = useMemo(
@@ -127,6 +138,7 @@ export function ParametersContextWrap({
     <ParamsContext
       value={{
         ...props,
+        ...optionalProps,
         rot_speed,
         random: gen,
         palette,

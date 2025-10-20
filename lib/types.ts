@@ -1,4 +1,4 @@
-import type { BufferGeometry, Vector3 } from "three";
+import type { BufferGeometry } from "three";
 
 type AudioAnalysisFns = {
   getFFT: () => number[];
@@ -16,12 +16,11 @@ export type OptionalProps = {
   resolution?: number;
   dpr?: 1 | 2;
   customPalette?: PropsPalette;
-  hui?: Vector3; // hui: define optional parameter for component
-  smoothFFTmin?: 0.5 | number;
-  smoothFFTmax?: 0.5 | number;
-  smoothRMS?: 0.5 | number;
+  // hui?: Vector3; // hui: define optional parameter for component
+  smoothFFT?: [number, number];
+  smoothRMS?: [number, number];
+  rmsSpeed?: number;
   useTex?: boolean;
-  texPath?: string;
 };
 
 export type EnvironmentLightProps = {
