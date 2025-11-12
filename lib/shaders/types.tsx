@@ -32,7 +32,8 @@ type NotGeneratedUniforms =
   | "uParticlesRes"
   | "uSimulationRes"
   | "uRotationAxis"
-  | "uObjectMatrix";
+  | "uObjectMatrix"
+  | "uCalcNormals";
 
 type ProgramableUniforms = Omit<GenerativeShaderUniforms, NotGeneratedUniforms>;
 

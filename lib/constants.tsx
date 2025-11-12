@@ -1,8 +1,9 @@
-export const FFT_SIZE = 128;
+export const FFT_SIZE = 512;
 export const ENV_MAP_RESOLUTION = 256;
 export const SPEED = 10; // suppose to be bpm?
 export const SPEED_MULTIPLIER = 1;
-export const MESH_DETAIL = 64;
+export const MESH_DETAIL = 32;
+export const CALC_NORMALS = true;
 export const POINT_DETAIL_DIVIDER = 4;
 export const AMBIENT_LIGHT_COLOR = 0x404040;
 export const SHADER_STYLE = ["solid", "point", "wireframe"] as const;
@@ -20,16 +21,16 @@ export const VALID_RANGES: Record<string, [number, number]> = {
   uStripesWidth: [0, 1],
 };
 export const FBO_SIZE = 64;
-export const AUDIO_TEXTURE_SIZE = 256;
+export const AUDIO_TEXTURE_SIZE = 128;
 
 export const DOF_FOCUS_LENGTH = 0.03;
 export const DOF_BOKEH_SCALE = 3;
 export const DOF_OFFSET = 0;
 export const FX_NOISE_SCALE = 0.02;
-export const FX_BLOOM_INTENSITY = 1;
-export const FX_BLOOM_LEVELS = 1;
+export const FX_BLOOM_INTENSITY = 0.2;
+export const FX_BLOOM_LEVELS = 4;
 export const FX_BLOOM_LEVELS_MOBILE = FX_BLOOM_LEVELS;
-export const FX_BLOOM_LUMINANCE_THRESHOLD = 0.9;
+export const FX_BLOOM_LUMINANCE_THRESHOLD = 0.7;
 export const CAMERA_FOV = 45;
 export const CAMERA_DISTANCE = 7;
 export const CAMERA_FAR = 50;
@@ -40,4 +41,4 @@ export const CAMERA_ZOOM_FAR = 10;
 export const ENVIRONMENT_LIGHT_INTENSITY = 1.0;
 export const AMBIENT_LIGHT_INTENSITY = 10;
 export const ROTATION_SPEED = 0.5;
-export const CAMERA_ROTATION_SPEED = 0.5;
+export const CAMERA_ROTATION_SPEED = 0.1;

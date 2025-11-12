@@ -29,7 +29,7 @@ void main() {
 
   float radial = length(uv);
   radial = pow(radial * 1.0, 1.0) * 1.0;
-  vec3 a = mix(uColor4*0.50, uColor3, radial);
+  vec3 a = mix(uColor4, uColor3*0.5, radial);
 
   // vec3 b = mix(uColor1, uColor2, radial);
 

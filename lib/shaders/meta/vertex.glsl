@@ -1,6 +1,7 @@
 precision highp float;
 
 varying vec3 vPatternD;
+// varying vec3 vWorldPosition;
 
 // vec3 stoc(vec2 uv) {
 //   vec3 p;
@@ -37,6 +38,9 @@ void main() {
 
 
   v_nmat = normalMatrix;
+
+  vec4 worldPosition2 = modelMatrix * vec4(new_position, 1.0);
+  vWorldPosition = worldPosition2.xyz;
 
 }
 

@@ -17,4 +17,4 @@ export default function MubertCanvas(props: CanvasProps & OptionalProps) {
   );
 }
 
-export const FFT_DATA_SIZE = FFT_SIZE * 2;
+export const FFT_DATA_SIZE = FFT_SIZE;

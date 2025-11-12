@@ -77,7 +77,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
   // animate fft texture
   const buffer = uAudioTex.current.image.data as Uint8Array;
-  const ROW = uAudioTex.current.image.width;
+  const ROW = uAudioTex.current.image.width*4;
   console.log(
     "uAudioTex size",
     uAudioTex.current.image.width,
@@ -91,8 +91,10 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
       // - ROW = width * 4 (bytes per row)
       // - width === fft.length, i.e., one pixel per FFT bin (adjust if different)
 
-      const fft_step = 16;
+      const fft_step = 8;
       const fft = ctx.getFFT();
+      console.log("fft length", fft.length);
+
 
       // 0) Cache previous top row (row 0) BEFORE scrolling
       const prevTop = new Uint8Array(fft.length);
@@ -106,8 +108,14 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
       // 2) Normalize new FFT with a decaying peak
       const fftRaw = ctx.getFFT(); // Float32Array (0..?)
       let currMax = 0;
-      for (let i = 0; i < fftRaw.length; i++)
-        currMax = Math.max(currMax, fftRaw[i]);
+
+      let EQ = 1.0;
+
+      for (let i = 0; i < fftRaw.length; i++) {
+        let eq = Math.sqrt((i * EQ) + 1);
+        // eq = 1.0;
+        currMax = Math.max(currMax, fftRaw[i] * eq);
+      }
 
       let peak = currMax;
       if (smoothFFT.current.max !== undefined) {
@@ -122,10 +130,13 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
 
       const newRow = new Uint8Array(fftRaw.length);
       for (let i = 0; i < fftRaw.length; i++) {
-        const target = Math.min(255, (fftRaw[i] / peak) * 255);
+        let eq = Math.sqrt((i * EQ) + 1);
+        // eq = 1.0;
+        const target = Math.min(255, (fftRaw[i] * eq / peak) * 255);
         const prev = prevTop[i]; // previous displayed value at the top
         const alpha = target > prev ? attack : release;
         const v = prev + (target - prev) * alpha; // EMA
+    
         newRow[i] = v | 0;
       }
 
@@ -144,6 +155,7 @@ function useAnimatedUniforms(uniforms: RefObject<GenerativeShaderUniforms>) {
           buffer[idx] = buffer[idx + 1] = buffer[idx + 2] = v;
           buffer[idx + 3] = 255;
         }
+        
       }
 
       uAudioTex.current.needsUpdate = true;

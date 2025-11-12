@@ -1,5 +1,4 @@
 
-uniform mat3 normalMatrix; // provided by Three.js
 // in vec3 v_wpos;
 in vec3 vPatternD;
 void main() {
@@ -29,8 +28,8 @@ void main() {
   csm_DiffuseColor.rgba = coat.color;
   // csm_DiffuseColor.rgba = vec4(0.5, 0.5, 0.5, 1.0);
   // csm_DiffuseColor.rgba = vec4(vUv.x, vUv.y, 0.0, 0.0);
-  vec3 new_normal = normalize(data_out.normal);
-  new_normal = normalMatrix * new_normal;
+  // vec3 new_normal = normalize(data_out.normal);
+  // new_normal = normalMatrix * new_normal;
   // csm_FragNormal = vNormalD;
   // csm_Transmission = coat.color.a;
 
