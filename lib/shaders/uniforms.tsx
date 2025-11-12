@@ -2,7 +2,7 @@
 // as const
 
 import { Matrix4 } from "three";
-import { FFT_SIZE } from "../constants";
+import { FFT_SIZE, CALC_NORMALS } from "../constants";
 import type { GenerativeShaderUniforms, ShaderControls } from "./types";
 
 // does not support multiple spaces between tokens
@@ -39,6 +39,7 @@ uniform vec2 uParticlesRes;
 uniform mat4 uObjectMatrix;
 uniform vec3 uHui;
 uniform bool uUseTex;
+uniform bool uCalcNormals;
 ` as const; // hui: added here
 
 export function generateDefaults() {
@@ -60,6 +61,8 @@ export function generateDefaults() {
     uHui: { value: [0, 0, 0] }, // hui: add default value to prevent errors
     uUseTex: { value: false }, // hui: add default value to prevent errors
     uParticlesRes: { value: [256, 256] },
+    uCalcNormals: { value: CALC_NORMALS },
+
   } as GenerativeShaderUniforms;
 }
 

@@ -22,7 +22,7 @@
   var ctx = new (window.AudioContext || window.webkitAudioContext)();
   var analyser = ctx.createAnalyser();
   // analyser.fftSize = window.FFT_DATA_SIZE;
-  analyser.fftSize = 128*2.0;
+  analyser.fftSize = 256;
   window.fftSize = analyser.fftSize;
   var data = new Uint8Array(analyser.frequencyBinCount);
   let audioReady = false;

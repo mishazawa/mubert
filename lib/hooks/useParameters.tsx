@@ -76,12 +76,21 @@ export function ParametersContextWrap({
   const optionalProps = useMemo(
     () => ({
       dpr: props.dpr || 1,
-      smoothFFT: props.smoothFFT || [0.4, 0.1],
+      smoothFFT: props.smoothFFT || [0.2, 0.05],
       smoothRMS: props.smoothRMS || [0.5, 0.5],
       rmsSpeed: props.rmsSpeed || 0.2,
     }),
     [props.dpr, props.smoothFFT, props.smoothRMS, props.rmsSpeed]
   );
+  // const optionalProps = useMemo(
+  //   () => ({
+  //     dpr: props.dpr || 1,
+  //     smoothFFT: props.smoothFFT || [0.99, 0.99],
+  //     smoothRMS: props.smoothRMS || [0.5, 0.5],
+  //     rmsSpeed: props.rmsSpeed || 0.2,
+  //   }),
+  //   [props.dpr, props.smoothFFT, props.smoothRMS, props.rmsSpeed]
+  // );
 
   const uniformData = useMemo(
     () => ({

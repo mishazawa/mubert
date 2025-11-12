@@ -12,9 +12,8 @@ function setupFFTAnalysis() {
   // FFT settings
   const ctx = new window.AudioContext();
   const analyser = ctx.createAnalyser();
-  analyser.fftSize = 256;
+  analyser.fftSize = 2048;
   const data = new Uint8Array(analyser.frequencyBinCount);
-
   let audioReady = false;
   audio.addEventListener("play", async () => {
     await ctx.resume(); // unlock AudioContext on user gesture
@@ -26,10 +25,11 @@ function setupFFTAnalysis() {
       audioReady = true;
     }
   });
-
+  
   // do fft analysis each frame
   function renderLoop() {
     if (audioReady) {
+      console.log("FFT data length:", data.length);
       analyser.getByteFrequencyData(data);
     }
     requestAnimationFrame(renderLoop);
